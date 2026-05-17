@@ -1,0 +1,15 @@
+# Ignora l'ambiente virtuale di Python
+venv/
+.venv/
+env/
+
+# Ignora i file temporanei di compilazione e cache di Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignora i file di configurazione locale di Qt Creator o del Mac
+*.user
+.DS_Store
+.QtCreator/
