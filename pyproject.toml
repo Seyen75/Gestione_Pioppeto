@@ -2,4 +2,4 @@
 name = "Gestione_Pioppeto"
 
 [tool.pyside6-project]
-files = [".gitignore", "main.py", "pioppeto_main.py", "pioppeto_main.ui"]
+files = [".gitignore", "main.py", "pioppeto_main.py", "pioppeto_main.ui", "risorse/risorse.qrc"]
