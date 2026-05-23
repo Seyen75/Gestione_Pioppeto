@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormLotti</class>
+ <widget class="QWidget" name="FormLotti">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>647</width>
+    <height>664</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>647</width>
+    <height>664</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>647</width>
+    <height>664</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* Sfondo applicato SOLO alla finestra principale della form */
+QWidget#FormLotti {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #1e2622, stop:1 #121715);
+    color: #ffffff;
+}
+
+/* Stile dei contenitori di gruppo */
+QGroupBox {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Titoli dei GroupBox */
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    color: #8cbfa4; /* Verde salvia chiaro coordinato */
+    padding: 0 5px;
+}
+
+/* Campi numerici di inserimento */
+QSpinBox {
+    background-color: #2a332f;
+    border: 1px solid #44544c;
+    border-radius: 4px;
+    padding: 4px;
+    color: #ffffff;
+    min-width: 65px;
+}
+
+/* Evidenziazione del campo quando l'utente ci clicca dentro */
+QSpinBox:focus {
+    border: 1px solid #8cbfa4;
+    background-color: #313c37;
+}
+
+/* Etichette di testo statiche dentro la form */
+QLabel {
+    color: #e0e0e0;
+}
+
+/* Pulsante di salvataggio finale */
+QPushButton {
+    background-color: #347a50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 30px;
+    padding: 4px
+}
+
+/* Effetto al passaggio del mouse sul pulsante */
+QPushButton:hover {
+    background-color: #419663;
+}
+
+/* Effetto al click sul pulsante */
+QPushButton:pressed {
+    background-color: #245939;
+}
+
+QTableWidget {
+                    background-color: #1e2422;      /* Sfondo delle celle leggermente più chiaro dello sfondo app */
+                    gridline-color: #3a4743;          /* Il colore dei quadretti di separazione */
+                    color: #ffffff;                  /* Colore del testo delle celle */
+                    font-size: 13px;
+                    border: 1px solid #3a4743;
+                }
+                
+                /* Stile dei titoli delle colonne in alto */
+                QHeaderView::section {
+                    background-color: #2d3835;       /* Sfondo dei titoli */
+                    color: #a3b8b0;                  /* Testo dei titoli (verde oliva chiaro/grigio) */
+                    padding: 6px;
+                    font-weight: bold;
+                    border: 1px solid #3a4743;       /* Confine dei titoli per allinearsi alla griglia */
+                }
+                
+                /* Stile quando l'utente seleziona una riga */
+                QTableWidget::item:selected {
+                    background-color: #2e6b4e;       /* Colore verde foresta per la riga selezionata */
+                    color: #ffffff;                  /* Testo bianco sulla selezione */
+                }
+</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>301</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Dati Lotto</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <widget class="QWidget" name="formLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>271</width>
+      <height>200</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="labelAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+     <property name="formAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>ID Lotto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="txt_id_lotto">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>135</width>
+         <height>28</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>135</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Tipologia Lotto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="combo_destinazione">
+       <property name="minimumSize">
+        <size>
+         <width>145</width>
+         <height>28</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>145</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Estensione lotto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="spin_ettari">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>28</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="suffix">
+        <string> ha</string>
+       </property>
+       <property name="minimum">
+        <double>0.050000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Attrito spaziale</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="spin_attrito">
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>90</height>
+        </size>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Stress idrico</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="spin_test_idrico">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>28</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <double>-1.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTableWidget" name="table_lotti">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>310</y>
+     <width>611</width>
+     <height>331</height>
+    </rect>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Shadow::Raised</enum>
+   </property>
+   <property name="showGrid">
+    <bool>true</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string>ID Lotto</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Superficie</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Clone</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Sesto d'impianto</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Destinazione d'Uso</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>240</y>
+     <width>621</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>10</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="btn_azione_lotto">
+      <property name="text">
+       <string>Aggiungi Lotto</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btn_elimina_lotto">
+      <property name="text">
+       <string>Svuota Lotto</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btn_randomizza">
+      <property name="text">
+       <string>Genera Lotto Random</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btn_esci">
+      <property name="text">
+       <string>Esci</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>10</y>
+     <width>301</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Dati Tipologia Impianto</string>
+   </property>
+   <widget class="QWidget" name="formLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>29</y>
+      <width>281</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout_2">
+     <property name="labelAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+     <property name="formAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Clone</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="combo_clone">
+       <property name="minimumSize">
+        <size>
+         <width>140</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>140</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Sesto d'impianto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="combo_sesto_impianto">
+       <property name="minimumSize">
+        <size>
+         <width>141</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>140</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="lbl_avviso_clone">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>271</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

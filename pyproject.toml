@@ -2,4 +2,4 @@
 name = "Gestione_Pioppeto"
 
 [tool.pyside6-project]
-files = [".gitignore", "main.py", "pioppeto_main.py", "pioppeto_main.ui", "risorse/risorse.qrc"]
+files = [".editorconfig", ".gitignore", "Core/cloni.json", "Core/cloni_default.json", "Core/ditta.py", "Core/gestori_clone.py", "Core/lotto.py", "Core/parametri_simulazione.py", "Core/struttura_lavorazioni.py", "GUI/form_ditta.py", "GUI/form_ditta.ui", "GUI/form_lotti.py", "GUI/form_lotti.ui", "GUI/pioppeto_main.py", "GUI/pioppeto_main.ui", "GUI/utils.py", "main.py", "risorse/risorse.qrc"]
