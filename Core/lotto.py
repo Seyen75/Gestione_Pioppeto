@@ -1,5 +1,5 @@
 
-# Modulo di rappresentazione del modello biologico e strutturale del singolo lotto.
+# Modulo di rappresentazione del modello biologico e structural del singolo lotto.
 
 
 class Lotto:
@@ -17,7 +17,7 @@ class Lotto:
         # Range da -1.0 (-100%) a +1.0 (+100%)
         # Indica la risposta del clone alla disponibilità di acqua nel terreno. 
         # Con valori sopra lo 0 si indica un terreno ottimo dove il pioppo cresce proporzionalmente ai suoi potenziali biometrici
-        # Con il valore 0 si ha la condizione standard, mentre andando verso il -1 il terreno ha stress idrico sempre maggiore che incide sulla produttività finale del lotto
+        # Con il valore 0 si ha la condition standard, mentre andando verso il -1 il terreno ha stress idrico sempre maggiore che incide sulla produttività finale del lotto
         self.indice_tendenza_idrica: float = 0.0 
         
         # Nome del clone scelto. Di default si è scelto quello più generico per il settore padano
@@ -25,7 +25,7 @@ class Lotto:
 
         # PARAMETRI DI INDIRIZZO E COERENZA PRODUTTIVA
         # Opzioni ammesse: "OPERA" (Sfoglia/Segheria) oppure "INDUSTRIA" (Cartiera/Biomassa). 
-        # Il TRUCIOLATO, terzo output non viene specificato in quanto è diretto risultato degli scarti degli altri due e non è un prodotto base di produzione
+        # Il TRUCIOLATO, third output non viene specificato in quanto è diretto risultato degli scarti degli altri due e non è un prodotto base di produzione
         self.destinazione_uso: str = "OPERA"
         # Coefficiente di efficienza accoppiamento clone con resa (1.0 = ottimo, < 1.0 = malus)
         self.moltiplicatore_efficienza_clone: float = 1.0
@@ -47,6 +47,39 @@ class Lotto:
         # CONSUNTIVO FINALE DEL LOTTO
         self.report_resa_finale: dict = {}
 
+    # ==========================================
+    #    PROPERTIES DI ALIAS PER IL MOTORE CORE
+    # ==========================================
+
+    @property
+    def clone_scelto(self):
+        """Metodo specchio per far sì che se il simulatore cerca clone_scelto, restituisca clone_assegnato."""
+        return self.clone_assegnato
+
+    @clone_scelto.setter
+    def clone_scelto(self, value):
+        self.clone_assegnato = value
+
+    @property
+    def eta(self) -> int:
+        """Metodo specchio per far sì che se il simulatore cerca eta, restituisca eta_lotto."""
+        return self.eta_lotto
+
+    @eta.setter
+    def eta(self, value: int):
+        self.eta_lotto = value
+
+    @property
+    def superficie(self) -> float:
+        """Metodo specchio per far sì che se il simulatore cerca superficie, restituisca superficie_ettari."""
+        return self.superficie_ettari
+
+    @superficie.setter
+    def superficie(self, value: float):
+        self.superficie_ettari = value
+
+    # ==========================================
+
     def presets_fallback_strutturale(self) -> dict:
         # Restituisce un dizionario minimo di emergenza se il passaggio dati con i dati della form fallisce
         return {
@@ -64,11 +97,27 @@ class Lotto:
 
     def inizializza_nuovo_ciclo(self):
         # Resetta le variabili biologiche all'atto dell'impianto
-        self.eta_lotto = 0
-        self.numero_piante_vive = int(self.superficie_ettari * self.densita_iniziale)
-        self.diametro_medio_fusto = 0.0
-        self.altezza_media_piante = 0.0
-        self.metri_potatura_effettivi = 0.0
+        # Manteniamo l'età se è stata preimpostata come lotto standard iniziale asincrono
+        if not hasattr(self, 'eta_lotto') or self.eta_lotto == 0:
+            self.eta_lotto = 0
+            self.numero_piante_vive = int(self.superficie_ettari * self.densita_iniziale)
+            self.diametro_medio_fusto = 0.0
+            self.altezza_media_piante = 0.0
+            self.metri_potatura_effettivi = 0.0
+        else:
+            # Se parte già vecchio (es. Anno 3 o Anno 9 standard), popoliamo la base di partenza viva
+            self.numero_piante_vive = int(self.superficie_ettari * self.densita_iniziale)
+            # Applichiamo una stima lineare temporanea per il popolamento statico iniziale in tabella
+            inc_cm = 2.5
+            self.diametro_medio_fusto = float(self.eta_lotto * inc_cm)
+            self.altezza_media_piante = float((1.15 * self.diametro_medio_fusto) + 1.2) if self.diametro_medio_fusto > 0 else 0.0
+            if self.altezza_media_piante >= 12.0:
+                self.metri_potatura_effettivi = 6.0
+            elif self.altezza_media_piante >= 7.0:
+                self.metri_potatura_effettivi = 3.0
+            else:
+                self.metri_potatura_effettivi = 0.0
+
         self.stato_infestanti = 0.0
         self.anni_ritardo_taglio = 0
         self.tagliato = False
@@ -160,7 +209,7 @@ class Lotto:
         })
 
     def verifica_maturita_raccolta(self, parametri_clone: dict) -> bool:
-        # Controlla se il lotto ha raggiunto l'età minima e se il diametro medio soddisfa lo standard qualitativo commerciale del clone.
+        # Controlla si il lotto ha raggiunto l'età minima e si il diametro medio soddisfa lo standard qualitativo commerciale del clone.
         
         # Se non ha ancora raggiunto l'età minima biologica, non è tagliabile
         if self.eta_lotto < parametri_clone.get("eta_rotazione_standard", 10):

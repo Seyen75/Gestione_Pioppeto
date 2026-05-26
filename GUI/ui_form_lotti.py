@@ -122,7 +122,7 @@ class Ui_FormLotti(object):
 "")
         self.groupBox = QGroupBox(FormLotti)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(10, 10, 301, 221))
+        self.groupBox.setGeometry(QRect(10, 10, 301, 241))
         self.groupBox.setFlat(False)
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
@@ -175,36 +175,22 @@ class Ui_FormLotti(object):
 
         self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_ettari)
 
-        self.label_7 = QLabel(self.formLayoutWidget)
-        self.label_7.setObjectName(u"label_7")
+        self.spin_eta_iniziale = QSpinBox(self.formLayoutWidget)
+        self.spin_eta_iniziale.setObjectName(u"spin_eta_iniziale")
+        self.spin_eta_iniziale.setMinimumSize(QSize(0, 0))
+        self.spin_eta_iniziale.setMaximumSize(QSize(90, 16777215))
+        self.spin_eta_iniziale.setMaximum(15)
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_7)
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spin_eta_iniziale)
 
-        self.spin_attrito = QSpinBox(self.formLayoutWidget)
-        self.spin_attrito.setObjectName(u"spin_attrito")
-        self.spin_attrito.setMaximumSize(QSize(90, 90))
-        self.spin_attrito.setMaximum(10)
+        self.label_3 = QLabel(self.formLayoutWidget)
+        self.label_3.setObjectName(u"label_3")
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spin_attrito)
-
-        self.label_6 = QLabel(self.formLayoutWidget)
-        self.label_6.setObjectName(u"label_6")
-
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_6)
-
-        self.spin_test_idrico = QDoubleSpinBox(self.formLayoutWidget)
-        self.spin_test_idrico.setObjectName(u"spin_test_idrico")
-        self.spin_test_idrico.setMinimumSize(QSize(90, 28))
-        self.spin_test_idrico.setMaximumSize(QSize(90, 16777215))
-        self.spin_test_idrico.setMinimum(-1.000000000000000)
-        self.spin_test_idrico.setMaximum(1.000000000000000)
-        self.spin_test_idrico.setSingleStep(0.100000000000000)
-
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.spin_test_idrico)
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_3)
 
         self.table_lotti = QTableWidget(FormLotti)
-        if (self.table_lotti.columnCount() < 5):
-            self.table_lotti.setColumnCount(5)
+        if (self.table_lotti.columnCount() < 6):
+            self.table_lotti.setColumnCount(6)
         __qtablewidgetitem = QTableWidgetItem()
         self.table_lotti.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -215,13 +201,15 @@ class Ui_FormLotti(object):
         self.table_lotti.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         __qtablewidgetitem4 = QTableWidgetItem()
         self.table_lotti.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.table_lotti.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.table_lotti.setObjectName(u"table_lotti")
-        self.table_lotti.setGeometry(QRect(20, 310, 611, 331))
+        self.table_lotti.setGeometry(QRect(20, 330, 611, 311))
         self.table_lotti.setFrameShadow(QFrame.Shadow.Raised)
         self.table_lotti.setShowGrid(True)
         self.horizontalLayoutWidget = QWidget(FormLotti)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(10, 240, 621, 61))
+        self.horizontalLayoutWidget.setGeometry(QRect(10, 260, 621, 61))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(10, 0, 10, 0)
@@ -247,10 +235,10 @@ class Ui_FormLotti(object):
 
         self.groupBox_2 = QGroupBox(FormLotti)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(330, 10, 301, 221))
+        self.groupBox_2.setGeometry(QRect(330, 10, 301, 241))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(9, 29, 281, 81))
+        self.formLayoutWidget_2.setGeometry(QRect(9, 29, 281, 140))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
@@ -280,9 +268,36 @@ class Ui_FormLotti(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.combo_sesto_impianto)
 
+        self.label_7 = QLabel(self.formLayoutWidget_2)
+        self.label_7.setObjectName(u"label_7")
+
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_7)
+
+        self.spin_attrito = QSpinBox(self.formLayoutWidget_2)
+        self.spin_attrito.setObjectName(u"spin_attrito")
+        self.spin_attrito.setMaximumSize(QSize(90, 90))
+        self.spin_attrito.setMaximum(10)
+
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_attrito)
+
+        self.label_6 = QLabel(self.formLayoutWidget_2)
+        self.label_6.setObjectName(u"label_6")
+
+        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_6)
+
+        self.spin_test_idrico = QDoubleSpinBox(self.formLayoutWidget_2)
+        self.spin_test_idrico.setObjectName(u"spin_test_idrico")
+        self.spin_test_idrico.setMinimumSize(QSize(90, 28))
+        self.spin_test_idrico.setMaximumSize(QSize(90, 16777215))
+        self.spin_test_idrico.setMinimum(-1.000000000000000)
+        self.spin_test_idrico.setMaximum(1.000000000000000)
+        self.spin_test_idrico.setSingleStep(0.100000000000000)
+
+        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spin_test_idrico)
+
         self.lbl_avviso_clone = QLabel(self.groupBox_2)
         self.lbl_avviso_clone.setObjectName(u"lbl_avviso_clone")
-        self.lbl_avviso_clone.setGeometry(QRect(10, 120, 271, 91))
+        self.lbl_avviso_clone.setGeometry(QRect(10, 180, 271, 51))
         self.lbl_avviso_clone.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignTop)
         self.lbl_avviso_clone.setWordWrap(True)
 
@@ -298,8 +313,8 @@ class Ui_FormLotti(object):
         self.label_8.setText(QCoreApplication.translate("FormLotti", u"Tipologia Lotto", None))
         self.label_2.setText(QCoreApplication.translate("FormLotti", u"Estensione lotto", None))
         self.spin_ettari.setSuffix(QCoreApplication.translate("FormLotti", u" ha", None))
-        self.label_7.setText(QCoreApplication.translate("FormLotti", u"Attrito spaziale", None))
-        self.label_6.setText(QCoreApplication.translate("FormLotti", u"Stress idrico", None))
+        self.spin_eta_iniziale.setSuffix(QCoreApplication.translate("FormLotti", u" anni", None))
+        self.label_3.setText(QCoreApplication.translate("FormLotti", u"Et\u00e0 lotto", None))
         ___qtablewidgetitem = self.table_lotti.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("FormLotti", u"ID Lotto", None))
         ___qtablewidgetitem1 = self.table_lotti.horizontalHeaderItem(1)
@@ -309,7 +324,9 @@ class Ui_FormLotti(object):
         ___qtablewidgetitem3 = self.table_lotti.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("FormLotti", u"Sesto d'impianto", None))
         ___qtablewidgetitem4 = self.table_lotti.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("FormLotti", u"Destinazione d'Uso", None))
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("FormLotti", u"Et\u00e0 Lotto", None))
+        ___qtablewidgetitem5 = self.table_lotti.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("FormLotti", u"Destinazione d'Uso", None))
         self.btn_azione_lotto.setText(QCoreApplication.translate("FormLotti", u"Aggiungi Lotto", None))
         self.btn_elimina_lotto.setText(QCoreApplication.translate("FormLotti", u"Svuota Lotto", None))
         self.btn_randomizza.setText(QCoreApplication.translate("FormLotti", u"Genera Lotto Random", None))
@@ -317,6 +334,8 @@ class Ui_FormLotti(object):
         self.groupBox_2.setTitle(QCoreApplication.translate("FormLotti", u"Dati Tipologia Impianto", None))
         self.label_4.setText(QCoreApplication.translate("FormLotti", u"Clone", None))
         self.label_5.setText(QCoreApplication.translate("FormLotti", u"Sesto d'impianto", None))
+        self.label_7.setText(QCoreApplication.translate("FormLotti", u"Attrito spaziale", None))
+        self.label_6.setText(QCoreApplication.translate("FormLotti", u"Stress idrico", None))
         self.lbl_avviso_clone.setText("")
     # retranslateUi
 

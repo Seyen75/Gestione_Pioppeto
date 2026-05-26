@@ -92,13 +92,12 @@ class Ui_FormDitta(object):
 "QPushButton:pressed {\n"
 "    background-color: #245939;\n"
 "}")
-        self.gridLayout = QGridLayout(FormDitta)
-        self.gridLayout.setObjectName(u"gridLayout")
         self.groupBox = QGroupBox(FormDitta)
         self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(12, 12, 323, 181))
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(13, 28, 301, 68))
+        self.formLayoutWidget.setGeometry(QRect(13, 28, 301, 111))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
@@ -128,11 +127,24 @@ class Ui_FormDitta(object):
 
         self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spin_operaio_B)
 
+        self.spin_durata_piano = QSpinBox(self.formLayoutWidget)
+        self.spin_durata_piano.setObjectName(u"spin_durata_piano")
+        self.spin_durata_piano.setMaximumSize(QSize(75, 16777215))
+        self.spin_durata_piano.setMinimum(1)
+        self.spin_durata_piano.setMaximum(50)
+        self.spin_durata_piano.setSingleStep(10)
+        self.spin_durata_piano.setValue(10)
 
-        self.gridLayout.addWidget(self.groupBox, 0, 0, 1, 1)
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_durata_piano)
+
+        self.label_9 = QLabel(self.formLayoutWidget)
+        self.label_9.setObjectName(u"label_9")
+
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_9)
 
         self.groupBox_2 = QGroupBox(FormDitta)
         self.groupBox_2.setObjectName(u"groupBox_2")
+        self.groupBox_2.setGeometry(QRect(351, 12, 323, 256))
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.formLayout_2 = QFormLayout()
@@ -211,24 +223,21 @@ class Ui_FormDitta(object):
 
         self.gridLayout_2.addLayout(self.formLayout_2, 0, 0, 1, 1)
 
-
-        self.gridLayout.addWidget(self.groupBox_2, 0, 1, 2, 1)
-
-        self.horizontalLayout = QHBoxLayout()
+        self.widget = QWidget(FormDitta)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(20, 210, 321, 51))
+        self.horizontalLayout = QHBoxLayout(self.widget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(10, -1, 10, -1)
-        self.btn_salva = QPushButton(FormDitta)
+        self.horizontalLayout.setContentsMargins(10, 0, 10, 0)
+        self.btn_salva = QPushButton(self.widget)
         self.btn_salva.setObjectName(u"btn_salva")
 
         self.horizontalLayout.addWidget(self.btn_salva)
 
-        self.btn_esci = QPushButton(FormDitta)
+        self.btn_esci = QPushButton(self.widget)
         self.btn_esci.setObjectName(u"btn_esci")
 
         self.horizontalLayout.addWidget(self.btn_esci)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
 
         self.retranslateUi(FormDitta)
@@ -241,6 +250,8 @@ class Ui_FormDitta(object):
         self.groupBox.setTitle(QCoreApplication.translate("FormDitta", u"Gestione Personale", None))
         self.label_2.setText(QCoreApplication.translate("FormDitta", u"Personale specializzato", None))
         self.label.setText(QCoreApplication.translate("FormDitta", u"Personale non specializzato", None))
+        self.spin_durata_piano.setSuffix(QCoreApplication.translate("FormDitta", u" anni", None))
+        self.label_9.setText(QCoreApplication.translate("FormDitta", u"Durata massima simulazione", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("FormDitta", u"Mezzi e Attrezzature Meccaniche", None))
         self.label_4.setText(QCoreApplication.translate("FormDitta", u"Trattori Media Potenza", None))
         self.label_5.setText(QCoreApplication.translate("FormDitta", u"Piattaforme Aeree", None))

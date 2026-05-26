@@ -1,4 +1,3 @@
-
 # Modulo per il pannello di controllo e pianificazione del pioppeto.
 # Gestisce l'inserimento dei lotti dall'Anno 0 e valida la coerenza selvicolturale dei cloni.
 
@@ -41,12 +40,24 @@ class FormLotti(QWidget):
         self.table_lotti = self.ui_interfaccia.findChild(object, "table_lotti")
         self.combo_destinazione = self.ui_interfaccia.findChild(object, "combo_destinazione")
         self.lbl_avviso_clone = self.ui_interfaccia.findChild(object, "lbl_avviso_clone")
+        self.spin_eta_iniziale = self.ui_interfaccia.findChild(object, "spin_eta_iniziale")
 
         # IMPOSTAZIONE TABELLA CON LISTA LOTTI INSERITI
         if self.table_lotti:
             self.table_lotti.setShowGrid(True)
+            self.table_lotti.setColumnCount(6)
+            
             orizzontale_header = self.table_lotti.horizontalHeader()
-            orizzontale_header.setSectionResizeMode(orizzontale_header.ResizeMode.Stretch)
+            orizzontale_header.setSectionResizeMode(orizzontale_header.ResizeMode.Interactive)
+            
+            # Impostiamo il comportamento specifico colonna per colonna per evitare la sovrapposizione degli header
+            orizzontale_header.setSectionResizeMode(0, orizzontale_header.ResizeMode.ResizeToContents)
+            orizzontale_header.setSectionResizeMode(1, orizzontale_header.ResizeMode.ResizeToContents)
+            orizzontale_header.setSectionResizeMode(2, orizzontale_header.ResizeMode.Stretch)
+            orizzontale_header.setSectionResizeMode(3, orizzontale_header.ResizeMode.ResizeToContents)
+            orizzontale_header.setSectionResizeMode(4, orizzontale_header.ResizeMode.ResizeToContents)
+            orizzontale_header.setSectionResizeMode(5, orizzontale_header.ResizeMode.Stretch)
+
             verticale_header = self.table_lotti.verticalHeader()
             verticale_header.setDefaultSectionSize(32)
             verticale_header.setVisible(False)
@@ -106,6 +117,13 @@ class FormLotti(QWidget):
             y = geometria_parent.y() + (geometria_parent.height() - altezza_self) // 2
             self.move(x, y)
 
+    def closeEvent(self, event):
+        """Intercetta la chiusura della form per forzare l'aggiornamento dello stato della dashboard principale."""
+        parent = self.parentWidget()
+        if parent and hasattr(parent, "aggiorna_stato_interfaccia"):
+            parent.aggiorna_stato_interfaccia()
+        super().closeEvent(event)
+
     def popola_cloni_disponibili(self):
         # Carica la combobox con la lista dei cloni selezionabili
         if not self.combo_clone: return
@@ -146,8 +164,12 @@ class FormLotti(QWidget):
         self.combo_destinazione.clear()
         self.combo_destinazione.addItems(["OPERA", "INDUSTRIA"])
 
+    def Blacklist(self):
+        # Mantenimento per consistenza con eventuali chiamate esterne ereditate
+        pass
+
     def verifica_coerenza_selvicolturale(self):
-        # Verifica se l'accoppiamento tra il Clone selezionato e la Destinazione d'uso commerciale è ottimale o crea un malus segnalandolo su apposita label.
+        # Verifica si l'accoppiamento tra il Clone selezionato e la Destinazione d'uso commerciale è ottimale o crea un malus segnalandolo su apposita label.
         
         if not self.combo_clone or not self.combo_destinazione or not self.lbl_avviso_clone:
             return
@@ -210,10 +232,16 @@ class FormLotti(QWidget):
             item_sesto.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.table_lotti.setItem(riga, 3, item_sesto)
 
-            # Colonna 4: Destinazione d'Uso (OPERA / INDUSTRIA)
+            # Colonna 4: Età Lotto (NUOVA COLONNA INTERCETTATA)
+            eta_valore = lotto.eta if hasattr(lotto, 'eta') else 0
+            item_eta = QTableWidgetItem(f"{eta_valore} anni")
+            item_eta.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.table_lotti.setItem(riga, 4, item_eta)
+
+            # Colonna 5: Destinazione d'Uso (OPERA / INDUSTRIA)
             item_dest = QTableWidgetItem(str(lotto.destinazione_uso))
             item_dest.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 4, item_dest)
+            self.table_lotti.setItem(riga, 5, item_dest)
 
     def valida_dati_input(self) -> bool:
         # Funzione per validazione della consistenza dei dati base
@@ -256,12 +284,16 @@ class FormLotti(QWidget):
         lati = [float(x) for x in nuovo_lotto.sesto_impianto.split("x")]
         
         # La densità iniziale iniziale del lotto (numero di piantine posizionate appena nate).
-        # Il calcolo moltiplica il numero di piantine per ettaro per il tipo di impianto scelto e poi lo moltiplica per l'estensione del lotto
+        # Il calcolo moltiplica il numero di piantine per ettaro per il tipo di impianto scelto e poi lo moltiplica per l'estensione del lotto
         nuovo_lotto.densita_iniziale = int((10000 / (lati[0] * lati[1])) * self.spin_ettari.value())
 
         nuovo_lotto.indice_attrito_spaziale = int(self.spin_attrito.value()) if self.spin_attrito else 0
         nuovo_lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value()) if self.spin_test_idrico else 0.0
-
+        
+        # Prepara il nuovo lotto impostando la biometria nominale di partenza
+        if self.spin_eta_iniziale:
+            nuovo_lotto.eta = self.spin_eta_iniziale.value()
+            
         nuovo_lotto.clone_assegnato = self.combo_clone.currentText()
         nuovo_lotto.destinazione_uso = self.combo_destinazione.currentText()
 
@@ -273,7 +305,7 @@ class FormLotti(QWidget):
         else:
             nuovo_lotto.moltiplicatore_efficienza_clone = 1.0
 
-        # Prepara il nuovo lotto
+        # Forza l'allineamento biometrico iniziale in base alla classe d'età immessa
         nuovo_lotto.inizializza_nuovo_ciclo()
 
         # Aggiunge il lotto alla collezione
@@ -298,6 +330,7 @@ class FormLotti(QWidget):
 
         if self.spin_attrito: self.spin_attrito.setValue(lotto.indice_attrito_spaziale)
         if self.spin_test_idrico: self.spin_test_idrico.setValue(lotto.indice_tendenza_idrica)
+        if self.spin_eta_iniziale and hasattr(lotto, 'eta'): self.spin_eta_iniziale.setValue(lotto.eta)
 
         index_clone = self.combo_clone.findText(lotto.clone_assegnato)
         if index_clone >= 0: self.combo_clone.setCurrentIndex(index_clone)
@@ -326,6 +359,9 @@ class FormLotti(QWidget):
 
         lotto.indice_attrito_spaziale = int(self.spin_attrito.value()) if self.spin_attrito else 0
         lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value()) if self.spin_test_idrico else 0.0
+        
+        if self.spin_eta_iniziale:
+            lotto.eta = self.spin_eta_iniziale.value()
 
         lotto.clone_assegnato = self.combo_clone.currentText()
         lotto.destinazione_uso = self.combo_destinazione.currentText()
@@ -337,7 +373,10 @@ class FormLotti(QWidget):
         else:
             lotto.moltiplicatore_efficienza_clone = 1.0
 
-        lotto.inizializza_nuovo_ciclo()
+        # Ricalcola la biometria iniziale solo se il lotto modificato è ancora fermo prima di partire
+        # Evita di azzerare la crescita accumulata durante lo scorrimento del Monitoraggio Real-Time
+        if self.parametri.anno_corrente == 1 and self.parametri.stagione_corrente == "Inverno":
+            lotto.inizializza_nuovo_ciclo()
 
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
@@ -356,7 +395,7 @@ class FormLotti(QWidget):
             "domanda"
         )
         
-        # Verifica se l'utente ha premuto "Sì" sul widget
+        # Verifica si l'utente ha premuto "Sì" sul widget
         if risposta == QMessageBox.StandardButton.Yes:
             riga = righe[0].row()
             self.parametri.collezione_lotti.pop(riga)
@@ -397,21 +436,26 @@ class FormLotti(QWidget):
         else:
             lotto_random.moltiplicatore_efficienza_clone = 1.0
 
+        # Impostiamo l'età DOPO l'inizializzazione del ciclo, così il valore randomico persiste
+        if self.spin_eta_iniziale:
+            lotto_random.eta = random.randint(0, 10)
+
+        # Prepara il nuovo lotto (Evitiamo che sovrascriva l'età casuale)
         lotto_random.inizializza_nuovo_ciclo()
 
         self.parametri.collezione_lotti.append(lotto_random)
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
-
+        
     def svuota_e_resetta_interfaccia(self):
         # resettaggio della form quando si spinge il tasto secondario in modalità svuota
         if self.table_lotti: self.table_lotti.clearSelection()
         if self.txt_id_lotto: self.txt_id_lotto.setText(self.calcola_prossimo_id_progressivo())
 
         if self.spin_ettari: self.spin_ettari.setValue(0.0)
-        if self.spin_eta_lotto: self.spin_eta_lotto.setValue(0.0)
         if self.spin_attrito: self.spin_attrito.setValue(0)
         if self.spin_test_idrico: self.spin_test_idrico.setValue(0.0)
+        if self.spin_eta_iniziale: self.spin_eta_iniziale.setValue(0)
 
         if self.combo_clone and self.combo_clone.count() > 0: self.combo_clone.setCurrentIndex(0)
         if self.combo_sesto_impianto and self.combo_sesto_impianto.count() > 0: self.combo_sesto_impianto.setCurrentIndex(0)

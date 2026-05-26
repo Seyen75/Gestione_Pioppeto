@@ -11,12 +11,14 @@ from GUI.utils import mostra_messaggio_stilizzato
 from Core.ditta import Ditta
 
 class FormDitta(QWidget):
-    def __init__(self, ditta_condivisa: Ditta, parent=None):
+    def __init__(self, ditta_condivisa: Ditta, parametri_condivisi, parent=None):
         super().__init__()
 
         # Configurazione dei flag della finestra per agganciarla alla form chiamante
         if parent:
             self.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
+            # Forza la distruzione effettiva della memoria alla chiusura per attivare il segnale .destroyed
+            self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         # Caricamento dinamico dell'interfaccia con QUiLoader
         loader = QUiLoader()
@@ -30,6 +32,7 @@ class FormDitta(QWidget):
 
         # Salva il riferimento all'oggetto Ditta globale passato alla chiamata e necessario per la gestione dei dati
         self.ditta = ditta_condivisa
+        self.parametri = parametri_condivisi # Salviamo il puntatore globale ai parametri della simulazione
 
         self.setWindowTitle("Inventario Forze di Produzione - Risorse e Flotta")
 
@@ -46,6 +49,7 @@ class FormDitta(QWidget):
         self.spin_harvester = self.ui_interfaccia.findChild(object, "spin_harvester")
         self.spin_forwarder = self.ui_interfaccia.findChild(object, "spin_forwarder")
         self.spin_motoseghe = self.ui_interfaccia.findChild(object, "spin_motoseghe")
+        self.spin_durata_piano = self.ui_interfaccia.findChild(object, "spin_durata_piano")
 
         # Pulsanti di Comando
         self.btn_salva = self.ui_interfaccia.findChild(object, "btn_salva")
@@ -77,6 +81,7 @@ class FormDitta(QWidget):
         if self.spin_harvester: self.spin_harvester.setValue(self.ditta.harvester_abbattitori)
         if self.spin_forwarder: self.spin_forwarder.setValue(self.ditta.forwarder_caricatori)
         if self.spin_motoseghe: self.spin_motoseghe.setValue(self.ditta.kit_motoseghe_professionali)
+        if self.spin_durata_piano: self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
 
     def salva_dati_in_modello(self):
         # Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati
@@ -101,6 +106,18 @@ class FormDitta(QWidget):
         if self.spin_harvester: self.ditta.harvester_abbattitori = self.spin_harvester.value()
         if self.spin_forwarder: self.ditta.forwarder_caricatori = self.spin_forwarder.value()
         if self.spin_motoseghe: self.ditta.kit_motoseghe_professionali = self.spin_motoseghe.value()
+        
+        # Salva la durata target degli anni all'interno della configurazione globale parametri
+        if self.spin_durata_piano: self.parametri.anni_durata_target = self.spin_durata_piano.value()
+
+        # Sincronizzazione immediata del monte ore stagionale nominale con il nuovo organico salvato
+        if hasattr(self.ditta, "inizializza_serbatoi_stagionali"):
+            self.ditta.inizializza_serbatoi_stagionali(55)
+        else:
+            ore_ricalcolate = (self.ditta.operai_grado_A + self.ditta.operai_grado_B) * 450.0
+            self.ditta.serbatoi_ore = {
+                "Inverno": ore_ricalcolate, "Primavera": ore_ricalcolate, "Estate": ore_ricalcolate, "Autunno": ore_ricalcolate
+            }
 
         self.close()
 
