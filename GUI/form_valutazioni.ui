@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormValutazioni</class>
+ <widget class="QWidget" name="FormValutazioni">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1150</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1150</width>
+    <height>780</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1150</width>
+    <height>780</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Reportistica Simulazione</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================================================
+   SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato)
+   ========================================================================= */
+QWidget#FormValutazioni, QTabWidget::pane {
+    background-color: #1a1516; /* Antracite caldissimo con una punta di bordeaux/terra d'ombra */
+}
+
+/* =========================================================================
+   STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra)
+   ========================================================================= */
+QTabWidget::tab-bar {
+    left: 0px; /* Spinge fisicamente l'inizio della barra al millimetro zero */
+}
+
+QTabBar {
+    alignment: left;
+    background: transparent;
+}
+
+QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2a1f21, stop:1 #1f1618);
+    color: #b0a2a4; /* Grigio-rosa morbido per il testo inattivo */
+    border: 1px solid #3d292c;
+    border-bottom: none;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 8px 20px; 
+    font-weight: bold;
+    font-size: 11px;
+    
+    /* Usiamo width fisso anziché min-width per impedire a Qt qualsiasi ricalcolo */
+    width: 200px; 
+}
+
+/* Tab Attivo (Selezionato) */
+QTabBar::tab:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8a1c24, stop:1 #4f0e13);
+    color: #ffffff;
+    border: 1px solid #a8222d;
+    border-bottom: 1px solid #1a1516; /* Si fonde con il nuovo sfondo caldo */
+}
+
+QTabBar::tab:hover:!selected {
+    background: #362528;
+    color: #ffffff;
+}
+
+/* =========================================================================
+   ETICHETTE TESTUALI (QLabel - Tutto in Rosso Corallo Chiaro)
+   ========================================================================= */
+#FormValutazioni QLabel, 
+QGroupBox QLabel, 
+QTabWidget QLabel, 
+QLabel {
+    color: #ff8a80 !important;
+    font-size: 11px;
+    font-weight: normal;
+    background: transparent;
+}
+
+QLabel#lbl_anno_selezionato,
+QLabel#lbl_titolo_lotto, 
+QGroupBox {
+    font-weight: bold !important;
+    font-size: 13px !important;
+}
+
+QLabel#lbl_tipo_filiera_lotto {
+    color: #ffca28 !important;         /* Un bellissimo Giallo Ambra/Oro luminoso */
+    font-size: 16px !important;        /* Dimensione maggiorata per dominare la tabella */
+    font-weight: bold !important;      /* Grassetto marcato */
+    font-family: &quot;Georgia&quot;, serif;     /* Font elegante coerente con il titolo main */
+    padding-top: 10px;                 /* Distanza dal selettore sopra */
+    padding-bottom: 5px;               /* Distanza dalla tabella sotto */
+    background: transparent;
+}
+
+/* =========================================================================
+   TABELLE (QTableWidget) - Sintonizzate sui toni caldi
+   ========================================================================= */
+QTableWidget {
+    background-color: #151011; /* Celle scure calde */
+    gridline-color: #2b1d20;
+    color: #ffffff;
+    border: 1px solid #3d2429;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+QTableWidget::item {
+    padding: 6px;
+}
+
+QTableWidget::item:selected {
+    background-color: #5a151a;
+    color: #ffffff;
+}
+
+QHeaderView::section {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2d181b, stop:1 #1f1012);
+    color: #ff8a80;
+    padding: 6px;
+    border: 1px solid #3d2429;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+/* =========================================================================
+   PULSANTI GENERALI E DI USCITA
+   ========================================================================= */
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7d1820, stop:1 #420f13);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 30px;
+    padding: 6px 12px;
+}
+
+
+/* =========================================================================
+   GROUPBOX INFORMATIVI
+   ========================================================================= */
+QGroupBox {
+    border: 1px solid #4a282d;
+    border-radius: 6px;
+    margin-top: 15px;
+    background-color: #1c1415;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    left: 10px;
+}
+
+QComboBox { 
+                    background-color: #2d181b; 
+                    color: #ffffff; 
+                    border: 1px solid #3d2429; 
+                    border-radius: 4px; 
+                    padding: 4px 10px;
+                }
+                QComboBox::drop-down {
+                    subcontrol-origin: padding;
+                    subcontrol-position: top right;
+                    width: 20px;
+                    border-left-width: 1px;
+                    border-left-color: #3d2429;
+                    border-left-style: solid;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: #151011;
+                    color: #ffffff;
+                    selection-background-color: #5a151a;
+                    border: 1px solid #3d2429;
+                }
+ 
+QSlider::groove:horizontal { 
+                    background: #2d181b; 
+                    height: 6px; 
+                    border-radius: 3px; 
+                } 
+                QSlider::handle:horizontal { 
+                    background: #ff8a80; 
+                    width: 14px; 
+                    margin: -4px 0; 
+                    border-radius: 7px; 
+                }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_6">
+   <property name="leftMargin">
+    <number>20</number>
+   </property>
+   <property name="topMargin">
+    <number>20</number>
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>20</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tab_valutazioni_root">
+     <property name="maximumSize">
+      <size>
+       <width>1100</width>
+       <height>700</height>
+      </size>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LayoutDirection::LeftToRight</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::TabPosition::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::TabShape::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <property name="elideMode">
+      <enum>Qt::TextElideMode::ElideNone</enum>
+     </property>
+     <property name="usesScrollButtons">
+      <bool>true</bool>
+     </property>
+     <property name="documentMode">
+      <bool>false</bool>
+     </property>
+     <property name="tabsClosable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab_consuntivo_annuale">
+      <attribute name="title">
+       <string>📊 Consuntivo Annuale</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="lbl_anno_selezionato">
+             <property name="text">
+              <string>Anno Simulazione</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="sld_anno_report">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tbl_tagli_anno">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <column>
+          <property name="text">
+           <string>ID Lotto</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Destinazione</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Superficie</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Vol. Raccolto</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Opera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Cartiera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Truciolato</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa/Ha Opera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa/Ha Cartiera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa/Ha Truciolato</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>500</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Rese Totali Comprensoriali</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="lbl_res_opera_anno">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_res_cartiera_anno">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_res_truciolato_anno">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_resa_ettaro_media_anno">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="canvas_ripartizione_lotti" native="true"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_storico_particella">
+      <attribute name="title">
+       <string>🌲 Fascicolo Storico Particella</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="lbl_titolo_lotto">
+             <property name="text">
+              <string>Lotto Selezionato</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cmb_scelta_lotto">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="lbl_tipo_filiera_lotto">
+           <property name="text">
+            <string>Indirizzo Produttivo: Filiera da Opera</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tbl_storico_lotto">
+         <column>
+          <property name="text">
+           <string>Anno</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Età</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Diametro</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Altezza</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Piante vive</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Pronto</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Tagliato</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Opera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Cartiera</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Resa Truciolato</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_esci">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>42</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Esci</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

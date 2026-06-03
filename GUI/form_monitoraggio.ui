@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>form_monitoraggio</class>
+ <widget class="QWidget" name="form_monitoraggio">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1100</width>
+    <height>900</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1100</width>
+    <height>900</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* Sfondo applicato SOLO alla finestra principale della form (Blu Notte Profondo) */
+QWidget#form_monitoraggio {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #141923, stop:1 #0c0f15);
+    color: #ffffff;
+}
+
+/* Stile dei contenitori di gruppo */
+QGroupBox {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Titoli dei GroupBox (Azzurro Ciano Tecnologico) */
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    color: #4fc3f7; /* Azzurro luminoso per staccare dal verde delle altre form */
+    padding: 0 5px;
+}
+
+QLabel {
+    color: #a0aec0; /* Grigio chiaro neutro per le label di descrizione */
+    font-size: 13px;
+}
+
+/* FORZATURA STRUTTURALE: Stile specifico per la Label dell'Anno */
+QGroupBox QLabel#lbl_anno, QLabel#lbl_anno {
+    color: #ffffff !important;          /* Bianco puro per massima leggibilità */
+    font-size: 22px !important;         /* Molto grande */
+    font-weight: bold !important;       /* Grassetto marcato */
+    font-family: &quot;Courier New&quot;, monospace !important; 
+}
+
+/* FORZATURA STRUTTURALE: Stile specifico per la Label della Stagione */
+QGroupBox QLabel#lbl_stagione, QLabel#lbl_stagione {
+    color: #00e5ff !important;          /* Azzurro Ciano Neon ad alta visibilità */
+    font-size: 18px !important;         /* Evidente */
+    font-weight: bold !important;       /* Grassetto */
+    font-family: &quot;Courier New&quot;, monospace !important;
+    padding-left: 5px;
+}
+
+/* Pulsante Standard / Avanzamento Temporale (Azzurro di Comando) */
+QPushButton {
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 30px;
+    padding: 6px 12px;
+}
+
+QPushButton:hover {
+    background-color: #039be5;
+}
+
+QPushButton:pressed {
+    background-color: #01579b;
+}
+
+/* Variante per il Pulsante di Chiusura/Termina Sessione (Rosso Corallo) */
+/* Nota: applicheremo questo objectName specifico nel Designer al tasto di interruzione */
+QPushButton#btn_termina_sessione {
+    background-color: #d32f2f;
+}
+
+QPushButton#btn_termina_sessione:hover {
+    background-color: #f44336;
+}
+
+QPushButton#btn_termina_sessione:pressed {
+    background-color: #b71c1c;
+}
+
+/* Stile della Tabella Monitoraggio Lotti */
+QTableWidget {
+    background-color: #171e2c;       /* Sfondo celle coordinato col blu notte */
+    gridline-color: #2b364a;         /* Quadretti di separazione blu scuro */
+    color: #ffffff;
+    font-size: 13px;
+    border: 1px solid #2b364a;
+}
+
+/* Stile dei titoli delle colonne in alto */
+QHeaderView::section {
+    background-color: #222c3e;       /* Sfondo dei titoli di colonna */
+    color: #8ab4f8;                  /* Testo dei titoli in azzurro soft */
+    padding: 6px;
+    font-weight: bold;
+    border: 1px solid #2b364a;
+}
+
+/* Stile della riga selezionata (Evidenziazione Blu Cobalto) */
+QTableWidget::item:selected {
+    background-color: #1a5ab5;       
+    color: #ffffff;
+}</string>
+  </property>
+  <widget class="QGroupBox" name="grp_controllo_tempo">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>397</width>
+     <height>122</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>📊 Stato Avanzamento Simulazione</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="lbl_anno">
+      <property name="text">
+       <string>Anno 1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QLabel" name="lbl_stagione">
+      <property name="text">
+       <string>STAGIONE: INVERNO</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QPushButton" name="btn_prossimo_trimestre">
+      <property name="text">
+       <string>Avanza Stagione ➡️</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="btn_termina_sessione">
+      <property name="text">
+       <string>Termina e Genera Report ⏹️</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="grp_risorse">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>140</y>
+     <width>491</width>
+     <height>381</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>📊 Saturazione Capacità Operativa Ditta</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QWidget" name="canvas_risorse" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="grp_rese">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>140</y>
+     <width>551</width>
+     <height>381</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>📈 Progressione Rese Commerciali Cumulate</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QWidget" name="canvas_rese" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QTableWidget" name="tbl_monitoraggio">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>540</y>
+     <width>1051</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+   </property>
+   <column>
+    <property name="text">
+     <string>ID Particella</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>N° Piante</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Superficie</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Destinazione d'Uso</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Età Biologica</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Diametro Medio</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Altezza Stimata</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Stato Cantiere</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>10</y>
+     <width>526</width>
+     <height>105</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>📊 Rese totali per annualità</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QLabel" name="lbl_tagli_saltati">
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>500</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>⛔ Tagli Saltati (Carenza Mezzi):</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_turni_saltati">
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>500</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>⏳ Tagli Rinviati (Immaturità Biologica):</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lbl_lavori_saltati">
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>500</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>⚠️ Lavorazioni Generiche Fallite:</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

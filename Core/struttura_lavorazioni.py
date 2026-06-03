@@ -1,163 +1,102 @@
 
+# =====================================================================
+# CATALOGO UNIVOCO DELLE OPERAZIONI AGRONOMICHE E FORESTALI
+# Ogni dizionario qui definito rappresenta un'entità unica (ID univoco).
+# Le macrocategorie servono al motore per identificare la natura del cantiere.
+# =====================================================================
+
+# --- IMPIANTO E PREPARAZIONE ---
+OP_SCA_01 = {"id_operazione": "OP_SCA_01", "descrizione": "Preparazione terreno e Scasso localizzato", "macrocategoria": "impianto", "priorita": 1, "ore_ha": 10.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
+OP_IMP_01 = {"id_operazione": "OP_IMP_01", "descrizione": "Messa a dimora astoni/pioppelle", "macrocategoria": "impianto", "priorita": 2, "ore_ha": 25.0, "risorse": {"trattori_media": 1.0, "grado_B": 2.0}}
+OP_IMP_02 = {"id_operazione": "OP_IMP_02", "descrizione": "Immissione nuovi astoni (Rimpiazzo fallanze)", "macrocategoria": "impianto", "priorita": 2, "ore_ha": 1.0, "risorse": {"trattori_media": 1.0, "grado_B": 4.0}}
+
+# --- LAVORAZIONI CON TRATTORE (Irrigazione, Infestanti, Trattamenti) ---
+OP_IRR_01 = {"id_operazione": "OP_IRR_01", "descrizione": "Irrigazione di soccorso giovanile", "macrocategoria": "lavorazione_trattore", "priorita": 1, "ore_ha": 8.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_IRR_02 = {"id_operazione": "OP_IRR_02", "descrizione": "Irrigazione di soccorso standard", "macrocategoria": "lavorazione_trattore", "priorita": 1, "ore_ha": 6.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_INF_01 = {"id_operazione": "OP_INF_01", "descrizione": "Controllo Infestanti Meccanico Interfilare", "macrocategoria": "lavorazione_trattore", "priorita": 3, "ore_ha": 4.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_INF_02 = {"id_operazione": "OP_INF_02", "descrizione": "Ripulitura erbe infestanti", "macrocategoria": "lavorazione_trattore", "priorita": 3, "ore_ha": 4.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRI_01 = {"id_operazione": "OP_TRI_01", "descrizione": "Trinciatura stocchi interfilare", "macrocategoria": "lavorazione_trattore", "priorita": 4, "ore_ha": 3.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRI_02 = {"id_operazione": "OP_TRI_02", "descrizione": "Trinciatura e controllo sottobosco", "macrocategoria": "lavorazione_trattore", "priorita": 4, "ore_ha": 3.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRA_01 = {"id_operazione": "OP_TRA_01", "descrizione": "Trattamento Antiparassitario fogliare", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 5.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRA_02 = {"id_operazione": "OP_TRA_02", "descrizione": "Trattamento rameico preventivo", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 4.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRA_03 = {"id_operazione": "OP_TRA_03", "descrizione": "Trattamento fitosanitario della chioma", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 6.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRA_04 = {"id_operazione": "OP_TRA_04", "descrizione": "Trattamento antifungino protettivo/fusto", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 5.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_TRA_05 = {"id_operazione": "OP_TRA_05", "descrizione": "Trattamento fitosanitario chioma adulta", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 7.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+OP_MON_01 = {"id_operazione": "OP_MON_01", "descrizione": "Monitoraggio fitosanitario pre-raccolta", "macrocategoria": "lavorazione_trattore", "priorita": 2, "ore_ha": 4.0, "risorse": {"trattori_media": 1.0, "grado_B": 1.0}}
+
+# --- POTATURE (Manuali e Piattaforme) ---
+OP_POT_01 = {"id_operazione": "OP_POT_01", "descrizione": "Spollonatura e prima potatura aste", "macrocategoria": "potatura", "priorita": 3, "ore_ha": 10.0, "risorse": {"grado_B": 1.0}}
+OP_POT_02 = {"id_operazione": "OP_POT_02", "descrizione": "Potatura di elevazione in quota (Nodi)", "macrocategoria": "potatura", "priorita": 2, "ore_ha": 15.0, "risorse": {"piattaforme": 1.0, "grado_A": 1.0, "grado_B": 1.0}}
+
+# --- RACCOLTA E ABBATTIMENTO ---
+OP_RAC_01 = {"id_operazione": "OP_RAC_01", "descrizione": "Abbattimento ed esbosco avanzato Opera", "macrocategoria": "raccolta", "priorita": 1, "ore_ha": 40.0, "risorse": {"grado_A": 2.0, "harvester": 1.0, "forwarder": 1.0}}
+OP_RAC_02 = {"id_operazione": "OP_RAC_02", "descrizione": "Abbattimento e cippatura meccanizzata Cartiera", "macrocategoria": "raccolta", "priorita": 1, "ore_ha": 35.0, "risorse": {"grado_A": 2.0, "harvester": 1.0, "forwarder": 1.0}}
+
+
+# =====================================================================
+# CALENDARIO STRUTTURALE DELLE LAVORAZIONI
+# Qui le operazioni vengono richiamate tramite la loro variabile univoca.
+# =====================================================================
+
 STRUTTURA_LAVORAZIONI = {
-    # -------------------------------------------------------------
-    # ANNO 0: PREPARAZIONE ED IMPIANTO
-    # -------------------------------------------------------------
-    0: {
-        "Inverno": [
-            {
-                "operazione": "Messa a dimora astoni (Impianto meccanizzato)",
-                "priorita": 1,
-                "ore_ha": 25.0,
-                "risorse": {"trattori_media": 1.0, "ore_grado_B": 2.0}
-            }
-        ],
-        "Primavera": [
-            {
-                "operazione": "Controllo Infestanti Meccanico Interfilare",
-                "priorita": 3,
-                "ore_ha": 4.0,
-                "risorse": {"trattori_media": 1.0, "attrezzature_agricole": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Estate": [
-            {
-                "operazione": "Irrigazione di soccorso giovanile",
-                "priorita": 1,
-                "ore_ha": 8.0,
-                "risorse": {"cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Autunno": [
-            {
-                "operazione": "Scasso e Ripuntatura profonda preliminare",
-                "priorita": 1, # Massima priorità per preparare il suolo asciutto
-                "ore_ha": 12.0,
-                "risorse": {"trattori_alta": 1.0, "attrezzature_agricole": 1.0, "ore_grado_A": 1.0}
-            }
-        ]
+    "OPERA": {
+        0: {
+            "Inverno": [],
+            "Primavera": [OP_SCA_01, OP_IMP_01],
+            "Estate": [OP_IRR_01],
+            "Autunno": [OP_INF_01]
+        },
+        1: {
+            "Inverno": [OP_POT_01, OP_IMP_02],
+            "Primavera": [OP_TRA_01, OP_INF_02],
+            "Estate": [OP_IRR_02],
+            "Autunno": [OP_TRA_02]
+        },
+        "Fase_Crescita_Giovane": { 
+            "Inverno": [OP_POT_02],
+            "Primavera": [OP_TRA_03],
+            "Estate": [OP_TRI_01],
+            "Autunno": [OP_TRA_04]
+        },
+        "Fase_Mantenimento_Tardo": { 
+            "Inverno": [],
+            "Primavera": [OP_TRA_05],
+            "Estate": [OP_TRI_02],
+            "Autunno": []
+        },
+        "Raccolta": {
+            "Inverno": [OP_RAC_01],
+            "Primavera": [], "Estate": [], "Autunno": []
+        }
     },
-
-    # -------------------------------------------------------------
-    # ANNO 1: ATTECCHIMENTO
-    # -------------------------------------------------------------
-    1: {
-        "Inverno": [
-            {
-                "operazione": "Spollonatura e prima potatura aste",
-                "priorita": 3,
-                "ore_ha": 10.0,
-                "risorse": {"ore_grado_B": 1.0}
-            }
-        ],
-        "Primavera": [
-            {
-                "operazione": "Trattamento Antiparassitario fogliare",
-                "priorita": 2,
-                "ore_ha": 5.0,
-                "risorse": {"trattori_media": 1.0, "cura": 1.0, "ore_grado_B": 1.0}
-            },
-            {
-                "operazione": "Ripulitura erbe infestanti",
-                "priorita": 3,
-                "ore_ha": 4.0,
-                "risorse": {"trattori_media": 1.0, "attrezzature_agricole": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Estate": [
-            {
-                "operazione": "Irrigazione di soccorso",
-                "priorita": 1,
-                "ore_ha": 6.0,
-                "risorse": {"cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Autunno": [
-            {
-                "operazione": "Trattamento rameico al tronco (Prevenzione Cancri)",
-                "priorita": 2,
-                "ore_ha": 4.0,
-                "risorse": {"trattori_media": 1.0, "cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ]
-    },
-
-    # -------------------------------------------------------------
-    # ANNI DA 2 A 5: ACCRESCIMENTO GIOVANE
-    # -------------------------------------------------------------
-    "Fase_Crescita_Giovane": {
-        "Inverno": [
-            {
-                "operazione": "Potatura di elevazione in quota (Nodi)",
-                "priorita": 2,
-                "ore_ha": 15.0,
-                "risorse": {"piattaforme": 1.0, "ore_grado_A": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Primavera": [
-            {
-                "operazione": "Trattamento fitosanitario della chioma",
-                "priorita": 2,
-                "ore_ha": 6.0,
-                "risorse": {"trattori_media": 1.0, "cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Estate": [
-            {
-                "operazione": "Trinciatura stocchi interfilare",
-                "priorita": 4,
-                "ore_ha": 3.0,
-                "risorse": {"trattori_media": 1.0, "attrezzature_agricole": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Autunno": [
-            {
-                "operazione": "Trattamento antifungino protettivo del fusto",
-                "priorita": 2,
-                "ore_ha": 5.0, # Leggermente più lungo per fusti più grandi rispetto all'anno 1
-                "risorse": {"trattori_media": 1.0, "cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ]
-    },
-
-    # -------------------------------------------------------------
-    # ANNI DA 6 AL TAGLIO (MANUTENZIONE TARDA)
-    # -------------------------------------------------------------
-    "Fase_Mantenimento_Tardo": {
-        "Inverno": [],
-        "Primavera": [
-            {
-                "operazione": "Trattamento fitosanitario chioma adulta",
-                "priorita": 2,
-                "ore_ha": 7.0,
-                "risorse": {"trattori_media": 1.0, "cura": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Estate": [
-            {
-                "operazione": "Trinciatura e controllo vegetazione sottobosco",
-                "priorita": 4,
-                "ore_ha": 3.0,
-                "risorse": {"trattori_media": 1.0, "attrezzature_agricole": 1.0, "ore_grado_B": 1.0}
-            }
-        ],
-        "Autunno": [] # Sulle piante adulte la corteccia è spessa e suberificata, non serve il trattamento
-    },
-
-    # -------------------------------------------------------------
-    # CANTIERE DI RACCOLTA FINALE
-    # -------------------------------------------------------------
-    "Raccolta": {
-        "Inverno": [
-            {
-                "operazione": "Abbattimento, sramatura ed esbosco (Taglio)",
-                "priorita": 1,
-                "ore_ha": 40.0,
-                "risorse": {"forestali_taglio": 2.0, "ore_grado_A": 2.0}
-            }
-        ],
-        "Primavera": [],
-        "Estate": [],
-        "Autunno": []
+    "INDUSTRIA": {
+        0: {
+            "Inverno": [],
+            "Primavera": [OP_SCA_01, OP_IMP_01],
+            "Estate": [OP_IRR_01],
+            "Autunno": [OP_INF_01]
+        },
+        1: {
+            "Inverno": [OP_IMP_02],
+            "Primavera": [OP_TRA_01, OP_INF_02],
+            "Estate": [OP_IRR_02],
+            "Autunno": [OP_TRA_02]
+        },
+        "Fase_Crescita_Giovane": { 
+            "Inverno": [], 
+            "Primavera": [OP_TRA_03],
+            "Estate": [OP_TRI_01],
+            "Autunno": [OP_TRA_04]
+        },
+        "Fase_Mantenimento_Tardo": { 
+            "Inverno": [],
+            "Primavera": [OP_MON_01],
+            "Estate": [OP_TRI_02],
+            "Autunno": []
+        },
+        "Raccolta": {
+            "Inverno": [OP_RAC_02],
+            "Primavera": [], "Estate": [], "Autunno": []
+        }
     }
 }

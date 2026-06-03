@@ -24,9 +24,9 @@ class Ui_FormLotti(object):
     def setupUi(self, FormLotti):
         if not FormLotti.objectName():
             FormLotti.setObjectName(u"FormLotti")
-        FormLotti.resize(647, 664)
-        FormLotti.setMinimumSize(QSize(647, 664))
-        FormLotti.setMaximumSize(QSize(647, 664))
+        FormLotti.resize(647, 721)
+        FormLotti.setMinimumSize(QSize(647, 720))
+        FormLotti.setMaximumSize(QSize(647, 721))
         FormLotti.setStyleSheet(u"/* Sfondo applicato SOLO alla finestra principale della form */\n"
 "QWidget#FormLotti {\n"
 "    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, \n"
@@ -204,7 +204,7 @@ class Ui_FormLotti(object):
         __qtablewidgetitem5 = QTableWidgetItem()
         self.table_lotti.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.table_lotti.setObjectName(u"table_lotti")
-        self.table_lotti.setGeometry(QRect(20, 330, 611, 311))
+        self.table_lotti.setGeometry(QRect(20, 330, 611, 371))
         self.table_lotti.setFrameShadow(QFrame.Shadow.Raised)
         self.table_lotti.setShowGrid(True)
         self.horizontalLayoutWidget = QWidget(FormLotti)

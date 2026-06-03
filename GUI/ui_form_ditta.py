@@ -15,17 +15,17 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFormLayout, QGridLayout, QGroupBox,
-    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-    QSpinBox, QWidget)
+from PySide6.QtWidgets import (QApplication, QDoubleSpinBox, QFormLayout, QGridLayout,
+    QGroupBox, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QSpinBox, QWidget)
 
 class Ui_FormDitta(object):
     def setupUi(self, FormDitta):
         if not FormDitta.objectName():
             FormDitta.setObjectName(u"FormDitta")
-        FormDitta.resize(686, 280)
-        FormDitta.setMinimumSize(QSize(686, 280))
-        FormDitta.setMaximumSize(QSize(16777215, 16777215))
+        FormDitta.resize(686, 406)
+        FormDitta.setMinimumSize(QSize(686, 406))
+        FormDitta.setMaximumSize(QSize(686, 406))
         FormDitta.setStyleSheet(u"/* Sfondo applicato SOLO alla finestra principale della form */\n"
 "QWidget#FormDitta {\n"
 "    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, \n"
@@ -94,10 +94,10 @@ class Ui_FormDitta(object):
 "}")
         self.groupBox = QGroupBox(FormDitta)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(12, 12, 323, 181))
+        self.groupBox.setGeometry(QRect(12, 12, 311, 151))
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(13, 28, 301, 111))
+        self.formLayoutWidget.setGeometry(QRect(13, 28, 281, 111))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
@@ -130,7 +130,7 @@ class Ui_FormDitta(object):
         self.spin_durata_piano = QSpinBox(self.formLayoutWidget)
         self.spin_durata_piano.setObjectName(u"spin_durata_piano")
         self.spin_durata_piano.setMaximumSize(QSize(75, 16777215))
-        self.spin_durata_piano.setMinimum(1)
+        self.spin_durata_piano.setMinimum(10)
         self.spin_durata_piano.setMaximum(50)
         self.spin_durata_piano.setSingleStep(10)
         self.spin_durata_piano.setValue(10)
@@ -144,7 +144,7 @@ class Ui_FormDitta(object):
 
         self.groupBox_2 = QGroupBox(FormDitta)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(351, 12, 323, 256))
+        self.groupBox_2.setGeometry(QRect(340, 10, 311, 321))
         self.gridLayout_2 = QGridLayout(self.groupBox_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.formLayout_2 = QFormLayout()
@@ -223,21 +223,82 @@ class Ui_FormDitta(object):
 
         self.gridLayout_2.addLayout(self.formLayout_2, 0, 0, 1, 1)
 
-        self.widget = QWidget(FormDitta)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(20, 210, 321, 51))
-        self.horizontalLayout = QHBoxLayout(self.widget)
+        self.layoutWidget = QWidget(FormDitta)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(10, 340, 321, 51))
+        self.horizontalLayout = QHBoxLayout(self.layoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(10, 0, 10, 0)
-        self.btn_salva = QPushButton(self.widget)
+        self.btn_salva = QPushButton(self.layoutWidget)
         self.btn_salva.setObjectName(u"btn_salva")
 
         self.horizontalLayout.addWidget(self.btn_salva)
 
-        self.btn_esci = QPushButton(self.widget)
+        self.btn_esci = QPushButton(self.layoutWidget)
         self.btn_esci.setObjectName(u"btn_esci")
 
         self.horizontalLayout.addWidget(self.btn_esci)
+
+        self.groupBox_3 = QGroupBox(FormDitta)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.groupBox_3.setGeometry(QRect(10, 170, 311, 161))
+        self.formLayoutWidget_2 = QWidget(self.groupBox_3)
+        self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
+        self.formLayoutWidget_2.setGeometry(QRect(10, 20, 284, 131))
+        self.formLayout_3 = QFormLayout(self.formLayoutWidget_2)
+        self.formLayout_3.setObjectName(u"formLayout_3")
+        self.formLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_10 = QLabel(self.formLayoutWidget_2)
+        self.label_10.setObjectName(u"label_10")
+
+        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_10)
+
+        self.label_11 = QLabel(self.formLayoutWidget_2)
+        self.label_11.setObjectName(u"label_11")
+
+        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_11)
+
+        self.label_12 = QLabel(self.formLayoutWidget_2)
+        self.label_12.setObjectName(u"label_12")
+
+        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_12)
+
+        self.label_13 = QLabel(self.formLayoutWidget_2)
+        self.label_13.setObjectName(u"label_13")
+
+        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_13)
+
+        self.dsb_elasticita_spec = QDoubleSpinBox(self.formLayoutWidget_2)
+        self.dsb_elasticita_spec.setObjectName(u"dsb_elasticita_spec")
+        self.dsb_elasticita_spec.setDecimals(1)
+        self.dsb_elasticita_spec.setValue(2.000000000000000)
+
+        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.FieldRole, self.dsb_elasticita_spec)
+
+        self.dsb_elasticita_comune = QDoubleSpinBox(self.formLayoutWidget_2)
+        self.dsb_elasticita_comune.setObjectName(u"dsb_elasticita_comune")
+        self.dsb_elasticita_comune.setDecimals(1)
+        self.dsb_elasticita_comune.setMaximum(5.000000000000000)
+        self.dsb_elasticita_comune.setSingleStep(0.500000000000000)
+        self.dsb_elasticita_comune.setValue(3.000000000000000)
+
+        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.FieldRole, self.dsb_elasticita_comune)
+
+        self.dsb_elasticita_mezzi_base = QDoubleSpinBox(self.formLayoutWidget_2)
+        self.dsb_elasticita_mezzi_base.setObjectName(u"dsb_elasticita_mezzi_base")
+        self.dsb_elasticita_mezzi_base.setDecimals(1)
+        self.dsb_elasticita_mezzi_base.setSingleStep(0.500000000000000)
+        self.dsb_elasticita_mezzi_base.setValue(2.500000000000000)
+
+        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.FieldRole, self.dsb_elasticita_mezzi_base)
+
+        self.dsb_elasticita_mezzi_spec = QDoubleSpinBox(self.formLayoutWidget_2)
+        self.dsb_elasticita_mezzi_spec.setObjectName(u"dsb_elasticita_mezzi_spec")
+        self.dsb_elasticita_mezzi_spec.setDecimals(1)
+        self.dsb_elasticita_mezzi_spec.setSingleStep(0.500000000000000)
+        self.dsb_elasticita_mezzi_spec.setValue(2.000000000000000)
+
+        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.FieldRole, self.dsb_elasticita_mezzi_spec)
 
 
         self.retranslateUi(FormDitta)
@@ -247,9 +308,9 @@ class Ui_FormDitta(object):
 
     def retranslateUi(self, FormDitta):
         FormDitta.setWindowTitle(QCoreApplication.translate("FormDitta", u"Gestione dati ditta", None))
-        self.groupBox.setTitle(QCoreApplication.translate("FormDitta", u"Gestione Personale", None))
+        self.groupBox.setTitle(QCoreApplication.translate("FormDitta", u"Gestione Personale dipendente", None))
         self.label_2.setText(QCoreApplication.translate("FormDitta", u"Personale specializzato", None))
-        self.label.setText(QCoreApplication.translate("FormDitta", u"Personale non specializzato", None))
+        self.label.setText(QCoreApplication.translate("FormDitta", u"Personale generico", None))
         self.spin_durata_piano.setSuffix(QCoreApplication.translate("FormDitta", u" anni", None))
         self.label_9.setText(QCoreApplication.translate("FormDitta", u"Durata massima simulazione", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("FormDitta", u"Mezzi e Attrezzature Meccaniche", None))
@@ -261,5 +322,10 @@ class Ui_FormDitta(object):
         self.label_3.setText(QCoreApplication.translate("FormDitta", u"Trattori Alta Potenza", None))
         self.btn_salva.setText(QCoreApplication.translate("FormDitta", u"Salva Ditta", None))
         self.btn_esci.setText(QCoreApplication.translate("FormDitta", u"Esci", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("FormDitta", u"Gestione Stagionali e Locazioni Macchinari", None))
+        self.label_10.setText(QCoreApplication.translate("FormDitta", u"Moltiplicatore Operai specializzati", None))
+        self.label_11.setText(QCoreApplication.translate("FormDitta", u"Moltiplicatore Operai generici", None))
+        self.label_12.setText(QCoreApplication.translate("FormDitta", u"Moltiplicatore mezzi base", None))
+        self.label_13.setText(QCoreApplication.translate("FormDitta", u"Moltiplicatore mezzi specializzati", None))
     # retranslateUi
 

@@ -7,7 +7,7 @@ class Ditta:
         # ANAGRAFICA E PARAMETRI GENERALI
         self.nome_ditta: str = nome
         self.ore_giorno_standard: int = 8
-        self.coefficiente_rendimento_cantiere: float = 0.80  # Adeguamento per Normativa IUFRO (20% tempi accessori) - Da indicare in PW
+        self.coefficiente_rendimento_cantiere: float = 0.80  # Adeguamento per Normativa IUFRO (20% tempi accessori) - Da indicate in PW
         self.coefficiente_iufro: float = 0.80              
 
         # FORZA LAVORO
@@ -20,7 +20,7 @@ class Ditta:
         self.piattaforme_aeree_semoventi: int = 0   # Ragni elevatori per potatura alta
         self.harvester_abbattitori: int = 0         # Abbattitori pioppicoli a testa rotante
         self.forwarder_caricatori: int = 0          # Caricatori forestali pesanti con ralle
-        self.kit_motoseghe_professionali: int = 0   # Per cantiere abbattimento tradizionale
+        self.kit_motoseghe_professionali: int = 0   # Per cantiere abbattimento tradicional
 
         # DIZIONARIO CENTRALIZZATO UNICO DEI SERBATOI ORE (Struttura Master)
         self.serbatoi_ore = {
@@ -44,29 +44,6 @@ class Ditta:
         self.serbatoio_ore_forwarder: float = 0.0
         self.serbatoio_ore_motoseghe: float = 0.0
 
-        # LISTA PRESTAZIONALI UNITARIE (Abaco IUFRO interno)
-        self.prestazioni_macchine = {
-            "impianto": {
-                "ha_ora_per_linea": 0.04,
-                "squadra": {"grado_A": 1, "grado_B": 1, "trattori_alta": 1}
-            },
-            "trinciatura": {
-                "ha_ora_per_linea": 0.30,
-                "squadra": {"grado_A": 1, "grado_B": 0, "trattori_media": 1}
-            },
-            "potatura": {
-                "ha_ora_per_linea": 0.08,
-                "squadra": {"grado_A": 1, "grado_B": 1, "piattaforme": 1}
-            },
-            "raccolta_tradizionale": {
-                "m3_ora_per_linea": 2.5,
-                "squadra": {"grado_A": 2, "grado_B": 0, "motoseghe": 1, "trattori_media": 1}
-            },
-            "raccolta_avanzata": {
-                "m3_ora_per_linea": 12.0,
-                "squadra": {"grado_A": 2, "grado_B": 0, "harvester": 1, "forwarder": 1}
-            }
-        }
 
         # REGISTRI DI UTILIZZO E LOGISTICA TOTALI
         self.ore_lavoro_effettivo: float = 0.0
@@ -81,6 +58,22 @@ class Ditta:
         self.fallimenti_harvester: int = 0
         self.fallimenti_forwarder: int = 0
         self.fallimenti_motoseghe: int = 0
+
+        # === DIZIONARIO ELASTICITÀ DI MERCATO DISACCOPPIATO (Requisito PW Avanzato) ===
+        # Taratura aggiornata per evitare l'inefficacia dei limiti frazionari (1.5) su singole unità.
+        # Garantisce il raddoppio minimo (2.0) sia per la manodopera d'alto fusto che per l'Harvester.
+        self.moltiplicatori_elasticita = {
+            "personale_spec": 2.0,     # Sblocca il raddoppio orario della squadra di Grado A
+            "personale_comune": 3.0,   # Ampio ricorso ad avventizi stagionali (+200% ore extra)
+            "mezzi_base": 2.5,         # Nolo flessibile di trattori e piattaforme aggiuntive
+            "mezzi_spec": 2.0          # Permette l'ingaggio di una seconda linea di taglio completa
+        }
+        
+        # Registro annuale cumulativo delle ore extra prestate (misure statistiche)
+        self.registro_extra_anno = {
+            "grado_A": 0.0, "grado_B": 0.0, "trattori_alta": 0.0, "trattori_media": 0.0,
+            "piattaforme": 0.0, "harvester": 0.0, "forwarder": 0.0, "motoseghe": 0.0
+        }
 
     def configura_risorse(self, op_A: int, op_B: int, t_alta: int, t_media: int,
                           piattaforme: int, harvester: int, forwarder: int, motoseghe: int):
@@ -119,119 +112,143 @@ class Ditta:
 
         self._allinea_fallback_singoli()
 
-    def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, indice_attrito: int = 0) -> dict:
-        abaco = self.prestazioni_macchine.get(tipo_cantiere)
-        if not abaco: return {}
+    def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, ore_unitarie: float, composizione_squadra: dict, indice_attrito: int = 0) -> dict:
+        if not composizione_squadra or ore_unitarie <= 0: return {}
 
-        combi = abaco["squadra"]
+        linee_possibili = []
+        for risorsa, quantita_richiesta in composizione_squadra.items():
+            if quantita_richiesta > 0:
+                mappa_mezzi = {
+                    "trattori_alta": getattr(self, "trattori_alta_potenza", 0),
+                    "trattori_media": getattr(self, "trattori_media_potenza", 0),
+                    "piattaforme": getattr(self, "piattaforme_aeree_semoventi", 0),
+                    "harvester": getattr(self, "harvester_abbattitori", 0),
+                    "forwarder": getattr(self, "forwarder_caricatori", 0),
+                    "motoseghe": getattr(self, "kit_motoseghe_professionali", 0),
+                    "grado_A": getattr(self, "operai_grado_A", 0),
+                    "grado_B": getattr(self, "operai_grado_B", 0)
+                }
+                disponibilita_fisica = mappa_mezzi.get(risorsa, 999)
+                linee_possibili.append(disponibilita_fisica // int(quantita_richiesta))
 
-        # 1. Determinazione del tetto massimo di linee attivabili in base all'hardware della ditta
-        if tipo_cantiere == "impianto": max_mezzi = self.trattori_alta_potenza
-        elif tipo_cantiere == "trinciatura": max_mezzi = self.trattori_media_potenza
-        elif tipo_cantiere == "potatura": max_mezzi = self.piattaforme_aeree_semoventi
-        elif tipo_cantiere == "raccolta_tradizionale": max_mezzi = min(self.trattori_media_potenza, self.kit_motoseghe_professionali)
-        elif tipo_cantiere == "raccolta_avanzata": max_mezzi = min(self.harvester_abbattitori, self.forwarder_caricatori)
-        else: max_mezzi = 1
+        linee_attive = max(1, min(linee_possibili) if linee_possibili else 1)
 
-        # Interroghiamo direttamente la struttura master centralizzata (self.serbatoi_ore)
-        linee_da_operai_A = (self.serbatoi_ore["grado_A"] // self.ore_giorno_standard) // combi["grado_A"] if combi["grado_A"] > 0 else 999
-        linee_da_operai_B = (self.serbatoi_ore["grado_B"] // self.ore_giorno_standard) // combi["grado_B"] if combi["grado_B"] > 0 else 999
-
-        linee_attive = max(1, min(max_mezzi, linee_da_operai_A, linee_da_operai_B))
-
-        # 2. Conversione unità biometrica per la raccolta
         if "raccolta" in tipo_cantiere:
-            resa_oraria_per_linea = 25.0
             moltiplicatore_attrito = 1.0 + (indice_attrito / 20.0)
-            resa_oraria_per_linea = resa_oraria_per_linea / moltiplicatore_attrito
+            ore_lavoro_puro = (unita_lavoro * ore_unitarie) * moltiplicatore_attrito
         else:
-            resa_oraria_per_linea = abaco["ha_ora_per_linea"] if "ha_ora_per_linea" in abaco else abaco[list(abaco.keys())[0]]
-
-        # 3. Sviluppo orario di linea condiviso
-        resa_oraria_collettiva = linee_attive * resa_oraria_per_linea
-        ore_linea_nette = unita_lavoro / max(0.001, resa_oraria_collettiva)
-        ore_linea_lorde = ore_linea_nette / self.coefficiente_rendimento_cantiere
-
-        ore_trasferta = ore_linea_lorde * 0.15
-        ore_lavoro_puro = ore_linea_lorde - ore_trasferta
-
-        # 4. Compilazione della richiesta analitica per risorsa
+            ore_lavoro_puro = unita_lavoro * ore_unitarie
+            
+        ore_totali_lorde = ore_lavoro_puro / self.coefficiente_rendimento_cantiere
+        
         richiesta = {}
-        for risorsa, quantita in combi.items():
-            richiesta[risorsa] = (ore_lavoro_puro + ore_trasferta) * quantita * linee_attive
+        for risorsa, quantita in composizione_squadra.items():
+            richiesta[risorsa] = ore_totali_lorde * quantita
 
         richiesta["meta_lavoro_puro"] = ore_lavoro_puro
-        richiesta["meta_trasferta"] = ore_trasferta
         richiesta["meta_linee_attive"] = linee_attive
-        richiesta["ore_richieste"] = ore_linea_lorde
+        richiesta["ore_richieste"] = ore_totali_lorde / linee_attive
 
         return richiesta
-        
+
+    def _ottieni_chiave_elasticita(self, nome_risorsa: str) -> str:
+        """Assegna ad ogni singola voce oraria la corretta categoria di elasticità sul mercato padano."""
+        if nome_risorsa == "grado_A":
+            return "personale_spec"
+        elif nome_risorsa == "grado_B":
+            return "personale_comune"
+        elif nome_risorsa in ["trattori_alta", "trattori_media", "piattaforme"]:
+            return "mezzi_base"
+        else:
+            return "mezzi_spec"  # Harvester, Forwarder e Motoseghe professionali
+
     def verifica_e_consuma_risorse(self, specifiche_cantiere: dict) -> float:
         """
-        Verifica la disponibilità delle risorse per il cantiere.
-        Se insufficienti, esegue un lavoro parziale consumando le risorse fino a saturazione.
-        Ritorna un float tra 0.0 e 1.0 che indica la percentuale di lavoro completata.
+        Verifica la disponibilità delle risorse fisiche. Se insufficienti, attiva la logica
+        degli stagionali e dei noli differenziati per categoria fino al tetto imposto.
         """
         if not specifiche_cantiere: return 0.0
         
+        giorni_utili_stagione = 55
+        ore_base_stagione = giorni_utili_stagione * self.ore_giorno_standard
+        
         fattore_completamento = 1.0
         risorsa_critica = None
-        
-        # 1. Fase di scansione per individuare il collo di bottiglia e calcolare il lavoro parziale
+
+        # 1. SCANSIONE CON FILTRI DI ELASTICITÀ ASIMMETRICI
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
         
             serbatoio_corrente = self.serbatoi_ore.get(risorsa, 0.0)
-            if ore_richieste > 0 and serbatoio_corrente < ore_richieste:
-                # Calcoliamo la percentuale massima che questa risorsa ci permette di fare
-                quota_possibile = serbatoio_corrente / ore_richieste
-                if quota_possibile < fattore_completamento:
-                    fattore_completamento = quota_possibile
-                    risorsa_critica = risorsa
-        
-        # Se il fattore di completamento è 0, la ditta è totalmente ferma su quella risorsa
+            
+            if ore_richieste > serbatoio_corrente:
+                deficit = ore_richieste - serbatoio_corrente
+                
+                # Identifichiamo il moltiplicatore disaccoppiato corretto per questa risorsa
+                categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
+                moltiplicatore_attivo = self.moltiplicatori_elasticita.get(categoria_mercato, 2.0)
+                
+                mappa_attributi = {
+                    "grado_A": "operai_grado_A", "grado_B": "operai_grado_B",
+                    "trattori_alta": "trattori_alta_potenza", "trattori_media": "trattori_media_potenza",
+                    "piattaforme": "piattaforme_aeree_semoventi", "harvester": "harvester_abbattitori",
+                    "forwarder": "forwarder_caricatori", "motoseghe": "kit_motoseghe_professionali"
+                }
+                nome_attr = mappa_attributi.get(risorsa)
+                quantita_fissa = getattr(self, nome_attr, 0) if nome_attr else 1
+                
+                # Calcolo del tetto specifico differenziato per questa risorsa
+                ore_massime_mercato = quantita_fissa * ore_base_stagione * (moltiplicatore_attivo - 1.0)
+                
+                if deficit > ore_massime_mercato:
+                    # Superato il tetto specifico della categoria
+                    ore_totali_erogabili_con_extra = serbatoio_corrente + ore_massime_mercato
+                    quota_possibile = ore_totali_erogabili_con_extra / ore_richieste
+                    
+                    if quota_possibile < fattore_completamento:
+                        fattore_completamento = quota_possibile
+                        risorsa_critica = risorsa
+
         if fattore_completamento <= 0.001:
             if risorsa_critica:
-                attributo_fallimento = f"fallimenti_{risorsa_critica}"
-                if hasattr(self, attributo_fallimento):
-                    setattr(self, attributo_fallimento, getattr(self, attributo_fallimento) + 1)
+                attr_f = f"fallimenti_{risorsa_critica}"
+                if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
             return 0.0
-        
-        # 2. Consumo effettivo proporzionato al fattore di completamento (totale o parziale)
+
+        # 2. CONSUMO E AGGIORNAMENTO REGISTRO EXTRA STATISTICO
         self.ore_lavoro_effettivo += specifiche_cantiere["meta_lavoro_puro"] * fattore_completamento
-        self.ore_logistica_trasferta += specifiche_cantiere["meta_trasferta"] * fattore_completamento
         
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
             
-            # Detraiamo solo la quota di ore effettivamente spesa nei campi
             ore_effettive_spese = ore_richieste * fattore_completamento
-            self.serbatoi_ore[risorsa] = max(0.0, self.serbatoi_ore[risorsa] - ore_effettive_spese)
-        
+            serbatoio_corrente = self.serbatoi_ore[risorsa]
+            
+            if ore_effettive_spese <= serbatoio_corrente:
+                self.serbatoi_ore[risorsa] = max(0.0, serbatoio_corrente - ore_effettive_spese)
+            else:
+                quota_externa = ore_effettive_spese - serbatoio_corrente
+                self.serbatoi_ore[risorsa] = 0.0
+                self.registro_extra_anno[risorsa] += quota_externa
+
         self._allinea_fallback_singoli()
         
-        # Ritorniamo la percentuale di lavoro svolto (1.0 = tutto fatto, < 1.0 = parziale)
+        if fattore_completamento < 0.99 and risorsa_critica:
+            attr_f = f"fallimenti_{risorsa_critica}"
+            if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
+
         return fattore_completamento
 
     def calcola_saturazione_macchinario(self, nome_macchinario: str, giorni_utili: int) -> float:
         ore_base = giorni_utili * self.ore_giorno_standard
-        
         mappa_nomi = {
-            "trattori_alta": "trattori_alta_potenza",
-            "trattori_media": "trattori_media_potenza",
-            "piattaforme": "piattaforme_aeree_semoventi",
-            "harvester": "harvester_abbattitori",
-            "forwarder": "forwarder_caricatori",
-            "motoseghe": "kit_motoseghe_professionali"
+            "trattori_alta": "trattori_alta_potenza", "trattori_media": "trattori_media_potenza",
+            "piattaforme": "piattaforme_aeree_semoventi", "harvester": "harvester_abbattitori",
+            "forwarder": "forwarder_caricatori", "motoseghe": "kit_motoseghe_professionali"
         }
-        
         nome_reale_attr = mappa_nomi.get(nome_macchinario, f"num_{nome_macchinario}")
         num_mezzi = getattr(self, nome_reale_attr, 0)
         if num_mezzi == 0: return 0.0
-
         ore_totali_disponibili = num_mezzi * ore_base
         ore_rimaste_serbatoio = self.serbatoi_ore.get(nome_macchinario, 0.0)
-        ore_consumate = ore_totali_disponibili - ore_rimaste_serbatoio
-
-        return round((ore_consumate / ore_totali_disponibili) * 100, 1)
+        return round(((ore_totali_disponibili - ore_rimaste_serbatoio) / ore_totali_disponibili) * 100, 1)

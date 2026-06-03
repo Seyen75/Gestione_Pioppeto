@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>647</width>
-    <height>664</height>
+    <height>721</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>647</width>
-    <height>664</height>
+    <height>720</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>647</width>
-    <height>664</height>
+    <height>721</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -270,7 +270,7 @@ QTableWidget {
      <x>20</x>
      <y>330</y>
      <width>611</width>
-     <height>311</height>
+     <height>371</height>
     </rect>
    </property>
    <property name="frameShadow">

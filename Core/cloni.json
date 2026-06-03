@@ -17,24 +17,6 @@
       "sensibilita_afidi": "Alta"
     }
   },
-  "I-214_Industria": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Italiano (Selezionato per Uso Industriale Fibra)",
-    "attitudine_suolo": "Terreni di pianura, fertili, ben drenati, freschi",
-    "parametri_crescita": {
-      "incremento_medio_annuo_ottimale": 28.0,
-      "eta_rotazione_standard": 8,
-      "coefficiente_forma": 0.39
-    },
-    "proprieta_tecnologiche": {
-      "densita_verde_t_m3": 0.80
-    },
-    "esigenze_trattamenti": {
-      "frequenza_irrigazione_anni_1_2": "Alta",
-      "sensibilita_marsonina": "Media",
-      "sensibilita_afidi": "Alta"
-    }
-  },
   "I-45/51": {
     "nome_scientifico": "Populus x canadensis",
     "origine": "Italiano (Euroamericano)",
