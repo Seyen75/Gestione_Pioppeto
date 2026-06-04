@@ -273,8 +273,8 @@ QTableWidget::item:selected {
     <rect>
      <x>430</x>
      <y>10</y>
-     <width>526</width>
-     <height>105</height>
+     <width>641</width>
+     <height>121</height>
     </rect>
    </property>
    <property name="title">

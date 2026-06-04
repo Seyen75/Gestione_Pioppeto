@@ -27,18 +27,15 @@ class Ui_FormValutazioni(object):
         FormValutazioni.resize(1150, 780)
         FormValutazioni.setMinimumSize(QSize(1150, 780))
         FormValutazioni.setMaximumSize(QSize(1150, 780))
-        FormValutazioni.setStyleSheet(u"/* =========================================================================\n"
-"   SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato)\n"
-"   ========================================================================= */\n"
+        FormValutazioni.setStyleSheet(u"/* SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato) */\n"
+"\n"
 "QWidget#FormValutazioni, QTabWidget::pane {\n"
-"    background-color: #1a1516; /* Antracite caldissimo con una punta di bordeaux/terra d'ombra */\n"
+"    background-color: #1a1516;  /* Antracite */\n"
 "}\n"
 "\n"
-"/* =========================================================================\n"
-"   STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra)\n"
-"   ========================================================================= */\n"
+"/* STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra) */\n"
 "QTabWidget::tab-bar {\n"
-"    left: 0px; /* Spinge fisicamente l'inizio della barra al millimetro zero */\n"
+"    left: 0px;\n"
 "}\n"
 "\n"
 "QTabBar {\n"
@@ -49,8 +46,7 @@ class Ui_FormValutazioni(object):
 "QTabBar::tab {\n"
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2a1f21, stop:1 #1f1618);\n"
 "    color: #b0a2a4; /* Grigio-rosa morbido per il testo inattivo */\n"
-" "
-                        "   border: 1px solid #3d292c;\n"
+"    border: 1px solid #3d292c;\n"
 "    border-bottom: none;\n"
 "    border-top-left-radius: 5px;\n"
 "    border-top-right-radius: 5px;\n"
@@ -64,7 +60,8 @@ class Ui_FormValutazioni(object):
 "\n"
 "/* Tab Attivo (Selezionato) */\n"
 "QTabBar::tab:selected {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8a1c24, stop:1 #4f0e13);\n"
+"    background: "
+                        "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8a1c24, stop:1 #4f0e13);\n"
 "    color: #ffffff;\n"
 "    border: 1px solid #a8222d;\n"
 "    border-bottom: 1px solid #1a1516; /* Si fonde con il nuovo sfondo caldo */\n"
@@ -79,8 +76,7 @@ class Ui_FormValutazioni(object):
 "   ETICHETTE TESTUALI (QLabel - Tutto in Rosso Corallo Chiaro)\n"
 "   ========================================================================= */\n"
 "#FormValutazioni QLabel, \n"
-""
-                        "QGroupBox QLabel, \n"
+"QGroupBox QLabel, \n"
 "QTabWidget QLabel, \n"
 "QLabel {\n"
 "    color: #ff8a80 !important;\n"
@@ -90,10 +86,31 @@ class Ui_FormValutazioni(object):
 "}\n"
 "\n"
 "QLabel#lbl_anno_selezionato,\n"
+"QLabel#lbl_anno_selezionato_2,\n"
 "QLabel#lbl_titolo_lotto, \n"
 "QGroupBox {\n"
 "    font-weight: bold !important;\n"
-"    font-size: 13px !important;\n"
+"    font-size: 11px !important;\n"
+"}\n"
+"\n"
+"/* ---Label interne al GroupBox Rese Total"
+                        "i --- */\n"
+"QLabel#lbl_tot_3,\n"
+"QLabel#lbl_tot_4,\n"
+"QLabel#lbl_tot_5,\n"
+"QLabel#lbl_tot_6,\n"
+"QLabel#lbl_tot_7,\n"
+"QLabel#lbl_tot_8,\n"
+"QLabel#lbl_tot_9 {\n"
+"    font-size: 13px;\n"
+"    color: #ffecb3\n"
+"}\n"
+"\n"
+"QGroupBox#GroupBoxReseTotali {\n"
+"	color: #ff8a80 !important;\n"
+"    font-size: 16px;\n"
+"    font-weight: normal;\n"
+"    background: transparent;\n"
 "}\n"
 "\n"
 "QLabel#lbl_tipo_filiera_lotto {\n"
@@ -106,9 +123,9 @@ class Ui_FormValutazioni(object):
 "    background: transparent;\n"
 "}\n"
 "\n"
-"/* =========================================================================\n"
-"   TABE"
-                        "LLE (QTableWidget) - Sintonizzate sui toni caldi\n"
+"/* =================================================="
+                        "=======================\n"
+"   TABELLE (QTableWidget) - Sintonizzate sui toni caldi\n"
 "   ========================================================================= */\n"
 "QTableWidget {\n"
 "    background-color: #151011; /* Celle scure calde */\n"
@@ -139,10 +156,10 @@ class Ui_FormValutazioni(object):
 "\n"
 "/* =========================================================================\n"
 "   PULSANTI GENERALI E DI USCITA\n"
-"   ========================================================================= */\n"
+"   ========================================================================"
+                        "= */\n"
 "QPushButton {\n"
-"    back"
-                        "ground: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7d1820, stop:1 #420f13);\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7d1820, stop:1 #420f13);\n"
 "    color: white;\n"
 "    border: none;\n"
 "    border-radius: 6px;\n"
@@ -174,9 +191,9 @@ class Ui_FormValutazioni(object):
 "                    border: 1px solid #3d2429; \n"
 "                    border-radius: 4px; \n"
 "                    padding: 4px 10px;\n"
-"                }\n"
-"         "
-                        "       QComboBox::drop-down {\n"
+""
+                        "                }\n"
+"                QComboBox::drop-down {\n"
 "                    subcontrol-origin: padding;\n"
 "                    subcontrol-position: top right;\n"
 "                    width: 20px;\n"
@@ -200,8 +217,8 @@ class Ui_FormValutazioni(object):
 "                    background: #ff8a80; \n"
 "                    width: 14px; \n"
 "                    margin: -4px 0; \n"
-"                    border-radiu"
-                        "s: 7px; \n"
+" "
+                        "                   border-radius: 7px; \n"
 "                }")
         self.verticalLayout_6 = QVBoxLayout(FormValutazioni)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -272,34 +289,49 @@ class Ui_FormValutazioni(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.groupBox = QGroupBox(self.tab_consuntivo_annuale)
-        self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setMinimumSize(QSize(0, 150))
-        self.groupBox.setMaximumSize(QSize(500, 300))
-        self.verticalLayout_5 = QVBoxLayout(self.groupBox)
+        self.GroupBoxReseTotali = QGroupBox(self.tab_consuntivo_annuale)
+        self.GroupBoxReseTotali.setObjectName(u"GroupBoxReseTotali")
+        self.GroupBoxReseTotali.setMinimumSize(QSize(0, 150))
+        self.GroupBoxReseTotali.setMaximumSize(QSize(500, 300))
+        self.verticalLayout_5 = QVBoxLayout(self.GroupBoxReseTotali)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.lbl_res_opera_anno = QLabel(self.groupBox)
-        self.lbl_res_opera_anno.setObjectName(u"lbl_res_opera_anno")
+        self.lbl_tot_3 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_3.setObjectName(u"lbl_tot_3")
 
-        self.verticalLayout_5.addWidget(self.lbl_res_opera_anno)
+        self.verticalLayout_5.addWidget(self.lbl_tot_3)
 
-        self.lbl_res_cartiera_anno = QLabel(self.groupBox)
-        self.lbl_res_cartiera_anno.setObjectName(u"lbl_res_cartiera_anno")
+        self.lbl_tot_4 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_4.setObjectName(u"lbl_tot_4")
 
-        self.verticalLayout_5.addWidget(self.lbl_res_cartiera_anno)
+        self.verticalLayout_5.addWidget(self.lbl_tot_4)
 
-        self.lbl_res_truciolato_anno = QLabel(self.groupBox)
-        self.lbl_res_truciolato_anno.setObjectName(u"lbl_res_truciolato_anno")
+        self.lbl_tot_5 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_5.setObjectName(u"lbl_tot_5")
 
-        self.verticalLayout_5.addWidget(self.lbl_res_truciolato_anno)
+        self.verticalLayout_5.addWidget(self.lbl_tot_5)
 
-        self.lbl_resa_ettaro_media_anno = QLabel(self.groupBox)
-        self.lbl_resa_ettaro_media_anno.setObjectName(u"lbl_resa_ettaro_media_anno")
+        self.lbl_tot_6 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_6.setObjectName(u"lbl_tot_6")
 
-        self.verticalLayout_5.addWidget(self.lbl_resa_ettaro_media_anno)
+        self.verticalLayout_5.addWidget(self.lbl_tot_6)
+
+        self.lbl_tot_7 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_7.setObjectName(u"lbl_tot_7")
+
+        self.verticalLayout_5.addWidget(self.lbl_tot_7)
+
+        self.lbl_tot_8 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_8.setObjectName(u"lbl_tot_8")
+
+        self.verticalLayout_5.addWidget(self.lbl_tot_8)
+
+        self.lbl_tot_9 = QLabel(self.GroupBoxReseTotali)
+        self.lbl_tot_9.setObjectName(u"lbl_tot_9")
+
+        self.verticalLayout_5.addWidget(self.lbl_tot_9)
 
 
-        self.horizontalLayout_4.addWidget(self.groupBox)
+        self.horizontalLayout_4.addWidget(self.GroupBoxReseTotali)
 
         self.canvas_ripartizione_lotti = QWidget(self.tab_consuntivo_annuale)
         self.canvas_ripartizione_lotti.setObjectName(u"canvas_ripartizione_lotti")
@@ -377,6 +409,99 @@ class Ui_FormValutazioni(object):
         self.verticalLayout_4.addWidget(self.tbl_storico_lotto)
 
         self.tab_valutazioni_root.addTab(self.tab_storico_particella, "")
+        self.tab_efficienza = QWidget()
+        self.tab_efficienza.setObjectName(u"tab_efficienza")
+        self.layoutWidget = QWidget(self.tab_efficienza)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(20, 10, 1061, 27))
+        self.horizontalLayout_7 = QHBoxLayout(self.layoutWidget)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.lbl_anno_selezionato_2 = QLabel(self.layoutWidget)
+        self.lbl_anno_selezionato_2.setObjectName(u"lbl_anno_selezionato_2")
+
+        self.horizontalLayout_7.addWidget(self.lbl_anno_selezionato_2)
+
+        self.sld_anno_report_capacita = QSlider(self.layoutWidget)
+        self.sld_anno_report_capacita.setObjectName(u"sld_anno_report_capacita")
+        self.sld_anno_report_capacita.setOrientation(Qt.Orientation.Horizontal)
+
+        self.horizontalLayout_7.addWidget(self.sld_anno_report_capacita)
+
+        self.groupBox = QGroupBox(self.tab_efficienza)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(20, 530, 1061, 96))
+        self.verticalLayout_7 = QVBoxLayout(self.groupBox)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.lbl_tagli_falliti = QLabel(self.groupBox)
+        self.lbl_tagli_falliti.setObjectName(u"lbl_tagli_falliti")
+
+        self.verticalLayout_7.addWidget(self.lbl_tagli_falliti)
+
+        self.lbl_biologici_falliti = QLabel(self.groupBox)
+        self.lbl_biologici_falliti.setObjectName(u"lbl_biologici_falliti")
+
+        self.verticalLayout_7.addWidget(self.lbl_biologici_falliti)
+
+        self.lbl_generici_falliti = QLabel(self.groupBox)
+        self.lbl_generici_falliti.setObjectName(u"lbl_generici_falliti")
+
+        self.verticalLayout_7.addWidget(self.lbl_generici_falliti)
+
+        self.horizontalLayoutWidget = QWidget(self.tab_efficienza)
+        self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
+        self.horizontalLayoutWidget.setGeometry(QRect(20, 40, 1061, 481))
+        self.horizontalLayout_2 = QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.groupBox_2 = QGroupBox(self.horizontalLayoutWidget)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        self.groupBox_2.setMaximumSize(QSize(500, 16777215))
+        self.verticalLayout_8 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.tbl_saturazione = QTableWidget(self.groupBox_2)
+        if (self.tbl_saturazione.columnCount() < 5):
+            self.tbl_saturazione.setColumnCount(5)
+        __qtablewidgetitem20 = QTableWidgetItem()
+        self.tbl_saturazione.setHorizontalHeaderItem(0, __qtablewidgetitem20)
+        __qtablewidgetitem21 = QTableWidgetItem()
+        self.tbl_saturazione.setHorizontalHeaderItem(1, __qtablewidgetitem21)
+        __qtablewidgetitem22 = QTableWidgetItem()
+        self.tbl_saturazione.setHorizontalHeaderItem(2, __qtablewidgetitem22)
+        __qtablewidgetitem23 = QTableWidgetItem()
+        self.tbl_saturazione.setHorizontalHeaderItem(3, __qtablewidgetitem23)
+        __qtablewidgetitem24 = QTableWidgetItem()
+        self.tbl_saturazione.setHorizontalHeaderItem(4, __qtablewidgetitem24)
+        self.tbl_saturazione.setObjectName(u"tbl_saturazione")
+
+        self.verticalLayout_8.addWidget(self.tbl_saturazione)
+
+
+        self.horizontalLayout_2.addWidget(self.groupBox_2)
+
+        self.groupBox_3 = QGroupBox(self.horizontalLayoutWidget)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout_9 = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.tbl_stagionali_noli = QTableWidget(self.groupBox_3)
+        if (self.tbl_stagionali_noli.columnCount() < 4):
+            self.tbl_stagionali_noli.setColumnCount(4)
+        __qtablewidgetitem25 = QTableWidgetItem()
+        self.tbl_stagionali_noli.setHorizontalHeaderItem(0, __qtablewidgetitem25)
+        __qtablewidgetitem26 = QTableWidgetItem()
+        self.tbl_stagionali_noli.setHorizontalHeaderItem(1, __qtablewidgetitem26)
+        __qtablewidgetitem27 = QTableWidgetItem()
+        self.tbl_stagionali_noli.setHorizontalHeaderItem(2, __qtablewidgetitem27)
+        __qtablewidgetitem28 = QTableWidgetItem()
+        self.tbl_stagionali_noli.setHorizontalHeaderItem(3, __qtablewidgetitem28)
+        self.tbl_stagionali_noli.setObjectName(u"tbl_stagionali_noli")
+
+        self.verticalLayout_9.addWidget(self.tbl_stagionali_noli)
+
+
+        self.horizontalLayout_2.addWidget(self.groupBox_3)
+
+        self.tab_valutazioni_root.addTab(self.tab_efficienza, "")
 
         self.verticalLayout_6.addWidget(self.tab_valutazioni_root)
 
@@ -399,7 +524,7 @@ class Ui_FormValutazioni(object):
 
         self.retranslateUi(FormValutazioni)
 
-        self.tab_valutazioni_root.setCurrentIndex(1)
+        self.tab_valutazioni_root.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(FormValutazioni)
@@ -428,11 +553,14 @@ class Ui_FormValutazioni(object):
         ___qtablewidgetitem8.setText(QCoreApplication.translate("FormValutazioni", u"Resa/Ha Cartiera", None))
         ___qtablewidgetitem9 = self.tbl_tagli_anno.horizontalHeaderItem(9)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("FormValutazioni", u"Resa/Ha Truciolato", None))
-        self.groupBox.setTitle(QCoreApplication.translate("FormValutazioni", u"Rese Totali Comprensoriali", None))
-        self.lbl_res_opera_anno.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
-        self.lbl_res_cartiera_anno.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
-        self.lbl_res_truciolato_anno.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
-        self.lbl_resa_ettaro_media_anno.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.GroupBoxReseTotali.setTitle(QCoreApplication.translate("FormValutazioni", u"Rese Totali Comprensoriali", None))
+        self.lbl_tot_3.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_4.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_5.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_6.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_7.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_8.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_tot_9.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
         self.tab_valutazioni_root.setTabText(self.tab_valutazioni_root.indexOf(self.tab_consuntivo_annuale), QCoreApplication.translate("FormValutazioni", u"\U0001f4ca Consuntivo Annuale", None))
         self.lbl_titolo_lotto.setText(QCoreApplication.translate("FormValutazioni", u"Lotto Selezionato", None))
         self.lbl_tipo_filiera_lotto.setText(QCoreApplication.translate("FormValutazioni", u"Indirizzo Produttivo: Filiera da Opera", None))
@@ -457,6 +585,32 @@ class Ui_FormValutazioni(object):
         ___qtablewidgetitem19 = self.tbl_storico_lotto.horizontalHeaderItem(9)
         ___qtablewidgetitem19.setText(QCoreApplication.translate("FormValutazioni", u"Resa Truciolato", None))
         self.tab_valutazioni_root.setTabText(self.tab_valutazioni_root.indexOf(self.tab_storico_particella), QCoreApplication.translate("FormValutazioni", u"\U0001f332 Fascicolo Storico Particella", None))
+        self.lbl_anno_selezionato_2.setText(QCoreApplication.translate("FormValutazioni", u"Anno Simulazione", None))
+        self.groupBox.setTitle(QCoreApplication.translate("FormValutazioni", u"Fallimenti operativi e selvicolturali", None))
+        self.lbl_tagli_falliti.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_biologici_falliti.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.lbl_generici_falliti.setText(QCoreApplication.translate("FormValutazioni", u"TextLabel", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("FormValutazioni", u"Saturazione Asset Interni", None))
+        ___qtablewidgetitem20 = self.tbl_saturazione.horizontalHeaderItem(0)
+        ___qtablewidgetitem20.setText(QCoreApplication.translate("FormValutazioni", u"Risorsa", None))
+        ___qtablewidgetitem21 = self.tbl_saturazione.horizontalHeaderItem(1)
+        ___qtablewidgetitem21.setText(QCoreApplication.translate("FormValutazioni", u"Stagione", None))
+        ___qtablewidgetitem22 = self.tbl_saturazione.horizontalHeaderItem(2)
+        ___qtablewidgetitem22.setText(QCoreApplication.translate("FormValutazioni", u"Ore Disponibili", None))
+        ___qtablewidgetitem23 = self.tbl_saturazione.horizontalHeaderItem(3)
+        ___qtablewidgetitem23.setText(QCoreApplication.translate("FormValutazioni", u"New Column", None))
+        ___qtablewidgetitem24 = self.tbl_saturazione.horizontalHeaderItem(4)
+        ___qtablewidgetitem24.setText(QCoreApplication.translate("FormValutazioni", u"% Saturazione", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("FormValutazioni", u"Utilizzi Stagionali e Noli", None))
+        ___qtablewidgetitem25 = self.tbl_stagionali_noli.horizontalHeaderItem(0)
+        ___qtablewidgetitem25.setText(QCoreApplication.translate("FormValutazioni", u"Risorsa", None))
+        ___qtablewidgetitem26 = self.tbl_stagionali_noli.horizontalHeaderItem(1)
+        ___qtablewidgetitem26.setText(QCoreApplication.translate("FormValutazioni", u"Stagione", None))
+        ___qtablewidgetitem27 = self.tbl_stagionali_noli.horizontalHeaderItem(2)
+        ___qtablewidgetitem27.setText(QCoreApplication.translate("FormValutazioni", u"Ore Extra/Noli Usati", None))
+        ___qtablewidgetitem28 = self.tbl_stagionali_noli.horizontalHeaderItem(3)
+        ___qtablewidgetitem28.setText(QCoreApplication.translate("FormValutazioni", u"Massimo Utilizzabile", None))
+        self.tab_valutazioni_root.setTabText(self.tab_valutazioni_root.indexOf(self.tab_efficienza), QCoreApplication.translate("FormValutazioni", u"\u2699\ufe0f Capacit\u00e0 Operative", None))
         self.btn_esci.setText(QCoreApplication.translate("FormValutazioni", u"Esci", None))
     # retranslateUi
 

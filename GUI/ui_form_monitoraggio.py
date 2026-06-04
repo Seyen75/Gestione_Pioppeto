@@ -203,7 +203,7 @@ class Ui_form_monitoraggio(object):
         self.tbl_monitoraggio.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.groupBox = QGroupBox(form_monitoraggio)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(430, 10, 526, 105))
+        self.groupBox.setGeometry(QRect(430, 10, 641, 121))
         self.verticalLayout_3 = QVBoxLayout(self.groupBox)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.lbl_tagli_saltati = QLabel(self.groupBox)

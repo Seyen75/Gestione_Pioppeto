@@ -1,6 +1,5 @@
 import os
 import json
-import math
 from typing import Dict, List, Any
 from Core.struttura_lavorazioni import STRUTTURA_LAVORAZIONI
 
@@ -23,12 +22,6 @@ class SimulatorePioppicoltura:
         with open(percorso_json, "r", encoding="utf-8") as f:
             self.dati_cloni = json.load(f)
 
-    def calcola_moltiplicatore_idrico(self, indice_idrico: float) -> float:
-        if indice_idrico >= 0:
-            return 1.0 - (0.25 * (indice_idrico ** 2))
-        else:
-            return 1.0 - (0.30 * (abs(indice_idrico) ** 1.5))
-
     def _get_chiave_fase(self, eta_anno: int) -> str:
         if eta_anno == 0:
             return 0
@@ -39,64 +32,37 @@ class SimulatorePioppicoltura:
         else:
             return "Fase_Mantenimento_Tardo"
 
-    def simula_accrescimento_lotto(self, lotto: Any, eta_anno: int) -> Dict[str, Any]:
-        if eta_anno == 0:
-            return {"dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, "piante_attive": lotto.numero_piante_vive, "volume_totale_m3": 0.0}
-
-        profilo = self.dati_cloni[lotto.clone_assegnato]
-        param = profilo["parametri_crescita"]
-        
-        # --- FIX: Differenziazione spinta biologica per filiera ---
-        if lotto.destinazione_uso == "INDUSTRIA":
-            # Asintoto più basso (simula l'alta densità e competizione) e curva più dolce
-            A = param["incremento_medio_annuo_ottimale"] * 1.20
-            eta_rot = 8
-            k = 1.5 / eta_rot  # Abbassa l'accelerazione, diametri contenuti nei primi 5 anni
-        else:
-            # Asintoto più alto e curva aggressiva (sesto d'impianto largo, massima spinta)
-            # Garantisce che a 10 anni si superi agilmente la soglia dei 30 cm
-            A = param["incremento_medio_annuo_ottimale"] * 1.45
-            eta_rot = param["eta_rotazione_standard"]
-            k = 2.2 / eta_rot  
-
-        p = 1.02 if profilo["esigenze_trattamenti"].get("frequenza_irrigazione_anni_1_2") == "Alta" else 1.05
-        
-        mult = self.calcola_moltiplicatore_idrico(lotto.indice_tendenza_idrica)
-        mult_reale = max(0.40, mult - getattr(lotto, "malus_colturale_accumulato", 0.0))
-
-        # 1. Calcolo DBH irreversibile (la pianta non si restringe)
-        dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * mult_reale
-        dbh_precedente = getattr(lotto, "diametro_medio_fusto", 0.0)
-        dbh = max(dbh_precedente, dbh_teorico) 
-
-        h = (dbh * 0.6) + 4.0 if eta_anno <= 5 else min(27.5, 17.0 + (1.2 * (dbh - 20)))
-        vol_singolo = (math.pi * ((dbh / 200) ** 2)) * h * param["coefficiente_forma"]
-
-        # 2. Decadimento mortalità sullo stato attuale
-        if eta_anno == 1:
-            immissione_fatta = getattr(lotto, "immissione_effettuata", False)
-            tasso = 0.007 if immissione_fatta else 0.07
-            piante_vive = int((lotto.superficie_ettari * lotto.densita_iniziale) * (1.0 - tasso))
-        else:
-            tasso = 0.012 if eta_anno <= 5 else (0.018 if eta_anno <= 10 else 0.025)
-            piante_vive = int(lotto.numero_piante_vive * (1.0 - tasso))
-        
-        return {
-            "dbh_reale_cm": round(dbh, 2), "altezza_m": round(h, 2),
-            "volume_singolo_m3": round(vol_singolo, 4), "piante_attive": max(0, piante_vive),
-            "volume_totale_m3": round(vol_singolo * max(0, piante_vive), 2)
-        }
-
-    def prevedi_domanda_stagionale(self) -> List[Dict[str, Any]]:
-        # self.ditta.inizializza_serbatoi_stagionali(55)
+    def prevedi_domanda_stagionale(self, is_esecuzione: bool = False) -> List[Dict[str, Any]]:
         stagione = self.parametri.stagione_corrente
         interventi = []
         
         for lotto in self.parametri.collezione_lotti:
             if not hasattr(lotto, "dati_correnti") or not lotto.dati_correnti:
-                lotto.dati_correnti = self.simula_accrescimento_lotto(lotto, lotto.eta)
+                profilo = self.dati_cloni[lotto.clone_assegnato]
+                lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
             
+            # --- FIX 2: PROIEZIONE FUTURA DEL COMPLEANNO ---
+            # Se siamo nella fase di pianificazione invernale (UI), la biologia non è ancora scattata.
+            # Simuliamo l'età e il diametro che la pianta avrà tra pochi secondi quando premerai Esegui.
+            eta_originale = lotto.eta
+            diametro_originale = getattr(lotto, "diametro_medio_fusto", 0.0)
+            
+            if stagione == "Inverno" and not is_esecuzione:
+                if (lotto.eta == 0 and lotto.numero_piante_vive > 0) or lotto.numero_piante_vive > 5:
+                    eta_futura = lotto.eta + 1
+                    profilo = self.dati_cloni[lotto.clone_assegnato]
+                    dati_futuri = lotto.simula_accrescimento(profilo, eta_futura)
+                    
+                    lotto.eta = eta_futura
+                    lotto.diametro_medio_fusto = dati_futuri.get("dbh_reale_cm", 0.0)
+
             is_maturo = lotto.verifica_maturita_raccolta()
+            
+            # Ripristino immediato dello stato originale per non corrompere la simulazione
+            lotto.eta = eta_originale
+            lotto.diametro_medio_fusto = diametro_originale
+            # ------------------------------------------------
+            
             filiera = STRUTTURA_LAVORAZIONI.get(lotto.destinazione_uso, STRUTTURA_LAVORAZIONI["OPERA"])
             
             if is_maturo or getattr(lotto, "tagliato", False):
@@ -112,13 +78,17 @@ class SimulatorePioppicoltura:
                 descrizione_ui = op.get("descrizione", "Operazione Generica")
                 
                 macrocategoria = op.get("macrocategoria", "lavorazione_trattore")
+                
+                # --- FIX: Valutazione disponibilità totale (Proprietà + Nolo) per il preventivo ---
                 if is_raccolta: 
-                    macrocategoria = "raccolta_avanzata" if self.ditta.harvester_abbattitori > 0 else "raccolta_tradizionale"
+                    harvester_noleggiabili = getattr(self.ditta, "limiti_noli_stagionali", {}).get("harvester", 0)
+                    harvester_totali_disponibili = self.ditta.harvester_abbattitori + harvester_noleggiabili
+                    macrocategoria = "raccolta_avanzata" if harvester_totali_disponibili > 0 else "raccolta_tradizionale"
                 
                 # Calcolo proporzionale superficie per raccolta
                 if is_raccolta:
                     piante_teoriche_max = lotto.superficie_ettari * lotto.densita_iniziale
-                    rapporto_sopravvivenza = lotto.dati_correnti["piante_attive"] / max(1, piante_teoriche_max)
+                    rapporto_sopravvivenza = lotto.dati_correnti.get("piante_attive", 0) / max(1, piante_teoriche_max)
                     unita = lotto.superficie_ettari * rapporto_sopravvivenza
                 else:
                     unita = lotto.superficie_ettari
@@ -131,7 +101,7 @@ class SimulatorePioppicoltura:
                     unita_lavoro=unita, 
                     ore_unitarie=ore_unitarie,
                     composizione_squadra=squadra,
-                    indice_attrito=lotto.indice_attrito_spaziale
+                    indice_attrito=getattr(lotto, "indice_attrito_spaziale", 0)
                 )
                 
                 if spec:
@@ -139,7 +109,7 @@ class SimulatorePioppicoltura:
                         "lotto": lotto, 
                         "id_operazione": id_univoco,
                         "operazione": descrizione_ui,
-                        "priorita": op["priorita"], 
+                        "priorita": op.get("priorita", 4), 
                         "tipo_cantiere_chiave": macrocategoria, 
                         "specifiche_richiesta": spec, 
                         "is_raccolta": is_raccolta
@@ -181,7 +151,7 @@ class SimulatorePioppicoltura:
             "tagli_effettuati": []
         }
     
-        lista_interventi_richiesti = self.prevedi_domanda_stagionale()
+        lista_interventi_richiesti = self.prevedi_domanda_stagionale(is_esecuzione=True)
     
         for intervento in lista_interventi_richiesti:
             lotto_target = intervento["lotto"]
@@ -191,7 +161,8 @@ class SimulatorePioppicoltura:
             if not hasattr(lotto_target, "malus_colturale_accumulato"): lotto_target.malus_colturale_accumulato = 0.0
             if not hasattr(lotto_target, "anni_ritardo_taglio"): lotto_target.anni_ritardo_taglio = 0
             if not hasattr(lotto_target, "dati_correnti") or not lotto_target.dati_correnti:
-                lotto_target.dati_correnti = self.simula_accrescimento_lotto(lotto_target, lotto_target.eta)
+                profilo = self.dati_cloni[lotto_target.clone_assegnato]
+                lotto_target.dati_correnti = lotto_target.simula_accrescimento(profilo, lotto_target.eta)
     
             percentuale_completamento = self.ditta.verifica_e_consuma_risorse(spec)
     
@@ -247,7 +218,7 @@ class SimulatorePioppicoltura:
                     
                     report_stagionale["tagli_effettuati"].append({
                         "lotto_id": lotto_target.id_lotto, 
-                        "volume_raccolto_m3": round(lotto_target.dati_correnti["volume_singolo_m3"] * p_abbattute, 2), 
+                        "volume_raccolto_m3": round(lotto_target.dati_correnti.get("volume_singolo_m3", 0.0) * p_abbattute, 2), 
                         "rese": rese
                     })
 
@@ -257,14 +228,12 @@ class SimulatorePioppicoltura:
                     lotto_target.tagliato = False
                     lotto_target.eta = 0 
                     
-                    # --- FIX: PULIZIA DELLA FEDINA PENALE DEL LOTTO ---
                     lotto_target.anni_ritardo_taglio = 0
                     lotto_target.malus_colturale_accumulato = 0.0
                     if hasattr(lotto_target, "cronistoria_lavorazioni_saltate"):
                         lotto_target.cronistoria_lavorazioni_saltate.clear()
                     if hasattr(lotto_target, "archivio_storico_lavorazioni_saltate"):
                         lotto_target.archivio_storico_lavorazioni_saltate.clear()
-                    # --------------------------------------------------
                     
                     lotto_target.dati_correnti = {
                         "dbh_reale_cm": 0.0, "altezza_m": 0.0, 
@@ -288,7 +257,6 @@ class SimulatorePioppicoltura:
                     "stato": stato_execution
                 })
     
-        # --- CALCOLI FINALI: BILANCIO DIFFERENZIALE PURE B.I. ---
         report_stagionale["risorse_umane_interne"] = {
             "disponibili_iniziali_A": round(serbatoi_iniziali.get("grado_A", 0.0), 2),
             "disponibili_iniziali_B": round(serbatoi_iniziali.get("grado_B", 0.0), 2),
@@ -313,27 +281,25 @@ class SimulatorePioppicoltura:
         
     def avanza_passo_simulazione(self) -> Dict[str, Any]:
         
-        # 1. BIOLOGIA: Prima di fare i lavori invernali, consolidiamo la crescita dell'anno appena trascorso
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
+                profilo = self.dati_cloni[lotto.clone_assegnato]
+                
                 if lotto.eta == 0 and lotto.numero_piante_vive > 0:
                     lotto.eta = 1
-                    lotto.dati_correnti = self.simula_accrescimento_lotto(lotto, lotto.eta)
+                    lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 elif lotto.numero_piante_vive > 5: 
                     lotto.eta += 1
-                    lotto.dati_correnti = self.simula_accrescimento_lotto(lotto, lotto.eta)
+                    lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 
-                # Sincronizziamo i parametri base per l'Harvester
                 lotto.diametro_medio_fusto = lotto.dati_correnti.get("dbh_reale_cm", 0.0)
                 lotto.altezza_media_piante = lotto.dati_correnti.get("altezza_m", 0.0)
                 if "piante_attive" in lotto.dati_correnti:
                     lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
                 lotto.malus_colturale_accumulato = 0.0
 
-        # 2. OPERAZIONI: Eseguiamo i cantieri (ora l'Harvester vedrà l'età esatta di 5 o 10 anni)
         risultati_cantieri = self.esegui_fase_lavorazioni_stagionali()
 
-        # 3. FOTOGRAFIA E LOG (Congeliamo lo stato per la UI)
         stato_lotti_istantaneo = {}
         for lotto in self.parametri.collezione_lotti:
             stato_lotti_istantaneo[lotto.id_lotto] = {
@@ -345,19 +311,16 @@ class SimulatorePioppicoltura:
                 }
             }
 
-        # 4. CHIUSURA ANNO: Rilevamento ritardi biologici per gli alberi sopravvissuti
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
-                # Se NON è stato appena tagliato (quindi ha età > 0)
                 if lotto.eta > 0:
                     profilo = self.dati_cloni[lotto.clone_assegnato]
-                    eta_rot = 5 if lotto.destinazione_uso == "INDUSTRIA" else profilo["parametri_crescita"]["eta_rotazione_standard"]
+                    eta_rot = 5 if lotto.destinazione_uso == "INDUSTRIA" else 10
                     
-                    if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta(profilo):
+                    if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta():
                         self.stats_globali["tagli_biologici_saltati"] += 1
                         lotto.anni_ritardo_taglio = getattr(lotto, "anni_ritardo_taglio", 0) + 1
 
-            # Azzeramento contatori risorse extra
             chiave_anno_storico = f"Anno_{self.parametri.anno_corrente}_RisorseExtra"
             if hasattr(self.parametri, "storico_stagionale"):
                 self.parametri.storico_stagionale[chiave_anno_storico] = self.ditta.registro_extra_anno.copy()
@@ -377,6 +340,5 @@ class SimulatorePioppicoltura:
         if hasattr(self.parametri, "registra_instantanea_stato_corrente"):
             self.parametri.registra_instantanea_stato_corrente(quadro_stato)
         
-        # 5. AVANZAMENTO OROLOGIO: Passiamo alla Primavera successiva
         dati_orologio = self.parametri.avanza_stagione()
         return {**dati_orologio, **quadro_stato}

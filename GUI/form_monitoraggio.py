@@ -156,7 +156,7 @@ class form_monitoraggio(QWidget):
             self.ui.tbl_monitoraggio.insertRow(riga)
 
             destinazione = getattr(lotto, "destinazione_uso", "OPERA")
-            eta = getattr(lotto, "eta", 0)  
+            eta = getattr(lotto, "eta", 0)
             superficie = getattr(lotto, "superficie_ettari", 0.0)
             
             if hasattr(lotto, "dati_correnti") and lotto.dati_correnti:
@@ -167,8 +167,28 @@ class form_monitoraggio(QWidget):
                 piante_vive = getattr(lotto, "numero_piante_vive", 0)
                 dbh = getattr(lotto, "diametro_medio_fusto", 0.0)
                 altezza = getattr(lotto, "altezza_media_piante", 0.0)
+
+            # --- FIX: MACCHINA DEL TEMPO PER LO STATO CANTIERE ---
+            eta_originale = lotto.eta
+            diametro_originale = getattr(lotto, "diametro_medio_fusto", 0.0)
             
+            if self.parametri.stagione_corrente == "Inverno":
+                if (lotto.eta == 0 and lotto.numero_piante_vive > 0) or lotto.numero_piante_vive > 5:
+                    eta_futura = lotto.eta + 1
+                    profilo = self.motore.dati_cloni[lotto.clone_assegnato]
+                    dati_futuri = lotto.simula_accrescimento(profilo, eta_futura)
+                    
+                    lotto.eta = eta_futura
+                    lotto.diametro_medio_fusto = dati_futuri.get("dbh_reale_cm", 0.0)
+
             is_maturo = lotto.verifica_maturita_raccolta()
+            
+            # Ripristino immediato dello stato originale per la tabella 
+            # (così continui a vedere "9 anni" stampato a schermo)
+            lotto.eta = eta_originale
+            lotto.diametro_medio_fusto = diametro_originale
+            # -----------------------------------------------------
+
             filiera_lotto = STRUTTURA_LAVORAZIONI.get(lotto.destinazione_uso, STRUTTURA_LAVORAZIONI["OPERA"])
             
             if is_maturo or getattr(lotto, "tagliato", False):
@@ -190,21 +210,21 @@ class form_monitoraggio(QWidget):
             self.ui.tbl_monitoraggio.setItem(riga, 6, QTableWidgetItem(f"{self._formatta_numero_it(altezza)} m"))
             self.ui.tbl_monitoraggio.setItem(riga, 7, QTableWidgetItem(stato_stringa))
 
+        # --- FIX: Dimensionamento dinamico e Centratura ---
         header = self.ui.tbl_monitoraggio.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Fixed)
-        self.ui.tbl_monitoraggio.setColumnWidth(0, 95)   
-        self.ui.tbl_monitoraggio.setColumnWidth(1, 120)  
-        self.ui.tbl_monitoraggio.setColumnWidth(2, 95)   
-        self.ui.tbl_monitoraggio.setColumnWidth(3, 90)   
-        self.ui.tbl_monitoraggio.setColumnWidth(4, 90)   
-        self.ui.tbl_monitoraggio.setColumnWidth(5, 105)  
-        self.ui.tbl_monitoraggio.setColumnWidth(6, 105)  
-        header.setSectionResizeMode(7, QHeaderView.Stretch)  
+        
+        # Diciamo a tutte le colonne di adattarsi esattamente alla larghezza del loro contenuto
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        
+        # Diciamo all'ultima colonna ("Stato Cantiere") di allungarsi per occupare tutto lo spazio vuoto rimanente
+        header.setStretchLastSection(True)
 
+        # Ripristiniamo il ciclo per centrare il testo orizzontalmente e verticalmente
         for r in range(self.ui.tbl_monitoraggio.rowCount()):
             for c in range(self.ui.tbl_monitoraggio.columnCount()):
                 item = self.ui.tbl_monitoraggio.item(r, c)
-                if item: item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                if item: 
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def _rendiconta_e_disegna_previsione_risorse(self):
         giorni_utili_standard = 55
@@ -214,14 +234,18 @@ class form_monitoraggio(QWidget):
         quota_b_nominale = self.motore.ditta.operai_grado_B * ore_base_stagione
         quota_harv_nominale = self.motore.ditta.harvester_abbattitori * ore_base_stagione
         quota_forw_nominale = self.motore.ditta.forwarder_caricatori * ore_base_stagione
-        quota_tratt_nominale = self.motore.ditta.trattori_media_potenza * ore_base_stagione
+        # --- FIX 1: Separazione netta dei trattori ---
+        quota_tratt_alta_nominale = self.motore.ditta.trattori_alta_potenza * ore_base_stagione
+        quota_tratt_media_nominale = self.motore.ditta.trattori_media_potenza * ore_base_stagione
+        
         quota_piatt_nominale = self.motore.ditta.piattaforme_aeree_semoventi * ore_base_stagione
 
         ore_a_richieste = 0.0
         ore_b_richieste = 0.0
         ore_harv_richieste = 0.0
         ore_forw_richieste = 0.0
-        ore_trattore_richieste = 0.0
+        ore_tratt_alta_richieste = 0.0
+        ore_tratt_media_richieste = 0.0
         ore_piattaforma_richieste = 0.0
 
         interventi_teorici = self.motore.prevedi_domanda_stagionale()
@@ -233,13 +257,16 @@ class form_monitoraggio(QWidget):
             ore_b_richieste += combi_squadra.get("grado_B", 0.0)
             ore_harv_richieste += combi_squadra.get("harvester", 0.0)
             ore_forw_richieste += combi_squadra.get("forwarder", 0.0)
-            ore_trattore_richieste += combi_squadra.get("trattori_alta", 0.0) + combi_squadra.get("trattori_media", 0.0)
+            ore_tratt_alta_richieste += combi_squadra.get("trattori_alta", 0.0)
+            ore_tratt_media_richieste += combi_squadra.get("trattori_media", 0.0)
             ore_piattaforma_richieste += combi_squadra.get("piattaforme", 0.0)
 
         self.ax_risorse.clear()
-        categorie = ['Grado A\n(Spec.)', 'Grado B\n(Manov.)', 'Harvester', 'Forwarder', 'Trattori', 'Piattaf.']
-        ore_totali_nominali = [quota_a_nominale, quota_b_nominale, quota_harv_nominale, quota_forw_nominale, quota_tratt_nominale, quota_piatt_nominale]
-        ore_domanda_effettiva = [ore_a_richieste, ore_b_richieste, ore_harv_richieste, ore_forw_richieste, ore_trattore_richieste, ore_piattaforma_richieste]
+        
+        # Aggiunta la colonna separata nell'asse X
+        categorie = ['Grado A\n(Spec.)', 'Grado B\n(Manov.)', 'Harvester', 'Forwarder', 'Trattori\nAlta', 'Trattori\nMedia', 'Piattaf.']
+        ore_totali_nominali = [quota_a_nominale, quota_b_nominale, quota_harv_nominale, quota_forw_nominale, quota_tratt_alta_nominale, quota_tratt_media_nominale, quota_piatt_nominale]
+        ore_domanda_effettiva = [ore_a_richieste, ore_b_richieste, ore_harv_richieste, ore_forw_richieste, ore_tratt_alta_richieste, ore_tratt_media_richieste, ore_piattaforma_richieste]
 
         larghezza_barre = 0.45 
 
@@ -248,14 +275,15 @@ class form_monitoraggio(QWidget):
         ore_interne = []
         ore_extra = []
         colori_extra = []
-        tetti_massimi_elastici = []
-        chiave_risorsa_lista = ["grado_A", "grado_B", "harvester", "forwarder", "trattori_media", "piattaforme"]
+        
+        chiave_risorsa_lista = ["grado_A", "grado_B", "harvester", "forwarder", "trattori_alta", "trattori_media", "piattaforme"]
         
         for richiesta, limite, chiave in zip(ore_domanda_effettiva, ore_totali_nominali, chiave_risorsa_lista):
             cat_mercato = self.motore.ditta._ottieni_chiave_elasticita(chiave)
-            moltiplicatore_attivo = self.motore.ditta.moltiplicatori_elasticita.get(cat_mercato, 2.0)
-            soffitto_reale = limite * moltiplicatore_attivo
-            tetti_massimi_elastici.append(soffitto_reale)
+            
+            unita_nolo_max = getattr(self.motore.ditta, "limiti_noli_stagionali", {}).get(cat_mercato, 1)
+            ore_massime_mercato = unita_nolo_max * ore_base_stagione
+            soffitto_reale = limite + ore_massime_mercato
             
             val_interno = min(richiesta, limite)
             val_extra = max(0.0, richiesta - limite)
@@ -263,29 +291,28 @@ class form_monitoraggio(QWidget):
             ore_interne.append(val_interno)
             ore_extra.append(val_extra)
             
+            # --- LOGICA DEI COLORI MANTENUTA ---
             if richiesta > soffitto_reale and soffitto_reale > 0:
-                colori_extra.append('#ff5252') 
+                colori_extra.append('#ff5252') # Sforamento totale (Rosso Corsa)
             else:
-                colori_extra.append('#ffb74d') 
+                colori_extra.append('#ffb74d') # Entro i limiti di nolo (Arancione)
                 
         self.ax_risorse.bar(categorie, ore_interne, label='Richiesta (Personale/Mezzi Propri)', color='#0288d1', alpha=0.9, width=larghezza_barre)
         self.ax_risorse.bar(categorie, ore_extra, bottom=ore_interne, label='Richiesta (Stagionali/Noli)', color=colori_extra, alpha=0.9, width=larghezza_barre)
 
-        for i, soffitto in enumerate(tetti_massimi_elastici):
-            if soffitto > 0:
-                margine_linea = (larghezza_barre / 2) + 0.1
-                self.ax_risorse.hlines(y=soffitto, xmin=i - margine_linea, xmax=i + margine_linea, colors='#00e676', linewidth=2.0, zorder=5)
-
         self.ax_risorse.set_ylabel('Ore Lavoro (h)', color='#8ab4f8')
-        limite_g = max(max(tetti_massimi_elastici), max(ore_domanda_effettiva)) if ore_domanda_effettiva else 450
-        self.ax_risorse.set_ylim(0, limite_g * 1.25)
+        
+        # --- FIX 2: Adattamento dinamico scala (Addio linea verde) ---
+        # Il grafico si auto-scala basandosi solo sulla barra più alta visibile
+        valore_massimo_grafico = max(max(ore_totali_nominali), max(ore_domanda_effettiva)) if ore_totali_nominali or ore_domanda_effettiva else 450
+        self.ax_risorse.set_ylim(0, valore_massimo_grafico * 1.25)
+        
         self.ax_risorse.tick_params(colors='#8ab4f8', labelsize=8)
         
-        self.ax_risorse.plot([], [], color='#00e676', linewidth=2.0, label='Limite Max (con Noli)')
-        
+        # Legenda espansa orizzontalmente e ripulita
         self.ax_risorse.legend(
             facecolor='#171e2c', edgecolor='none', labelcolor='#ffffff', 
-            loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=8
+            loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=3, fontsize=8
         )
         
         self.ax_risorse.grid(axis='y', color='#2b364a', linestyle='--', alpha=0.4)

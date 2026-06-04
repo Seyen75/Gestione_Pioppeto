@@ -170,14 +170,14 @@ class Ui_FormLotti(object):
         self.spin_ettari.setObjectName(u"spin_ettari")
         self.spin_ettari.setMinimumSize(QSize(90, 28))
         self.spin_ettari.setMaximumSize(QSize(90, 16777215))
-        self.spin_ettari.setMinimum(0.050000000000000)
+        self.spin_ettari.setMinimum(1.000000000000000)
         self.spin_ettari.setSingleStep(0.100000000000000)
 
         self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_ettari)
 
         self.spin_eta_iniziale = QSpinBox(self.formLayoutWidget)
         self.spin_eta_iniziale.setObjectName(u"spin_eta_iniziale")
-        self.spin_eta_iniziale.setMinimumSize(QSize(0, 0))
+        self.spin_eta_iniziale.setMinimumSize(QSize(75, 0))
         self.spin_eta_iniziale.setMaximumSize(QSize(90, 16777215))
         self.spin_eta_iniziale.setMaximum(15)
 

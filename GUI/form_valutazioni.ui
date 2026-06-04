@@ -26,18 +26,15 @@
    <string>Reportistica Simulazione</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* =========================================================================
-   SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato)
-   ========================================================================= */
+   <string notr="true">/* SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato) */
+
 QWidget#FormValutazioni, QTabWidget::pane {
-    background-color: #1a1516; /* Antracite caldissimo con una punta di bordeaux/terra d'ombra */
+    background-color: #1a1516;  /* Antracite */
 }
 
-/* =========================================================================
-   STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra)
-   ========================================================================= */
+/* STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra) */
 QTabWidget::tab-bar {
-    left: 0px; /* Spinge fisicamente l'inizio della barra al millimetro zero */
+    left: 0px;
 }
 
 QTabBar {
@@ -87,10 +84,30 @@ QLabel {
 }
 
 QLabel#lbl_anno_selezionato,
+QLabel#lbl_anno_selezionato_2,
 QLabel#lbl_titolo_lotto, 
 QGroupBox {
     font-weight: bold !important;
-    font-size: 13px !important;
+    font-size: 11px !important;
+}
+
+/* ---Label interne al GroupBox Rese Totali --- */
+QLabel#lbl_tot_3,
+QLabel#lbl_tot_4,
+QLabel#lbl_tot_5,
+QLabel#lbl_tot_6,
+QLabel#lbl_tot_7,
+QLabel#lbl_tot_8,
+QLabel#lbl_tot_9 {
+    font-size: 13px;
+    color: #ffecb3
+}
+
+QGroupBox#GroupBoxReseTotali {
+	color: #ff8a80 !important;
+    font-size: 16px;
+    font-weight: normal;
+    background: transparent;
 }
 
 QLabel#lbl_tipo_filiera_lotto {
@@ -231,7 +248,7 @@ QSlider::groove:horizontal {
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::TextElideMode::ElideNone</enum>
@@ -335,7 +352,7 @@ QSlider::groove:horizontal {
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QGroupBox" name="groupBox">
+          <widget class="QGroupBox" name="GroupBoxReseTotali">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -353,28 +370,49 @@ QSlider::groove:horizontal {
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QLabel" name="lbl_res_opera_anno">
+             <widget class="QLabel" name="lbl_tot_3">
               <property name="text">
                <string>TextLabel</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="lbl_res_cartiera_anno">
+             <widget class="QLabel" name="lbl_tot_4">
               <property name="text">
                <string>TextLabel</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="lbl_res_truciolato_anno">
+             <widget class="QLabel" name="lbl_tot_5">
               <property name="text">
                <string>TextLabel</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="lbl_resa_ettaro_media_anno">
+             <widget class="QLabel" name="lbl_tot_6">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_tot_7">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_tot_8">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbl_tot_9">
               <property name="text">
                <string>TextLabel</string>
               </property>
@@ -499,6 +537,162 @@ QSlider::groove:horizontal {
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_efficienza">
+      <attribute name="title">
+       <string>⚙️ Capacità Operative</string>
+      </attribute>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>1061</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QLabel" name="lbl_anno_selezionato_2">
+          <property name="text">
+           <string>Anno Simulazione</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="sld_anno_report_capacita">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>530</y>
+         <width>1061</width>
+         <height>96</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Fallimenti operativi e selvicolturali</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="lbl_tagli_falliti">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_biologici_falliti">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_generici_falliti">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>40</y>
+         <width>1061</width>
+         <height>481</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="maximumSize">
+           <size>
+            <width>500</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Saturazione Asset Interni</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QTableWidget" name="tbl_saturazione">
+             <column>
+              <property name="text">
+               <string>Risorsa</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Stagione</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ore Disponibili</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>New Column</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>% Saturazione</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>Utilizzi Stagionali e Noli</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QTableWidget" name="tbl_stagionali_noli">
+             <column>
+              <property name="text">
+               <string>Risorsa</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Stagione</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ore Extra/Noli Usati</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Massimo Utilizzabile</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </item>

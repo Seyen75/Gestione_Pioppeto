@@ -4,6 +4,8 @@ from typing import Dict, Any, List
 
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QComboBox, QSlider, QLabel, QPushButton, QTabWidget, QVBoxLayout, QHeaderView
+from PySide6.QtGui import QScreen, QGuiApplication
+from PySide6.QtGui import QColor, QFont
 from PySide6.QtUiTools import QUiLoader
 
 import matplotlib
@@ -21,9 +23,11 @@ class FormValutazioni(QWidget):
 
         # 1. Caricamento UI e mappatura componenti
         self._carica_interfaccia()
+        self._centra_finestra_su_schermo()
         self._mappa_componenti_ui()
         self._inizializza_canvas_grafico()
         self._connetti_segnali()
+        self._tabelle_efficienza()
         
         # 2. Configurazione e popolamento iniziale dei dati
         self._configura_stato_iniziale_selettori()
@@ -36,6 +40,23 @@ class FormValutazioni(QWidget):
         layout_principale = QVBoxLayout(self)
         layout_principale.addWidget(self.ui)
         layout_principale.setContentsMargins(15, 15, 15, 15)
+        
+        self.setWindowTitle("Report Finale e Statistiche Consuntive")
+        
+
+    def _centra_finestra_su_schermo(self):
+        self.adjustSize()
+        schermo: QScreen = QGuiApplication.primaryScreen()
+        if self.parent() and self.parent().window():
+            schermo = self.parent().window().screen()
+            
+        if schermo:
+            geometria_schermo = schermo.geometry()
+            larghezza_form = self.width() if self.width() > 100 else 1100
+            altezza_form = self.height() if self.height() > 100 else 780
+            x = (geometria_schermo.width() - larghezza_form) // 2
+            y = (geometria_schermo.height() - altezza_form) // 2
+            self.move(geometria_schermo.x() + x, geometria_schermo.y() + y)
 
     def _mappa_componenti_ui(self):
         self.tab_root = self.ui.findChild(QTabWidget, "tab_valutazioni_root")
@@ -63,15 +84,38 @@ class FormValutazioni(QWidget):
         self.lbl_tipo_filiera_lotto = self.ui.findChild(QLabel, "lbl_tipo_filiera_lotto")
         self.lbl_titolo_lotto = self.ui.findChild(QLabel, "lbl_titolo_lotto")
         
-        # FIX 1: Riallineamento nome reale del componente rispetto al file .ui
         self.tbl_storico_lotto = self.ui.findChild(QTableWidget, "tbl_storico_lotto")
         if self.tbl_storico_lotto is None:
             tab_2 = self.ui.findChild(QWidget, "tab_storico_particella")
             if tab_2:
                 self.tbl_storico_lotto = tab_2.findChild(QTableWidget, "tbl_storico_lotto")
+                
+        self.sld_anno_report_capacita = self.ui.findChild(QSlider, "sld_anno_report_capacita")
 
         self.btn_esci = self.ui.findChild(QPushButton, "btn_esci")
 
+    def _tabelle_efficienza(self):
+        # --- Setup Tabella 1: Saturazione Interna ---
+        col_sat = ["Risorsa", "Stagione", "Ore\nDisponibili", "Ore\nLavorate", "%\nSaturaz."]
+        self.ui.tbl_saturazione.setColumnCount(len(col_sat))
+        self.ui.tbl_saturazione.setHorizontalHeaderLabels(col_sat)
+        
+        header_sat = self.ui.tbl_saturazione.horizontalHeader()
+        header_sat.setMinimumHeight(45)
+        header_sat.setSectionResizeMode(QHeaderView.ResizeToContents)
+        header_sat.setSectionResizeMode(0, QHeaderView.Stretch)
+        header_sat.setStretchLastSection(False)
+        
+        # --- Setup Tabella 2: Stress Test Noli ---
+        col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim.", "Ore Sforate\n(Criticità)"]
+        self.ui.tbl_stagionali_noli.setColumnCount(len(col_stress))
+        self.ui.tbl_stagionali_noli.setHorizontalHeaderLabels(col_stress)
+        
+        header_stress = self.ui.tbl_stagionali_noli.horizontalHeader()
+        header_stress.setMinimumHeight(45)
+        header_stress.setSectionResizeMode(QHeaderView.ResizeToContents)
+        header_stress.setSectionResizeMode(0, QHeaderView.Stretch)
+        header_stress.setStretchLastSection(False)
 
     def _inizializza_canvas_grafico(self):
         colore_sfondo_hex = "#141923"
@@ -92,6 +136,8 @@ class FormValutazioni(QWidget):
             self.sld_anno.valueChanged.connect(self.slot_cambio_anno_slider)
         if self.cmb_scelta_lotto:
             self.cmb_scelta_lotto.currentTextChanged.connect(self.slot_cambio_lotto_combobox)
+        if self.sld_anno_report_capacita:
+            self.sld_anno_report_capacita.valueChanged.connect(self._aggiorna_tab_efficienza)
 
     def _configura_stato_iniziale_selettori(self):
         anni_presenti = set()
@@ -118,16 +164,23 @@ class FormValutazioni(QWidget):
             for lotto in self.parametri.collezione_lotti:
                 self.cmb_scelta_lotto.addItem(lotto.id_lotto)
 
-        # --- FIX: Stop alla dilatazione dell'ultima colonna ---
+        # Stop alla dilatazione dell'ultima colonna della Tabella Storico
         if self.tbl_storico_lotto:
             header = self.tbl_storico_lotto.horizontalHeader()
-            # Tutte le colonne si adattano al loro contenuto (titolo o dato)
             header.setSectionResizeMode(QHeaderView.ResizeToContents)
-            # Impedisce forzatamente a Qt di allargare l'ultima colonna fino al bordo destro
             header.setStretchLastSection(False) 
-
-        # Innesco forzato iniziale controlli
+            
+        if self.sld_anno_report_capacita:
+            self.sld_anno_report_capacita.setMinimum(1)
+            self.sld_anno_report_capacita.setMaximum(self.anno_max)
+            self.sld_anno_report_capacita.setValue(1)
+        
+        # Innesco forzato iniziale controlli all'apertura
         self.slot_cambio_anno_slider(1)
+        
+        if hasattr(self, '_aggiorna_tab_efficienza'):
+            self._aggiorna_tab_efficienza(1)
+            
         if self.cmb_scelta_lotto and self.cmb_scelta_lotto.count() > 0:
             self.slot_cambio_lotto_combobox(self.cmb_scelta_lotto.currentText())
     
@@ -150,7 +203,6 @@ class FormValutazioni(QWidget):
         if self.tbl_tagli_anno is None:
             return
 
-        # --- FIX: Rimodellazione dinamica delle 10 colonne ---
         intestazioni = [
             "ID Lotto", 
             "Destinazione", 
@@ -167,7 +219,6 @@ class FormValutazioni(QWidget):
         self.tbl_tagli_anno.setHorizontalHeaderLabels(intestazioni)
         self.tbl_tagli_anno.setRowCount(0)
         
-        # Manteniamo l'adattamento automatico delle larghezze per non tagliare il testo
         header = self.tbl_tagli_anno.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
@@ -207,7 +258,6 @@ class FormValutazioni(QWidget):
                 massa_cartiera = rese.get("cartiera_t", 0.0)
                 massa_truciolato = rese.get("truciolato_t", 0.0)
                 
-                # --- CALCOLO DELLE 3 RESE SPECIFICHE PER ETTARO ---
                 resa_ha_opera = vol_opera / superficie if superficie > 0 else 0.0
                 resa_ha_cartiera = massa_cartiera / superficie if superficie > 0 else 0.0
                 resa_ha_truciolato = massa_truciolato / superficie if superficie > 0 else 0.0
@@ -222,7 +272,6 @@ class FormValutazioni(QWidget):
                     "cartiera": massa_cartiera, "truciolato": massa_truciolato
                 })
                 
-                # --- POPOLAMENTO DELLE 10 COLONNE ---
                 self.tbl_tagli_anno.setItem(riga, 0, QTableWidgetItem(id_lotto))
                 self.tbl_tagli_anno.setItem(riga, 1, QTableWidgetItem(destinazione))
                 self.tbl_tagli_anno.setItem(riga, 2, QTableWidgetItem(f"{superficie:.2f}"))
@@ -238,17 +287,41 @@ class FormValutazioni(QWidget):
                     item = self.tbl_tagli_anno.item(riga, c)
                     if item: item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Aggiornamento delle Label in basso
-        if self.lbl_res_opera_anno:
-            self.lbl_res_opera_anno.setText(f"Tronchetti da Opera Totali: {tot_opera:.2f} m³")
-        if self.lbl_res_cartiera_anno:
-            self.lbl_res_cartiera_anno.setText(f"Legno da Cartiera Totale: {tot_cartiera:.2f} t")
-        if self.lbl_res_truciolato_anno:
-            self.lbl_res_truciolato_anno.setText(f"Fibra per Truciolato Totale: {tot_truciolato:.2f} t")
+        sup_opera = sum(getattr(l, "superficie_ettari", 0) for l in self.parametri.collezione_lotti 
+                        if str(l.destinazione_uso).strip().upper() == "OPERA" and l.id_lotto in [d["id"] for d in dati_grafico_lotti])
+                        
+        sup_industria = sum(getattr(l, "superficie_ettari", 0) for l in self.parametri.collezione_lotti 
+                            if str(l.destinazione_uso).strip().upper() == "INDUSTRIA" and l.id_lotto in [d["id"] for d in dati_grafico_lotti])
+
+        tot_vol_raccolto = sum(float(self.tbl_tagli_anno.item(r, 3).text()) for r in range(self.tbl_tagli_anno.rowCount()) if self.tbl_tagli_anno.item(r, 3))
+
+        media_ha_opera = (tot_opera / sup_opera) if sup_opera > 0 else 0.0
+        media_ha_cartiera = (tot_cartiera / sup_industria) if sup_industria > 0 else 0.0
+        media_ha_truciolato = (tot_truciolato / sup_industria) if sup_industria > 0 else 0.0
+
+        valori_colonne = {
+            3: tot_vol_raccolto,
+            4: tot_opera,
+            5: tot_cartiera,
+            6: tot_truciolato,
+            7: media_ha_opera,
+            8: media_ha_cartiera,
+            9: media_ha_truciolato
+        }
+
+        for col, valore in valori_colonne.items():
+            nome_obj = f"lbl_tot_{col}"
             
-        resa_media_ha = ((tot_opera * 0.80) + tot_cartiera + tot_truciolato) / superficie_tagliata_anno if superficie_tagliata_anno > 0 else 0.0
-        if self.lbl_resa_ettaro_media_anno:
-            self.lbl_resa_ettaro_media_anno.setText(f"Resa Media Comprensoriale Equivalente: {resa_media_ha:.2f} t/ha")
+            label_obj = None
+            if hasattr(self, nome_obj):
+                label_obj = getattr(self, nome_obj)
+            elif hasattr(self, "ui") and hasattr(self.ui, nome_obj):
+                label_obj = getattr(self.ui, nome_obj)
+                
+            if label_obj:
+                header_item = self.tbl_tagli_anno.horizontalHeaderItem(col)
+                testo_header = header_item.text().replace('\n', ' ') if header_item else f"Colonna {col}"
+                label_obj.setText(f"Totale {testo_header}: {valore:.2f}")
 
         self._aggiorna_grafico_ripartizione(dati_grafico_lotti)
 
@@ -307,7 +380,6 @@ class FormValutazioni(QWidget):
                 risultati_cantieri = istanza_inverno.get("risultati_cantieri", {})
                 tagli_anno = risultati_cantieri.get("tagli_effettuati", []) if risultati_cantieri else []
                 
-                # Cerca il cantiere per questo specifico lotto
                 for t in tagli_anno:
                     if t.get("lotto_id") == lotto_reale.id_lotto:
                         è_tagliato = "SÌ"
@@ -335,7 +407,6 @@ class FormValutazioni(QWidget):
                 dbh_val, h_val = 0.0, 0.0
                 è_tagliato = "NO"
 
-            # --- VERIFICA DELLA MATURITÀ (Rispecchia fedelmente il motore) ---
             is_pronto = False
             if eta_biologica >= eta_rotazione_standard:
                 if dbh_val >= diametro_target:
@@ -345,7 +416,6 @@ class FormValutazioni(QWidget):
 
             pronto_al_taglio = "SÌ" if is_pronto else "NO"
 
-            # --- POPOLAMENTO VISIVO ---
             self.tbl_storico_lotto.setItem(riga, 0, QTableWidgetItem(f"Anno {num_anno}"))
             self.tbl_storico_lotto.setItem(riga, 1, QTableWidgetItem(f"{eta_biologica} anni"))
             self.tbl_storico_lotto.setItem(riga, 2, QTableWidgetItem(f"{dbh_val:.2f} cm"))
@@ -356,12 +426,10 @@ class FormValutazioni(QWidget):
             if pronto_al_taglio == "SÌ": item_pronto.setForeground(Qt.GlobalColor.green)
             self.tbl_storico_lotto.setItem(riga, 5, item_pronto)
             
-            # Il nostro indicatore diagnostico
             item_tagliato = QTableWidgetItem(è_tagliato)
             if è_tagliato == "SÌ": 
                 item_tagliato.setForeground(Qt.GlobalColor.yellow)
             elif pronto_al_taglio == "SÌ" and è_tagliato == "NO":
-                # Opzionale: Colora di rosso il "NO" se l'albero era pronto ma è stato saltato (Ritardo Strutturale)
                 item_tagliato.setForeground(Qt.GlobalColor.red)
                 
             self.tbl_storico_lotto.setItem(riga, 6, item_tagliato)
@@ -393,7 +461,6 @@ class FormValutazioni(QWidget):
         cartiera = np.array([d["cartiera"] for d in dati_lotti])
         truciolato = np.array([d["truciolato"] for d in dati_lotti])
 
-        # --- FIX 1: Larghezza colonna ridotta e fissa ---
         larghezza_colonna = 0.35 
         x_pos = np.arange(len(nomi_lotti))
         
@@ -404,22 +471,16 @@ class FormValutazioni(QWidget):
         self.ax_ripartizione.set_xticks(x_pos)
         self.ax_ripartizione.set_xticklabels(nomi_lotti)
 
-        # --- FIX 2: Trucco per impedire colonne dilatate ---
-        # Garantiamo sempre una "finestra" visiva di almeno 6 spazi. 
-        # Se c'è 1 solo lotto, lo metterà al centro senza ingrandirlo.
         min_slots = 4
         if len(nomi_lotti) < min_slots:
             margine = (min_slots - len(nomi_lotti)) / 2.0
             self.ax_ripartizione.set_xlim(-margine - 0.5, len(nomi_lotti) - 1 + margine + 0.5)
 
-        # Solleviamo il titolo (pad=30) per fare spazio alla legenda
         self.ax_ripartizione.set_title("Ripartizione Assoluta Masse Raccolte", color='#ff8a80', fontsize=11, weight='bold', pad=30)
         self.ax_ripartizione.tick_params(colors='#e0e0e0', labelsize=8)
         
-        # Mettiamo solo la griglia orizzontale (axis='y') per un look più pulito
         self.ax_ripartizione.grid(True, color='#2b1d20', linestyle='--', alpha=0.5, axis='y')
         
-        # --- FIX 3: Legenda in alto orizzontale (ncol=3) fuori dal tracciato ---
         legenda = self.ax_ripartizione.legend(
             loc='lower center', 
             bbox_to_anchor=(0.5, 1.02), 
@@ -432,6 +493,150 @@ class FormValutazioni(QWidget):
         for text in legenda.get_texts():
             text.set_color('#e0e0e0')
 
-        # Sostituiamo tight_layout con subplots_adjust per evitare che la legenda alta venga mozzata
         self.fig_ripartizione.subplots_adjust(top=0.78, bottom=0.15, left=0.15, right=0.95)
         self.canvas_ripartizione.draw()
+        
+    def _aggiorna_tab_efficienza(self, anno: int):
+        if hasattr(self.ui, 'lbl_anno_selezionato_2'):
+            self.ui.lbl_anno_selezionato_2.setText(f"Analisi Saturazione Risorse - Anno: {anno}")
+
+        self.ui.tbl_saturazione.setRowCount(0)
+        self.ui.tbl_stagionali_noli.setRowCount(0)
+        
+        stagioni = ["Inverno", "Primavera", "Estate", "Autunno"]
+        risorse = [
+            ("Op. Spec.", "grado_A", "personale_spec"),
+            ("Op. Generici", "grado_B", "personale_comune"),
+            ("Harvester", "harvester", "harvester"),
+            ("Forwarder", "forwarder", "forwarder"),
+            ("Trattori Alta", "trattori_alta", "trattori_alta"),
+            ("Trattori Media", "trattori_media", "trattori_media"),
+            ("Piattaforme", "piattaforme", "piattaforme")
+        ]
+        
+        mappa_attributi_ditta = {
+            "grado_A": "operai_grado_A",
+            "grado_B": "operai_grado_B",
+            "harvester": "harvester_abbattitori",
+            "forwarder": "forwarder_caricatori",
+            "trattori_alta": "trattori_alta_potenza",
+            "trattori_media": "trattori_media_potenza",
+            "piattaforme": "piattaforme_aeree_semoventi"
+        }
+        
+        giorni_utili = 55
+        ore_base = giorni_utili * getattr(self.motore.ditta, "ore_giorno_standard", 8)
+        limiti_noli = getattr(self.motore.ditta, "limiti_noli_stagionali", {})
+        
+        for nome_ui, chiave_interna, chiave_nolo in risorse:
+            tot_disp = 0.0
+            tot_lav = 0.0
+            tot_noli = 0.0
+            tot_mercato = 0.0
+            tot_sforate = 0.0
+            
+            nome_reale = mappa_attributi_ditta.get(chiave_interna, chiave_interna)
+            disp = getattr(self.motore.ditta, nome_reale, 0) * ore_base
+            
+            for stagione in stagioni:
+                chiave_stato = f"A{anno}_{stagione}"
+                dizionario_storico = getattr(self.parametri, "storico_stati", getattr(self.parametri, "storico_stagionale", {}))
+                stato = dizionario_storico.get(chiave_stato, {})
+                report_cantieri = stato.get("risultati_cantieri", {})
+                
+                umane = report_cantieri.get("risorse_umane_interne", {})
+                macchine = report_cantieri.get("macchinari_interni_consumati", {})
+                lav = umane.get(f"consumate_{chiave_interna[-1]}", 0.0) if "grado" in chiave_interna else macchine.get(chiave_interna, 0.0)
+                
+                terzi = report_cantieri.get("ricorso_terzi_e_noli", {})
+                noli_usati = terzi.get(chiave_interna, 0.0)
+                
+                unita_max = limiti_noli.get(chiave_nolo, 0)
+                tetto_mercato = unita_max * ore_base
+                ore_sforate = max(0.0, noli_usati - tetto_mercato)
+                
+                tot_disp += disp
+                tot_lav += lav
+                tot_noli += noli_usati
+                tot_mercato += tetto_mercato
+                tot_sforate += ore_sforate
+                
+                self._inserisci_riga_saturazione(nome_ui, stagione, disp, lav)
+                self._inserisci_riga_stress(nome_ui, stagione, noli_usati, tetto_mercato, ore_sforate)
+            
+            self._inserisci_riga_saturazione(nome_ui, "TOTALE", tot_disp, tot_lav, is_totale=True)
+            self._inserisci_riga_stress(nome_ui, "TOTALE", tot_noli, tot_mercato, tot_sforate, is_totale=True)
+            
+            self.ui.tbl_saturazione.insertRow(self.ui.tbl_saturazione.rowCount())
+            self.ui.tbl_stagionali_noli.insertRow(self.ui.tbl_stagionali_noli.rowCount())
+
+        stats = getattr(self.motore, "stats_globali", {})
+        if hasattr(self.ui, 'lbl_tagli_falliti'):
+            self.ui.lbl_tagli_falliti.setText(f"Tagli Raso Saltati (Mancanza Risorse): {stats.get('tagli_strutturali_saltati', 0)}")
+        if hasattr(self.ui, 'lbl_biologici_falliti'):
+            self.ui.lbl_biologici_falliti.setText(f"Tagli Ritardati (Oltre Maturità): {stats.get('tagli_biologici_saltati', 0)}")
+        if hasattr(self.ui, 'lbl_generici_falliti'):
+            self.ui.lbl_generici_falliti.setText(f"Lavorazioni Agronomiche Saltate: {stats.get('lavorazioni_generiche_saltate', 0)}")
+                    
+    def _inserisci_riga_saturazione(self, nome, stagione, disp, lav, is_totale=False):
+        r = self.ui.tbl_saturazione.rowCount()
+        self.ui.tbl_saturazione.insertRow(r)
+        
+        sat_perc = (lav / disp * 100) if disp > 0 else 0.0
+        sat_testo = f"{sat_perc:.1f}%"
+        
+        self.ui.tbl_saturazione.setItem(r, 0, QTableWidgetItem(nome if not is_totale else ""))
+        self.ui.tbl_saturazione.setItem(r, 1, QTableWidgetItem(stagione))
+        self.ui.tbl_saturazione.setItem(r, 2, QTableWidgetItem(f"{disp:.1f} h"))
+        self.ui.tbl_saturazione.setItem(r, 3, QTableWidgetItem(f"{lav:.1f} h"))
+        
+        item_sat = QTableWidgetItem(sat_testo)
+        if sat_perc < 25.0 and disp > 0: item_sat.setForeground(QColor("#ff5252"))
+        elif sat_perc > 75.0: item_sat.setForeground(QColor("#00e676"))
+        self.ui.tbl_saturazione.setItem(r, 4, item_sat)
+        
+        if is_totale:
+            for c in range(5):
+                item = self.ui.tbl_saturazione.item(r, c)
+                if item:
+                    item.setFont(QFont("Arial", 11, QFont.Bold))
+                    if c != 4: 
+                        item.setForeground(QColor("#ffecb3"))
+        else:
+             for c in range(5):
+                item = self.ui.tbl_saturazione.item(r, c)
+                if item and c != 4: 
+                    item.setForeground(QColor("#ffffff"))
+
+    def _inserisci_riga_stress(self, nome, stagione, noli, tetto, sforate, is_totale=False):
+        r = self.ui.tbl_stagionali_noli.rowCount()
+        self.ui.tbl_stagionali_noli.insertRow(r)
+        
+        esaurimento_perc = (noli / tetto * 100) if tetto > 0 else (100.0 if noli > 0 else 0.0)
+        
+        self.ui.tbl_stagionali_noli.setItem(r, 0, QTableWidgetItem(nome if not is_totale else ""))
+        self.ui.tbl_stagionali_noli.setItem(r, 1, QTableWidgetItem(stagione))
+        self.ui.tbl_stagionali_noli.setItem(r, 2, QTableWidgetItem(f"{noli:.1f} h"))
+        self.ui.tbl_stagionali_noli.setItem(r, 3, QTableWidgetItem(f"{tetto:.1f} h"))
+        self.ui.tbl_stagionali_noli.setItem(r, 4, QTableWidgetItem(f"{esaurimento_perc:.1f}%"))
+        
+        item_sforate = QTableWidgetItem(f"{sforate:.1f} h")
+        if sforate > 0: 
+            item_sforate.setForeground(QColor("#ff5252"))
+            item_sforate.setFont(QFont("Arial", 11, QFont.Bold))
+        else:
+            item_sforate.setForeground(QColor("#00e676"))
+        self.ui.tbl_stagionali_noli.setItem(r, 5, item_sforate)
+        
+        if is_totale:
+            for c in range(6):
+                item = self.ui.tbl_stagionali_noli.item(r, c)
+                if item:
+                    item.setFont(QFont("Arial", 11, QFont.Bold))
+                    if c != 5: 
+                        item.setForeground(QColor("#ffecb3"))
+        else:
+             for c in range(6):
+                item = self.ui.tbl_stagionali_noli.item(r, c)
+                if item and c != 5: 
+                    item.setForeground(QColor("#ffffff"))

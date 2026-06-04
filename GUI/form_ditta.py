@@ -4,7 +4,7 @@
 # Sincronizza i dati inseriti con la classe Ditta per impostare i parametri della simulazione.
 
 import os
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt
 from GUI.utils import mostra_messaggio_stilizzato
@@ -52,20 +52,21 @@ class FormDitta(QWidget):
         self.spin_motoseghe = self.ui_interfaccia.findChild(object, "spin_motoseghe")
         self.spin_durata_piano = self.ui_interfaccia.findChild(object, "spin_durata_piano")
 
-        # === COMPARTO FLUIDITÀ E LIMITI ELASTICITÀ DI MERCATO (Nuovi Puntatori PW) ===
-        self.dsb_elasticita_spec = self.ui_interfaccia.findChild(object, "dsb_elasticita_spec")
-        self.dsb_elasticita_comune = self.ui_interfaccia.findChild(object, "dsb_elasticita_comune")
-        self.dsb_elasticita_mezzi_base = self.ui_interfaccia.findChild(object, "dsb_elasticita_mezzi_base")
-        self.dsb_elasticita_mezzi_spec = self.ui_interfaccia.findChild(object, "dsb_elasticita_mezzi_spec")
-
+        # === COMPARTO FLUIDITÀ E LIMITI ELASTICITÀ DI MERCATO ===
+        self.spin_operaio_A_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_A_noleggio")
+        self.spin_operaio_B_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_B_noleggio")
+        self.spin_trattori_alta_noleggio = self.ui_interfaccia.findChild(object, "spin_trattori_alta_noleggio")
+        self.spin_trattori_media_noleggio = self.ui_interfaccia.findChild(object, "spin_trattori_media_noleggio")
+        self.spin_piattaforme_noleggio = self.ui_interfaccia.findChild(object, "spin_piattaforme_noleggio")
+        self.spin_harvester_noleggio = self.ui_interfaccia.findChild(object, "spin_harvester_noleggio")
+        self.spin_forwarder_noleggio = self.ui_interfaccia.findChild(object, "spin_forwarder_noleggio")
+        self.spin_motoseghe_noleggio = self.ui_interfaccia.findChild(object, "spin_motoseghe_noleggio")
+        
         # Pulsanti di Comando
         self.btn_salva = self.ui_interfaccia.findChild(object, "btn_salva")
         self.btn_esci = self.ui_interfaccia.findChild(object, "btn_esci")
 
         # INTERFACCIA E SEGNALI
-        
-        # Inizializza i limiti fisici di sicurezza (min/max) delle DoubleSpinBox di elasticità
-        self._configura_limiti_elasticita_ui()
         
         # Pre-popola i widget grafici con i valori correnti salvati nell'oggetto ditta
         self.aggiorna_interfaccia_da_modello()
@@ -79,32 +80,6 @@ class FormDitta(QWidget):
         # Centratura geometrica automatica rispetto alla form principale
         if parent:
             self.centra_rispetto_al_parent(parent)
-
-    def _configura_limiti_elasticita_ui(self):
-        """Definisce le barriere e gli step di incremento per i moltiplicatori di mercato disaccoppiati."""
-        if self.dsb_elasticita_spec:
-            self.dsb_elasticita_spec.setMinimum(1.0)
-            self.dsb_elasticita_spec.setMaximum(2.5)
-            self.dsb_elasticita_spec.setSingleStep(0.1)
-            self.dsb_elasticita_spec.setDecimals(1)
-            
-        if self.dsb_elasticita_comune:
-            self.dsb_elasticita_comune.setMinimum(1.0)
-            self.dsb_elasticita_comune.setMaximum(5.0)
-            self.dsb_elasticita_comune.setSingleStep(0.5)
-            self.dsb_elasticita_comune.setDecimals(1)
-            
-        if self.dsb_elasticita_mezzi_base:
-            self.dsb_elasticita_mezzi_base.setMinimum(1.0)
-            self.dsb_elasticita_mezzi_base.setMaximum(4.0)
-            self.dsb_elasticita_mezzi_base.setSingleStep(0.5)
-            self.dsb_elasticita_mezzi_base.setDecimals(1)
-            
-        if self.dsb_elasticita_mezzi_spec:
-            self.dsb_elasticita_mezzi_spec.setMinimum(1.0)
-            self.dsb_elasticita_mezzi_spec.setMaximum(3.0)
-            self.dsb_elasticita_mezzi_spec.setSingleStep(0.5)
-            self.dsb_elasticita_mezzi_spec.setDecimals(1)
 
     def aggiorna_interfaccia_da_modello(self):
         # Estrae i valori reali dall'oggetto ditta e popola gli SpinBox grafici
@@ -120,15 +95,15 @@ class FormDitta(QWidget):
         if self.spin_durata_piano: self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
 
         # Allineamento dei valori correnti dei moltiplicatori di elasticità disaccoppiati
-        elasti = getattr(self.ditta, "moltiplicatori_elasticita", {})
-        if self.dsb_elasticita_spec and "personale_spec" in elasti:
-            self.dsb_elasticita_spec.setValue(elasti["personale_spec"])
-        if self.dsb_elasticita_comune and "personale_comune" in elasti:
-            self.dsb_elasticita_comune.setValue(elasti["personale_comune"])
-        if self.dsb_elasticita_mezzi_base and "mezzi_base" in elasti:
-            self.dsb_elasticita_mezzi_base.setValue(elasti["mezzi_base"])
-        if self.dsb_elasticita_mezzi_spec and "mezzi_spec" in elasti:
-            self.dsb_elasticita_mezzi_spec.setValue(elasti["mezzi_spec"])
+        limiti = getattr(self.ditta, "limiti_noli_stagionali", {})
+        if self.spin_operaio_A_noleggio and "personale_spec" in limiti: self.spin_operaio_A_noleggio.setValue(limiti["personale_spec"])
+        if self.spin_operaio_B_noleggio and "personale_comune" in limiti: self.spin_operaio_B_noleggio.setValue(limiti["personale_comune"])
+        if self.spin_trattori_alta_noleggio and "trattori_alta" in limiti: self.spin_trattori_alta_noleggio.setValue(limiti["trattori_alta"])
+        if self.spin_trattori_media_noleggio and "trattori_media" in limiti: self.spin_trattori_media_noleggio.setValue(limiti["trattori_media"])
+        if self.spin_piattaforme_noleggio and "piattaforme" in limiti: self.spin_piattaforme_noleggio.setValue(limiti["piattaforme"])
+        if self.spin_harvester_noleggio and "harvester" in limiti: self.spin_harvester_noleggio.setValue(limiti["harvester"])
+        if self.spin_forwarder_noleggio and "forwarder" in limiti: self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
+        if self.spin_motoseghe_noleggio and "motoseghe" in limiti: self.spin_motoseghe_noleggio.setValue(limiti["motoseghe"])
 
     def salva_dati_in_modello(self):
         # Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati
@@ -155,15 +130,15 @@ class FormDitta(QWidget):
         if self.spin_motoseghe: self.ditta.kit_motoseghe_professionali = self.spin_motoseghe.value()
         
         # Salvataggio delle nuove impostazioni di elasticità disaccoppiata inserite dall'utente
-        if hasattr(self.ditta, "moltiplicatori_elasticita"):
-            if self.dsb_elasticita_spec:
-                self.ditta.moltiplicatori_elasticita["personale_spec"] = self.dsb_elasticita_spec.value()
-            if self.dsb_elasticita_comune:
-                self.ditta.moltiplicatori_elasticita["personale_comune"] = self.dsb_elasticita_comune.value()
-            if self.dsb_elasticita_mezzi_base:
-                self.ditta.moltiplicatori_elasticita["mezzi_base"] = self.dsb_elasticita_mezzi_base.value()
-            if self.dsb_elasticita_mezzi_spec:
-                self.ditta.moltiplicatori_elasticita["mezzi_spec"] = self.dsb_elasticita_mezzi_spec.value()
+        if hasattr(self.ditta, "limiti_noli_stagionali"):
+            if self.spin_operaio_A_noleggio: self.ditta.limiti_noli_stagionali["personale_spec"] = int(self.spin_operaio_A_noleggio.value())
+            if self.spin_operaio_B_noleggio: self.ditta.limiti_noli_stagionali["personale_comune"] = int(self.spin_operaio_B_noleggio.value())
+            if self.spin_trattori_alta_noleggio: self.ditta.limiti_noli_stagionali["trattori_alta"] = int(self.spin_trattori_alta_noleggio.value())
+            if self.spin_trattori_media_noleggio: self.ditta.limiti_noli_stagionali["trattori_media"] = int(self.spin_trattori_media_noleggio.value())
+            if self.spin_piattaforme_noleggio: self.ditta.limiti_noli_stagionali["piattaforme"] = int(self.spin_piattaforme_noleggio.value())
+            if self.spin_harvester_noleggio: self.ditta.limiti_noli_stagionali["harvester"] = int(self.spin_harvester_noleggio.value())
+            if self.spin_forwarder_noleggio: self.ditta.limiti_noli_stagionali["forwarder"] = int(self.spin_forwarder_noleggio.value())
+            if self.spin_motoseghe_noleggio: self.ditta.limiti_noli_stagionali["motoseghe"] = int(self.spin_motoseghe_noleggio.value())
 
         # Salva la durata target degli anni all'interno della configurazione globale parametri
         if self.spin_durata_piano: self.parametri.anni_durata_target = self.spin_durata_piano.value()
@@ -185,7 +160,7 @@ class FormDitta(QWidget):
         
         # dimensioni della finestra per il calcolo e il rendering (altezza modificata a 350 per contenere i nuovi controlli)
         larghezza_self = 686
-        altezza_self = 406
+        altezza_self = 450
 
         # Calcolo geometrico della mezzeria rispetto alla form principale
         x = geometria_parent.x() + (geometria_parent.width() - larghezza_self) // 2

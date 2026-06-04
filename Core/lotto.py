@@ -1,5 +1,5 @@
 
-import math
+import math, random
 
 class Lotto:
     def __init__(self, id_lotto: str, superficie: float, sesto_impianto: str = "6x6"):
@@ -108,10 +108,11 @@ class Lotto:
         
         if self.diametro_medio_fusto < diametro_target:
             if self.anni_ritardo_taglio >= limite_massimo_ritardo: return True
-            #self.anni_ritardo_taglio += 1
             return False
         return True
 
+    import random
+    
     def calcola_ripartizione_assortimenti(self, parametri_clone_selezionato: dict, piante_abbattute: int) -> dict:
         
         # INIZIALIZZAZIONE SICURA DELLE VARIABILI
@@ -130,24 +131,64 @@ class Lotto:
 
         d_m = self.diametro_medio_fusto / 100.0
         volume_cantiere_m3 = (d_m ** 2) * self.altezza_media_piante * coeff_forma * piante_abbattute
+        
+        # Il volume lordo totale influenzato dallo storico vitale del lotto
         volume_cantiere_m3 *= self.moltiplicatore_efficienza_clone
 
         if self.destinazione_uso == "OPERA":
             if self.diametro_medio_fusto >= diametro_obiettivo:
-                resa_opera_m3 = volume_cantiere_m3 * 0.70
-                resa_cartiera_ton = (volume_cantiere_m3 * 0.15) * densita_verde
-                resa_truciolato_ton = (volume_cantiere_m3 * 0.15) * densita_verde
-            else:
-                fattore_efficienza = self.diametro_medio_fusto / diametro_obiettivo
-                quota_opera_reale = 0.70 * (fattore_efficienza ** 2)
-                quota_residua = 1.0 - quota_opera_reale
-                resa_opera_m3 = volume_cantiere_m3 * quota_opera_reale
-                resa_cartiera_ton = (volume_cantiere_m3 * (quota_residua * 0.50)) * densita_verde
-                resa_truciolato_ton = (volume_cantiere_m3 * (quota_residua * 0.50)) * densita_verde
-        else:
-            resa_cartiera_ton = (volume_cantiere_m3 * 0.90) * densita_verde
-            resa_truciolato_ton = (volume_cantiere_m3 * 0.10) * densita_verde
+                # --- CALCOLO STATISTICO CON DISTRIBUZIONE NORMALE ---
+                # Moduliamo la media in base all'efficienza vitale del lotto. 
+                # Un clone sofferente produrrà meno legno da sfogliato.
+                mu_opera = 0.62 * min(1.0, self.moltiplicatore_efficienza_clone) 
+                
+                # Applichiamo la Gaussiana (Media, Deviazione Standard)
+                quota_opera = random.gauss(mu_opera, 0.04) 
+                quota_cartiera = random.gauss(0.20, 0.03)
+                quota_truciolato = random.gauss(0.18, 0.03)
+                
+                # Evitiamo valori fuori range (es. negativi in casi estremi)
+                quota_opera = max(0.40, min(0.75, quota_opera))
+                quota_cartiera = max(0.10, min(0.35, quota_cartiera))
+                quota_truciolato = max(0.05, min(0.30, quota_truciolato))
+                
+                # Normalizzazione: assicuriamoci che la somma faccia sempre 1.0 (100%)
+                somma_quote = quota_opera + quota_cartiera + quota_truciolato
+                quota_opera /= somma_quote
+                quota_cartiera /= somma_quote
+                quota_truciolato /= somma_quote
 
+                resa_opera_m3 = volume_cantiere_m3 * quota_opera
+                resa_cartiera_ton = (volume_cantiere_m3 * quota_cartiera) * densita_verde
+                resa_truciolato_ton = (volume_cantiere_m3 * quota_truciolato) * densita_verde
+            else:
+                # Taglio anticipato/immaturo (Ritardo strutturale o abbattimento forzato)
+                fattore_efficienza = self.diametro_medio_fusto / diametro_obiettivo
+                
+                # Più il diametro è lontano dall'obiettivo, più la Gaussiana collassa
+                mu_opera_ridotta = 0.62 * (fattore_efficienza ** 2.5) 
+                quota_opera_reale = max(0.0, random.gauss(mu_opera_ridotta, 0.05))
+                
+                quota_residua = 1.0 - quota_opera_reale
+                
+                # Il residuo si divide tra cartiera e truciolato (con leggera varianza)
+                var_residuo = random.gauss(0.50, 0.05)
+                
+                resa_opera_m3 = volume_cantiere_m3 * quota_opera_reale
+                resa_cartiera_ton = (volume_cantiere_m3 * (quota_residua * var_residuo)) * densita_verde
+                resa_truciolato_ton = (volume_cantiere_m3 * (quota_residua * (1.0 - var_residuo))) * densita_verde
+        else:
+            # DESTINAZIONE INDUSTRIA
+            mu_cartiera = 0.88 * min(1.0, self.moltiplicatore_efficienza_clone)
+            quota_cartiera = random.gauss(mu_cartiera, 0.03)
+            quota_cartiera = max(0.75, min(0.95, quota_cartiera))
+            
+            quota_truciolato = 1.0 - quota_cartiera
+            
+            resa_cartiera_ton = (volume_cantiere_m3 * quota_cartiera) * densita_verde
+            resa_truciolato_ton = (volume_cantiere_m3 * quota_truciolato) * densita_verde
+
+        # Aggiornamento contatori
         self.report_resa_finale.setdefault("opera_m3", 0.0)
         self.report_resa_finale["opera_m3"] += resa_opera_m3
         self.report_resa_finale.setdefault("cartiera_t", 0.0)
@@ -159,4 +200,72 @@ class Lotto:
             "opera_m3": round(resa_opera_m3, 2),
             "cartiera_t": round(resa_cartiera_ton, 2),
             "truciolato_t": round(resa_truciolato_ton, 2)
+        }
+        
+    def calcola_moltiplicatore_idrico(self) -> float:
+        """
+        Valuta l'adattabilità (vocazione) del clone al terreno del lotto.
+        Valore fisso strutturale tra -1.0 e +1.0.
+        
+        +1.0 = Scelta perfetta (Es. terreno golenale freschissimo) -> +10% di crescita annua
+         0.0 = Terreno standard (Neutro) -> Crescita 100% (1.0)
+        -1.0 = Scelta errata (Es. terreno arido o inadatto) -> -15% di crescita annua
+        """
+        idx = getattr(self, "indice_tendenza_idrica", 0.0)
+        
+        if idx >= 0:
+            # Bonus lineare: fino a un massimo del +10%
+            return 1.0 + (0.10 * idx)
+        else:
+            # Malus lineare morbido: fino a un massimo del -15%
+            return 1.0 - (0.15 * abs(idx))
+
+        
+    def simula_accrescimento(self, profilo_clone: dict, eta_anno: int) -> dict:
+        if eta_anno == 0:
+            return {"dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, "piante_attive": self.numero_piante_vive, "volume_totale_m3": 0.0}
+
+        param = profilo_clone["parametri_crescita"]
+        
+        if self.destinazione_uso == "INDUSTRIA":
+            A = param["incremento_medio_annuo_ottimale"] * 1.20
+            eta_rot = 5
+            k = 1.5 / eta_rot  
+        else:
+            A = param["incremento_medio_annuo_ottimale"] * 1.45
+            eta_rot = param["eta_rotazione_standard"]
+            k = 2.2 / eta_rot  
+
+        p = 1.02 if profilo_clone["esigenze_trattamenti"].get("frequenza_irrigazione_anni_1_2") == "Alta" else 1.05
+        
+        # 1. Moltiplicatore ambientale (Vocazione fissa del terreno + Errori colturali accumulati)
+        vocazione_terreno = self.calcola_moltiplicatore_idrico()
+        mult_reale = max(0.40, vocazione_terreno - getattr(self, "malus_colturale_accumulato", 0.0))
+
+        # 2. CALCOLO ASSOLUTO (Ripristinato: sicuro per l'architettura del tuo motore)
+        dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * mult_reale
+        
+        # Salvaguardia: la pianta mantiene il diametro massimo raggiunto in caso di malus estremi
+        dbh_precedente = getattr(self, "diametro_medio_fusto", 0.0)
+        dbh = max(dbh_precedente, dbh_teorico)
+
+        # 3. Calcolo Altezza e Volume
+        h = (dbh * 0.6) + 4.0 if eta_anno <= 5 else min(27.5, 17.0 + (1.2 * (dbh - 20)))
+        vol_singolo = (math.pi * ((dbh / 200) ** 2)) * h * param["coefficiente_forma"]
+
+        # 4. Mortalità
+        if eta_anno == 1:
+            immissione_fatta = getattr(self, "immissione_effettuata", False)
+            tasso = 0.007 if immissione_fatta else 0.07
+            piante_vive = int((self.superficie_ettari * self.densita_iniziale) * (1.0 - tasso))
+        else:
+            tasso = 0.012 if eta_anno <= 5 else (0.018 if eta_anno <= 10 else 0.025)
+            piante_vive = int(self.numero_piante_vive * (1.0 - tasso))
+        
+        return {
+            "dbh_reale_cm": round(dbh, 2), 
+            "altezza_m": round(h, 2),
+            "volume_singolo_m3": round(vol_singolo, 4), 
+            "piante_attive": max(0, piante_vive),
+            "volume_totale_m3": round(vol_singolo * max(0, piante_vive), 2)
         }

@@ -59,14 +59,15 @@ class Ditta:
         self.fallimenti_forwarder: int = 0
         self.fallimenti_motoseghe: int = 0
 
-        # === DIZIONARIO ELASTICITÀ DI MERCATO DISACCOPPIATO (Requisito PW Avanzato) ===
-        # Taratura aggiornata per evitare l'inefficacia dei limiti frazionari (1.5) su singole unità.
-        # Garantisce il raddoppio minimo (2.0) sia per la manodopera d'alto fusto che per l'Harvester.
-        self.moltiplicatori_elasticita = {
-            "personale_spec": 2.0,     # Sblocca il raddoppio orario della squadra di Grado A
-            "personale_comune": 3.0,   # Ampio ricorso ad avventizi stagionali (+200% ore extra)
-            "mezzi_base": 2.5,         # Nolo flessibile di trattori e piattaforme aggiuntive
-            "mezzi_spec": 2.0          # Permette l'ingaggio di una seconda linea di taglio completa
+        self.limiti_noli_stagionali = {
+            "personale_spec": 10,     
+            "personale_comune": 40,   
+            "trattori_alta": 5,      
+            "trattori_media": 10,    
+            "piattaforme": 5,         
+            "harvester": 2,
+            "forwarder" : 2,
+            "motoseghe" : 10         
         }
         
         # Registro annuale cumulativo delle ore extra prestate (misure statistiche)
@@ -111,6 +112,13 @@ class Ditta:
         self.serbatoi_ore["motoseghe"] = self.kit_motoseghe_professionali * ore_base
 
         self._allinea_fallback_singoli()
+        
+        # Ricarica del plafond del mercato locale (Risorse Esterne)
+        if not hasattr(self, "serbatoi_noli_correnti"):
+            self.serbatoi_noli_correnti = {}
+            
+        for chiave_mercato, unita_max in self.limiti_noli_stagionali.items():
+            self.serbatoi_noli_correnti[chiave_mercato] = unita_max * ore_base
 
     def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, ore_unitarie: float, composizione_squadra: dict, indice_attrito: int = 0) -> dict:
         if not composizione_squadra or ore_unitarie <= 0: return {}
@@ -152,58 +160,41 @@ class Ditta:
         return richiesta
 
     def _ottieni_chiave_elasticita(self, nome_risorsa: str) -> str:
-        """Assegna ad ogni singola voce oraria la corretta categoria di elasticità sul mercato padano."""
-        if nome_risorsa == "grado_A":
-            return "personale_spec"
-        elif nome_risorsa == "grado_B":
-            return "personale_comune"
-        elif nome_risorsa in ["trattori_alta", "trattori_media", "piattaforme"]:
-            return "mezzi_base"
-        else:
-            return "mezzi_spec"  # Harvester, Forwarder e Motoseghe professionali
+        """
+        Restituisce la chiave esatta per interrogare il dizionario dei limiti stagionali.
+        Mappa il nome della risorsa del cantiere alla chiave di mercato.
+        """
+        if nome_risorsa == "grado_A": return "personale_spec"
+        elif nome_risorsa == "grado_B": return "personale_comune"
+        # Per i mezzi, il nome della risorsa coincide esattamente con la chiave di nolo
+        else: return nome_risorsa
 
     def verifica_e_consuma_risorse(self, specifiche_cantiere: dict) -> float:
         """
-        Verifica la disponibilità delle risorse fisiche. Se insufficienti, attiva la logica
-        degli stagionali e dei noli differenziati per categoria fino al tetto imposto.
+        HARD-CAP: Verifica e consuma le risorse fisiche (interne ed esterne).
+        Se il mercato è esaurito, il cantiere subisce un arresto immediato.
         """
         if not specifiche_cantiere: return 0.0
-        
-        giorni_utili_stagione = 55
-        ore_base_stagione = giorni_utili_stagione * self.ore_giorno_standard
         
         fattore_completamento = 1.0
         risorsa_critica = None
 
-        # 1. SCANSIONE CON FILTRI DI ELASTICITÀ ASIMMETRICI
+        # 1. VALUTAZIONE FATTIBILITÀ (Esiste abbastanza capienza nei serbatoi?)
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
         
-            serbatoio_corrente = self.serbatoi_ore.get(risorsa, 0.0)
+            serbatoio_interno = self.serbatoi_ore.get(risorsa, 0.0)
             
-            if ore_richieste > serbatoio_corrente:
-                deficit = ore_richieste - serbatoio_corrente
+            if ore_richieste > serbatoio_interno:
+                deficit = ore_richieste - serbatoio_interno
                 
-                # Identifichiamo il moltiplicatore disaccoppiato corretto per questa risorsa
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
-                moltiplicatore_attivo = self.moltiplicatori_elasticita.get(categoria_mercato, 2.0)
+                ore_nolo_rimaste = getattr(self, "serbatoi_noli_correnti", {}).get(categoria_mercato, 0.0)
                 
-                mappa_attributi = {
-                    "grado_A": "operai_grado_A", "grado_B": "operai_grado_B",
-                    "trattori_alta": "trattori_alta_potenza", "trattori_media": "trattori_media_potenza",
-                    "piattaforme": "piattaforme_aeree_semoventi", "harvester": "harvester_abbattitori",
-                    "forwarder": "forwarder_caricatori", "motoseghe": "kit_motoseghe_professionali"
-                }
-                nome_attr = mappa_attributi.get(risorsa)
-                quantita_fissa = getattr(self, nome_attr, 0) if nome_attr else 1
-                
-                # Calcolo del tetto specifico differenziato per questa risorsa
-                ore_massime_mercato = quantita_fissa * ore_base_stagione * (moltiplicatore_attivo - 1.0)
-                
-                if deficit > ore_massime_mercato:
-                    # Superato il tetto specifico della categoria
-                    ore_totali_erogabili_con_extra = serbatoio_corrente + ore_massime_mercato
-                    quota_possibile = ore_totali_erogabili_con_extra / ore_richieste
+                if deficit > ore_nolo_rimaste:
+                    # BLOCCO FISICO: Risorse interne e mercato totalmente prosciugati.
+                    ore_totali_erogabili = serbatoio_interno + ore_nolo_rimaste
+                    quota_possibile = ore_totali_erogabili / ore_richieste
                     
                     if quota_possibile < fattore_completamento:
                         fattore_completamento = quota_possibile
@@ -215,20 +206,29 @@ class Ditta:
                 if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
             return 0.0
 
-        # 2. CONSUMO E AGGIORNAMENTO REGISTRO EXTRA STATISTICO
+        # 2. EROGAZIONE (Svuotamento reale dei serbatoi)
         self.ore_lavoro_effettivo += specifiche_cantiere["meta_lavoro_puro"] * fattore_completamento
         
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
             
             ore_effettive_spese = ore_richieste * fattore_completamento
-            serbatoio_corrente = self.serbatoi_ore[risorsa]
+            serbatoio_interno = self.serbatoi_ore.get(risorsa, 0.0)
             
-            if ore_effettive_spese <= serbatoio_corrente:
-                self.serbatoi_ore[risorsa] = max(0.0, serbatoio_corrente - ore_effettive_spese)
+            if ore_effettive_spese <= serbatoio_interno:
+                self.serbatoi_ore[risorsa] -= ore_effettive_spese
             else:
-                quota_externa = ore_effettive_spese - serbatoio_corrente
+                # Fondo raschiato: azzeriamo l'interno e attingiamo al mercato
+                quota_externa = ore_effettive_spese - serbatoio_interno
                 self.serbatoi_ore[risorsa] = 0.0
+                
+                # Consumiamo fisicamente le ore del terzista!
+                categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
+                if hasattr(self, "serbatoi_noli_correnti"):
+                    residuo_nolo = self.serbatoi_noli_correnti.get(categoria_mercato, 0.0)
+                    self.serbatoi_noli_correnti[categoria_mercato] = max(0.0, residuo_nolo - quota_externa)
+                
+                # Registriamo l'uso per le statistiche della dashboard
                 self.registro_extra_anno[risorsa] += quota_externa
 
         self._allinea_fallback_singoli()

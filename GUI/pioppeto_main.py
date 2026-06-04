@@ -2,7 +2,7 @@
 # Modulo Finestra principale (Dashboard) del simulatore di pioppicoltura.
 import os
 from PySide6.QtWidgets import QMainWindow, QPushButton, QWidget, QGraphicsDropShadowEffect, QMessageBox, QApplication, QProgressDialog
-from PySide6.QtGui import QColor
+from PySide6.QtGui import QColor, QGuiApplication
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from GUI.utils import mostra_messaggio_stilizzato
@@ -45,13 +45,27 @@ class PioppetoMain(QMainWindow):
 
         self.ditta_attiva.operai_grado_A = 4         
         self.ditta_attiva.operai_grado_B = 2         
+        
         self.ditta_attiva.trattori_alta_potenza = 1
-        self.ditta_attiva.trattori_media_potenza = 2 
+        self.ditta_attiva.trattori_media_potenza = 3 
         self.ditta_attiva.piattaforme_aeree_semoventi = 1
+        
         self.ditta_attiva.harvester_abbattitori = 1
         self.ditta_attiva.forwarder_caricatori = 1
-        self.ditta_attiva.kit_motoseghe_professionali = 2
-        self.ditta_attiva.coefficiente_iufro = 0.80
+        
+        self.ditta_attiva.kit_motoseghe_professionali = 4
+        self.ditta_attiva.coefficiente_iufro = 0.80 
+
+        # Tetti massimi al ricorso del mercato (Noli stagionali)
+        self.ditta_attiva.limiti_noli_stagionali = {
+            "personale_spec": 6,   
+            "personale_comune": 15, 
+            "harvester": 1,        
+            "forwarder": 1,
+            "trattori_alta": 1,
+            "trattori_media": 4,
+            "piattaforme": 2
+        }
         
         
         
@@ -66,24 +80,50 @@ class PioppetoMain(QMainWindow):
         self.parametri_condivisi.anni_durata_target = 10
 
         configurazione_lotti_default = [
-                {"id": "LTI-001", "clone": "I-214",   "dest": "OPERA", "eta": 9, "superficie": 5.0, "idrico": 0.0},
-                {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "eta": 8, "superficie": 5.0, "idrico": -0.2},
-                {"id": "LTI-003", "clone": "Velasco", "dest": "OPERA", "eta": 7, "superficie": 5.0, "idrico": 0.1},
-                {"id": "LTI-004", "clone": "I-214", "dest": "OPERA", "eta": 6, "superficie": 5.0, "idrico": 0.0},
-                {"id": "LTI-005", "clone": "I-214",   "dest": "OPERA", "eta": 5, "superficie": 5.0, "idrico": 0.2},
-                {"id": "LTI-006", "clone": "Neva",    "dest": "OPERA", "eta": 4, "superficie": 5.0, "idrico": -0.1},
-                {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "eta": 3, "superficie": 5.0, "idrico": 0.0},
-                {"id": "LTI-008", "clone": "I-214", "dest": "OPERA", "eta": 2, "superficie": 5.0, "idrico": -0.2},
-                {"id": "LTI-009", "clone": "I-214",   "dest": "OPERA", "eta": 1, "superficie": 5.0, "idrico": 0.1},
-                {"id": "LTI-010", "clone": "Neva",    "dest": "OPERA", "eta": 0, "superficie": 5.0, "idrico": 0.0},
-    
-                {"id": "LTI-011", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 4, "superficie": 5.0, "idrico": 0.2},
-                {"id": "LTI-012", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 3, "superficie": 5.0, "idrico": 0.0},
-                {"id": "LTI-013", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 2, "superficie": 5.0, "idrico": 0.3},
-                {"id": "LTI-014", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 1, "superficie": 5.0, "idrico": 0.0},
-                {"id": "LTI-015", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 0, "superficie": 5.0, "idrico": 0.1}
-            ]
+            # --- FILIERA OPERA (Ciclo 10 anni) - 20 Lotti ---
+            # Taglio Imminente (Maturano l'anno prossimo)
+            {"id": "LTI-001", "clone": "I-214",   "dest": "OPERA", "eta": 9, "superficie": 13.5, "idrico": 0.0},
+            {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "eta": 9, "superficie": 12.0, "idrico": 0.1},
+            
+            # Fase Tardo Mantenimento
+            {"id": "LTI-003", "clone": "Velasco", "dest": "OPERA", "eta": 8, "superficie": 14.0, "idrico": 0.2},
+            {"id": "LTI-004", "clone": "I-214",   "dest": "OPERA", "eta": 8, "superficie": 13.0, "idrico": -0.1},
+            {"id": "LTI-005", "clone": "Neva",    "dest": "OPERA", "eta": 7, "superficie": 12.5, "idrico": 0.0},
+            {"id": "LTI-006", "clone": "I-214",   "dest": "OPERA", "eta": 7, "superficie": 13.5, "idrico": -0.2},
+            {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "eta": 6, "superficie": 13.0, "idrico": 0.0},
+            {"id": "LTI-008", "clone": "I-214",   "dest": "OPERA", "eta": 6, "superficie": 12.5, "idrico": 0.1},
+            {"id": "LTI-009", "clone": "Neva",    "dest": "OPERA", "eta": 5, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-010", "clone": "I-214",   "dest": "OPERA", "eta": 5, "superficie": 12.0, "idrico": 0.0},
+            
+            # Fase Giovane (Potature in quota)
+            {"id": "LTI-011", "clone": "Velasco", "dest": "OPERA", "eta": 4, "superficie": 13.5, "idrico": 0.2},
+            {"id": "LTI-012", "clone": "Neva",    "dest": "OPERA", "eta": 4, "superficie": 13.0, "idrico": -0.1},
+            {"id": "LTI-013", "clone": "I-214",   "dest": "OPERA", "eta": 3, "superficie": 12.0, "idrico": 0.0},
+            {"id": "LTI-014", "clone": "Velasco", "dest": "OPERA", "eta": 3, "superficie": 14.0, "idrico": -0.1},
+            {"id": "LTI-015", "clone": "I-214",   "dest": "OPERA", "eta": 2, "superficie": 13.5, "idrico": 0.1},
+            {"id": "LTI-016", "clone": "Neva",    "dest": "OPERA", "eta": 2, "superficie": 12.5, "idrico": 0.0},
+            
+            # Nuovi Impianti (Lavorazioni a terra)
+            {"id": "LTI-017", "clone": "I-214",   "dest": "OPERA", "eta": 1, "superficie": 14.0, "idrico": -0.2},
+            {"id": "LTI-018", "clone": "Velasco", "dest": "OPERA", "eta": 1, "superficie": 13.0, "idrico": 0.0},
+            {"id": "LTI-019", "clone": "I-214",   "dest": "OPERA", "eta": 0, "superficie": 12.5, "idrico": 0.1},
+            {"id": "LTI-020", "clone": "Neva",    "dest": "OPERA", "eta": 0, "superficie": 13.5, "idrico": 0.0},
+
+            # --- FILIERA INDUSTRIA (Ciclo 5 anni) - 10 Lotti ---
+            {"id": "LTI-021", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 4, "superficie": 15.0, "idrico": 0.1},
+            {"id": "LTI-022", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 4, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-023", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 3, "superficie": 16.0, "idrico": -0.1},
+            {"id": "LTI-024", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 3, "superficie": 14.0, "idrico": 0.2},
+            {"id": "LTI-025", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 2, "superficie": 15.5, "idrico": 0.0},
+            {"id": "LTI-026", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 2, "superficie": 15.0, "idrico": -0.2},
+            {"id": "LTI-027", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 1, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-028", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 1, "superficie": 16.5, "idrico": 0.1},
+            {"id": "LTI-029", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 0, "superficie": 15.0, "idrico": -0.1},
+            {"id": "LTI-030", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 0, "superficie": 14.0, "idrico": 0.2}
+        ]
         
+        
+        # Inserimento dei lotti di default all'interno della struttura operativa con la creazione dei dati dinamici dei lotti già avanzati
         self.parametri_condivisi.collezione_lotti = []
         for conf in configurazione_lotti_default:
             lotto = Lotto(id_lotto=conf["id"], superficie=conf["superficie"])
@@ -98,7 +138,8 @@ class PioppetoMain(QMainWindow):
             lotto.inizializza_nuovo_ciclo() 
             
             if lotto.eta > 0:
-                lotto.dati_correnti = self.motore_condiviso.simula_accrescimento_lotto(lotto, lotto.eta)
+                profilo = self.motore_condiviso.dati_cloni[lotto.clone_assegnato]
+                lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 lotto.diametro_medio_fusto = lotto.dati_correnti["dbh_reale_cm"]
                 lotto.altezza_media_piante = lotto.dati_correnti["altezza_m"]
                 lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
@@ -139,6 +180,24 @@ class PioppetoMain(QMainWindow):
             self.label_titolo.setGraphicsEffect(ombra)
 
         self.aggiorna_stato_interfaccia()
+        self._centra_finestra()
+        
+    def _centra_finestra(self):
+        """Centra la finestra principale esattamente in mezzo allo schermo."""
+        # Forza Qt a calcolare le dimensioni reali della finestra
+        self.adjustSize() 
+        
+        # Ottiene la risoluzione e lo spazio disponibile dello schermo principale
+        schermo = QGuiApplication.primaryScreen().availableGeometry()
+        
+        # Ottiene le dimensioni e la posizione attuali della nostra finestra
+        geometria_finestra = self.frameGeometry()
+        
+        # Sposta il centro del "rettangolo" della finestra al centro del "rettangolo" dello schermo
+        geometria_finestra.moveCenter(schermo.center())
+        
+        # Muove fisicamente la finestra verso le nuove coordinate calcolate (in alto a sinistra)
+        self.move(geometria_finestra.topLeft())
 
     def aggiorna_stato_interfaccia(self):
         ditta_pronta = (self.ditta_attiva.operai_grado_A + self.ditta_attiva.operai_grado_B) > 0
@@ -205,7 +264,8 @@ class PioppetoMain(QMainWindow):
             lotto.inizializza_nuovo_ciclo() 
             
             if lotto.eta > 0:
-                lotto.dati_correnti = self.motore_condiviso.simula_accrescimento_lotto(lotto, lotto.eta)
+                profilo = self.motore_condiviso.dati_cloni[lotto.clone_assegnato]
+                lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 lotto.diametro_medio_fusto = lotto.dati_correnti["dbh_reale_cm"]
                 lotto.altezza_media_piante = lotto.dati_correnti["altezza_m"]
                 lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
@@ -314,7 +374,7 @@ class PioppetoMain(QMainWindow):
         print(f" -> Numero totale di passi stagionali registrati nella storia: {len(dizionario_storia)}")
 
         # =========================================================================
-        # BLOCCO DI ESPORTAZIONE IN FILE DETTAGLIATO "storia.json" (PW15)
+        # BLOCCO DI ESPORTAZIONE IN FILE DETTAGLIATO "storia.json" 
         # =========================================================================
         try:
             percorso_esportazione = os.path.join(os.path.dirname(__file__), "storia.json")
@@ -326,28 +386,28 @@ class PioppetoMain(QMainWindow):
             print(f"[EXPORT ERRORE] Impossibile scrivere il file storia.json: {str(e_json)}")
         # =========================================================================
 
-        if len(dizionario_storia) > 0:
-            chiavi_ordinate = sorted(list(dizionario_storia.keys()))
-            print(f" -> Prime 4 chiavi temporali salvate: {chiavi_ordinate[:4]}")
-            print(f" -> Ultime 4 chiavi temporali salvate: {chiavi_ordinate[-4:]}")
+        # if len(dizionario_storia) > 0:
+        #     chiavi_ordinate = sorted(list(dizionario_storia.keys()))
+        #     print(f" -> Prime 4 chiavi temporali salvate: {chiavi_ordinate[:4]}")
+        #     print(f" -> Ultime 4 chiavi temporali salvate: {chiavi_ordinate[-4:]}")
             
-            chiave_campione = chiavi_ordinate[-1]
-            print(f"\n --- ANALISI CAMPIONE STRUTTURA DATI INTERNA (Chiave: '{chiave_campione}') ---")
-            istanza_campione = dizionario_storia[chiave_campione]
-            print(f"   • Sotto-chiavi di quadro_stato: {list(istanza_campione.keys())}")
+        #     chiave_campione = chiavi_ordinate[-1]
+        #     print(f"\n --- ANALISI CAMPIONE STRUTTURA DATI INTERNA (Chiave: '{chiave_campione}') ---")
+        #     istanza_campione = dizionario_storia[chiave_campione]
+        #     print(f"   • Sotto-chiavi di quadro_stato: {list(istanza_campione.keys())}")
             
-            prod_cumulata = istanza_campione.get("produzione_cumulata", {})
-            print(f"   • Production Cumulata rilevata nel record: {prod_cumulata}")
+        #     prod_cumulata = istanza_campione.get("produzione_cumulata", {})
+        #     print(f"   • Production Cumulata rilevata nel record: {prod_cumulata}")
             
-            stato_lotti = istanza_campione.get("stato_lotti", {})
-            print(f"   • Numero di lotti tracciati in questa istantanea: {len(stato_lotti)}")
-            if len(stato_lotti) > 0:
-                primo_id_lotto = list(stato_lotti.keys())[0]
-                print(f"     -> Dati biometrici salvati per lotto {primo_id_lotto}: {stato_lotti[primo_id_lotto]}")
-        else:
-            print("[ALLARME] Il dizionario 'storico_stagionale' è vuoto! La simulazione non ha registrato passi.")
+        #     stato_lotti = istanza_campione.get("stato_lotti", {})
+        #     print(f"   • Numero di lotti tracciati in questa istantanea: {len(stato_lotti)}")
+        #     if len(stato_lotti) > 0:
+        #         primo_id_lotto = list(stato_lotti.keys())[0]
+        #         print(f"     -> Dati biometrici salvati per lotto {primo_id_lotto}: {stato_lotti[primo_id_lotto]}")
+        # else:
+        #     print("[ALLARME] Il dizionario 'storico_stagionale' è vuoto! La simulazione non ha registrato passi.")
 
-        print("="*80 + "\n")
+        # print("="*80 + "\n")
 
         try:
             from GUI.form_valutazioni import FormValutazioni
