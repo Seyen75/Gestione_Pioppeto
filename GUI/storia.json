@@ -2048,18 +2048,18 @@
                     "lotto_id": "LTI-001",
                     "volume_raccolto_m3": 3300.54,
                     "rese": {
-                        "opera_m3": 2523.1,
-                        "cartiera_t": 699.87,
-                        "truciolato_t": 677.44
+                        "opera_m3": 2675.6,
+                        "cartiera_t": 669.58,
+                        "truciolato_t": 582.68
                     }
                 },
                 {
                     "lotto_id": "LTI-002",
                     "volume_raccolto_m3": 2961.1,
                     "rese": {
-                        "opera_m3": 2502.38,
-                        "cartiera_t": 663.51,
-                        "truciolato_t": 452.18
+                        "opera_m3": 2321.39,
+                        "cartiera_t": 717.63,
+                        "truciolato_t": 557.33
                     }
                 },
                 {
@@ -2067,8 +2067,8 @@
                     "volume_raccolto_m3": 1863.27,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1779.66,
-                        "truciolato_t": 236.43
+                        "cartiera_t": 1695.22,
+                        "truciolato_t": 320.87
                     }
                 },
                 {
@@ -2076,8 +2076,8 @@
                     "volume_raccolto_m3": 876.68,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 808.79,
-                        "truciolato_t": 139.82
+                        "cartiera_t": 817.78,
+                        "truciolato_t": 130.83
                     }
                 }
             ],
@@ -2437,9 +2437,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 5025.48,
-            "cartiera_t": 3951.83,
-            "truciolato_t": 1505.8700000000001
+            "opera_m3": 4996.99,
+            "cartiera_t": 3900.21,
+            "truciolato_t": 1591.71
         }
     },
     "A2_Primavera": {
@@ -3145,9 +3145,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 5025.48,
-            "cartiera_t": 3951.83,
-            "truciolato_t": 1505.8700000000001
+            "opera_m3": 4996.99,
+            "cartiera_t": 3900.21,
+            "truciolato_t": 1591.71
         }
     },
     "A2_Estate": {
@@ -3781,9 +3781,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 5025.48,
-            "cartiera_t": 3951.83,
-            "truciolato_t": 1505.8700000000001
+            "opera_m3": 4996.99,
+            "cartiera_t": 3900.21,
+            "truciolato_t": 1591.71
         }
     },
     "A2_Autunno": {
@@ -4327,9 +4327,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 5025.48,
-            "cartiera_t": 3951.83,
-            "truciolato_t": 1505.8700000000001
+            "opera_m3": 4996.99,
+            "cartiera_t": 3900.21,
+            "truciolato_t": 1591.71
         }
     },
     "Anno_2_RisorseExtra": {
@@ -4491,18 +4491,18 @@
                     "lotto_id": "LTI-003",
                     "volume_raccolto_m3": 4122.9,
                     "rese": {
-                        "opera_m3": 3339.93,
-                        "cartiera_t": 764.84,
-                        "truciolato_t": 876.5
+                        "opera_m3": 3085.96,
+                        "cartiera_t": 1179.68,
+                        "truciolato_t": 680.06
                     }
                 },
                 {
                     "lotto_id": "LTI-004",
                     "volume_raccolto_m3": 3028.9,
                     "rese": {
-                        "opera_m3": 2472.43,
-                        "cartiera_t": 588.73,
-                        "truciolato_t": 547.08
+                        "opera_m3": 2536.92,
+                        "cartiera_t": 689.17,
+                        "truciolato_t": 393.76
                     }
                 },
                 {
@@ -4510,8 +4510,8 @@
                     "volume_raccolto_m3": 1522.9,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1501.71,
-                        "truciolato_t": 167.1
+                        "cartiera_t": 1379.88,
+                        "truciolato_t": 288.93
                     }
                 },
                 {
@@ -4519,8 +4519,8 @@
                     "volume_raccolto_m3": 1765.93,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1738.99,
-                        "truciolato_t": 171.81
+                        "cartiera_t": 1669.39,
+                        "truciolato_t": 241.4
                     }
                 }
             ],
@@ -4880,9 +4880,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 10837.84,
-            "cartiera_t": 8546.1,
-            "truciolato_t": 3268.3599999999997
+            "opera_m3": 10619.869999999999,
+            "cartiera_t": 8818.33,
+            "truciolato_t": 3195.8599999999997
         }
     },
     "A3_Primavera": {
@@ -5588,9 +5588,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 10837.84,
-            "cartiera_t": 8546.1,
-            "truciolato_t": 3268.3599999999997
+            "opera_m3": 10619.869999999999,
+            "cartiera_t": 8818.33,
+            "truciolato_t": 3195.8599999999997
         }
     },
     "A3_Estate": {
@@ -6224,9 +6224,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 10837.84,
-            "cartiera_t": 8546.1,
-            "truciolato_t": 3268.3599999999997
+            "opera_m3": 10619.869999999999,
+            "cartiera_t": 8818.33,
+            "truciolato_t": 3195.8599999999997
         }
     },
     "A3_Autunno": {
@@ -6770,9 +6770,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 10837.84,
-            "cartiera_t": 8546.1,
-            "truciolato_t": 3268.3599999999997
+            "opera_m3": 10619.869999999999,
+            "cartiera_t": 8818.33,
+            "truciolato_t": 3195.8599999999997
         }
     },
     "Anno_3_RisorseExtra": {
@@ -6934,18 +6934,18 @@
                     "lotto_id": "LTI-005",
                     "volume_raccolto_m3": 2913.64,
                     "rese": {
-                        "opera_m3": 2361.86,
-                        "cartiera_t": 519.73,
-                        "truciolato_t": 666.15
+                        "opera_m3": 2503.84,
+                        "cartiera_t": 480.61,
+                        "truciolato_t": 580.33
                     }
                 },
                 {
                     "lotto_id": "LTI-006",
                     "volume_raccolto_m3": 2994.06,
                     "rese": {
-                        "opera_m3": 2272.73,
-                        "cartiera_t": 557.52,
-                        "truciolato_t": 704.31
+                        "opera_m3": 2250.21,
+                        "cartiera_t": 675.5,
+                        "truciolato_t": 604.8
                     }
                 },
                 {
@@ -6953,8 +6953,8 @@
                     "volume_raccolto_m3": 914.71,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 830.06,
-                        "truciolato_t": 159.69
+                        "cartiera_t": 845.51,
+                        "truciolato_t": 144.24
                     }
                 },
                 {
@@ -6962,8 +6962,8 @@
                     "volume_raccolto_m3": 1351.71,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1298.26,
-                        "truciolato_t": 182.15
+                        "cartiera_t": 1271.0,
+                        "truciolato_t": 209.4
                     }
                 }
             ],
@@ -7323,9 +7323,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 15472.43,
-            "cartiera_t": 11751.67,
-            "truciolato_t": 4980.659999999999
+            "opera_m3": 15373.919999999998,
+            "cartiera_t": 12090.95,
+            "truciolato_t": 4734.629999999999
         }
     },
     "A4_Primavera": {
@@ -8031,9 +8031,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 15472.43,
-            "cartiera_t": 11751.67,
-            "truciolato_t": 4980.659999999999
+            "opera_m3": 15373.919999999998,
+            "cartiera_t": 12090.95,
+            "truciolato_t": 4734.629999999999
         }
     },
     "A4_Estate": {
@@ -8667,9 +8667,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 15472.43,
-            "cartiera_t": 11751.67,
-            "truciolato_t": 4980.659999999999
+            "opera_m3": 15373.919999999998,
+            "cartiera_t": 12090.95,
+            "truciolato_t": 4734.629999999999
         }
     },
     "A4_Autunno": {
@@ -9213,9 +9213,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 15472.43,
-            "cartiera_t": 11751.67,
-            "truciolato_t": 4980.659999999999
+            "opera_m3": 15373.919999999998,
+            "cartiera_t": 12090.95,
+            "truciolato_t": 4734.629999999999
         }
     },
     "Anno_4_RisorseExtra": {
@@ -9377,18 +9377,18 @@
                     "lotto_id": "LTI-007",
                     "volume_raccolto_m3": 3547.24,
                     "rese": {
-                        "opera_m3": 2701.0,
-                        "cartiera_t": 654.78,
-                        "truciolato_t": 907.28
+                        "opera_m3": 2935.76,
+                        "cartiera_t": 741.1,
+                        "truciolato_t": 619.06
                     }
                 },
                 {
                     "lotto_id": "LTI-008",
                     "volume_raccolto_m3": 2951.14,
                     "rese": {
-                        "opera_m3": 2356.07,
-                        "cartiera_t": 608.34,
-                        "truciolato_t": 540.83
+                        "opera_m3": 2262.32,
+                        "cartiera_t": 622.11,
+                        "truciolato_t": 603.93
                     }
                 },
                 {
@@ -9396,8 +9396,8 @@
                     "volume_raccolto_m3": 1589.62,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1528.84,
-                        "truciolato_t": 192.59
+                        "cartiera_t": 1487.53,
+                        "truciolato_t": 233.89
                     }
                 },
                 {
@@ -9405,8 +9405,8 @@
                     "volume_raccolto_m3": 930.64,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 877.7,
-                        "truciolato_t": 129.0
+                        "cartiera_t": 904.67,
+                        "truciolato_t": 102.03
                     }
                 }
             ],
@@ -9766,9 +9766,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 20529.5,
-            "cartiera_t": 15421.330000000002,
-            "truciolato_t": 6750.359999999999
+            "opera_m3": 20572.0,
+            "cartiera_t": 15846.360000000002,
+            "truciolato_t": 6293.539999999999
         }
     },
     "A5_Primavera": {
@@ -10474,9 +10474,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 20529.5,
-            "cartiera_t": 15421.330000000002,
-            "truciolato_t": 6750.359999999999
+            "opera_m3": 20572.0,
+            "cartiera_t": 15846.360000000002,
+            "truciolato_t": 6293.539999999999
         }
     },
     "A5_Estate": {
@@ -11110,9 +11110,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 20529.5,
-            "cartiera_t": 15421.330000000002,
-            "truciolato_t": 6750.359999999999
+            "opera_m3": 20572.0,
+            "cartiera_t": 15846.360000000002,
+            "truciolato_t": 6293.539999999999
         }
     },
     "A5_Autunno": {
@@ -11656,9 +11656,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 20529.5,
-            "cartiera_t": 15421.330000000002,
-            "truciolato_t": 6750.359999999999
+            "opera_m3": 20572.0,
+            "cartiera_t": 15846.360000000002,
+            "truciolato_t": 6293.539999999999
         }
     },
     "Anno_5_RisorseExtra": {
@@ -11820,18 +11820,18 @@
                     "lotto_id": "LTI-009",
                     "volume_raccolto_m3": 3278.63,
                     "rese": {
-                        "opera_m3": 2633.13,
-                        "cartiera_t": 720.66,
-                        "truciolato_t": 635.44
+                        "opera_m3": 2600.41,
+                        "cartiera_t": 702.27,
+                        "truciolato_t": 682.61
                     }
                 },
                 {
                     "lotto_id": "LTI-010",
                     "volume_raccolto_m3": 2744.65,
                     "rese": {
-                        "opera_m3": 2200.1,
-                        "cartiera_t": 698.37,
-                        "truciolato_t": 363.37
+                        "opera_m3": 2005.3,
+                        "cartiera_t": 707.44,
+                        "truciolato_t": 514.04
                     }
                 },
                 {
@@ -11839,8 +11839,8 @@
                     "volume_raccolto_m3": 1400.3,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1394.69,
-                        "truciolato_t": 139.78
+                        "cartiera_t": 1399.57,
+                        "truciolato_t": 134.89
                     }
                 },
                 {
@@ -11848,8 +11848,8 @@
                     "volume_raccolto_m3": 1731.45,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1676.19,
-                        "truciolato_t": 197.31
+                        "cartiera_t": 1543.77,
+                        "truciolato_t": 329.72
                     }
                 }
             ],
@@ -12209,9 +12209,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 25362.73,
-            "cartiera_t": 19911.239999999998,
-            "truciolato_t": 8086.259999999999
+            "opera_m3": 25177.71,
+            "cartiera_t": 20199.41,
+            "truciolato_t": 7954.799999999999
         }
     },
     "A6_Primavera": {
@@ -12917,9 +12917,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 25362.73,
-            "cartiera_t": 19911.239999999998,
-            "truciolato_t": 8086.259999999999
+            "opera_m3": 25177.71,
+            "cartiera_t": 20199.41,
+            "truciolato_t": 7954.799999999999
         }
     },
     "A6_Estate": {
@@ -13553,9 +13553,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 25362.73,
-            "cartiera_t": 19911.239999999998,
-            "truciolato_t": 8086.259999999999
+            "opera_m3": 25177.71,
+            "cartiera_t": 20199.41,
+            "truciolato_t": 7954.799999999999
         }
     },
     "A6_Autunno": {
@@ -14099,9 +14099,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 25362.73,
-            "cartiera_t": 19911.239999999998,
-            "truciolato_t": 8086.259999999999
+            "opera_m3": 25177.71,
+            "cartiera_t": 20199.41,
+            "truciolato_t": 7954.799999999999
         }
     },
     "Anno_6_RisorseExtra": {
@@ -14263,18 +14263,18 @@
                     "lotto_id": "LTI-011",
                     "volume_raccolto_m3": 3738.8,
                     "rese": {
-                        "opera_m3": 3045.86,
-                        "cartiera_t": 843.51,
-                        "truciolato_t": 630.22
+                        "opera_m3": 3150.67,
+                        "cartiera_t": 841.26,
+                        "truciolato_t": 542.33
                     }
                 },
                 {
                     "lotto_id": "LTI-012",
                     "volume_raccolto_m3": 2817.99,
                     "rese": {
-                        "opera_m3": 2077.05,
-                        "cartiera_t": 730.01,
-                        "truciolato_t": 600.1
+                        "opera_m3": 2270.23,
+                        "cartiera_t": 514.22,
+                        "truciolato_t": 645.89
                     }
                 },
                 {
@@ -14282,8 +14282,8 @@
                     "volume_raccolto_m3": 1805.38,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1707.64,
-                        "truciolato_t": 245.8
+                        "cartiera_t": 1762.92,
+                        "truciolato_t": 190.52
                     }
                 },
                 {
@@ -14291,8 +14291,8 @@
                     "volume_raccolto_m3": 849.61,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 763.02,
-                        "truciolato_t": 156.29
+                        "cartiera_t": 827.24,
+                        "truciolato_t": 92.08
                     }
                 }
             ],
@@ -14652,9 +14652,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 30485.64,
-            "cartiera_t": 23955.419999999995,
-            "truciolato_t": 9718.67
+            "opera_m3": 30598.609999999997,
+            "cartiera_t": 24145.05,
+            "truciolato_t": 9425.619999999999
         }
     },
     "A7_Primavera": {
@@ -15360,9 +15360,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 30485.64,
-            "cartiera_t": 23955.419999999995,
-            "truciolato_t": 9718.67
+            "opera_m3": 30598.609999999997,
+            "cartiera_t": 24145.05,
+            "truciolato_t": 9425.619999999999
         }
     },
     "A7_Estate": {
@@ -15996,9 +15996,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 30485.64,
-            "cartiera_t": 23955.419999999995,
-            "truciolato_t": 9718.67
+            "opera_m3": 30598.609999999997,
+            "cartiera_t": 24145.05,
+            "truciolato_t": 9425.619999999999
         }
     },
     "A7_Autunno": {
@@ -16542,9 +16542,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 30485.64,
-            "cartiera_t": 23955.419999999995,
-            "truciolato_t": 9718.67
+            "opera_m3": 30598.609999999997,
+            "cartiera_t": 24145.05,
+            "truciolato_t": 9425.619999999999
         }
     },
     "Anno_7_RisorseExtra": {
@@ -16706,18 +16706,18 @@
                     "lotto_id": "LTI-013",
                     "volume_raccolto_m3": 2678.71,
                     "rese": {
-                        "opera_m3": 1999.58,
-                        "cartiera_t": 631.2,
-                        "truciolato_t": 526.12
+                        "opera_m3": 2146.41,
+                        "cartiera_t": 484.72,
+                        "truciolato_t": 552.2
                     }
                 },
                 {
                     "lotto_id": "LTI-014",
                     "volume_raccolto_m3": 3573.39,
                     "rese": {
-                        "opera_m3": 2804.48,
-                        "cartiera_t": 742.14,
-                        "truciolato_t": 759.77
+                        "opera_m3": 3299.96,
+                        "cartiera_t": 643.3,
+                        "truciolato_t": 432.5
                     }
                 },
                 {
@@ -16725,8 +16725,8 @@
                     "volume_raccolto_m3": 1493.67,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1432.8,
-                        "truciolato_t": 203.99
+                        "cartiera_t": 1469.64,
+                        "truciolato_t": 167.15
                     }
                 },
                 {
@@ -16734,8 +16734,8 @@
                     "volume_raccolto_m3": 1731.45,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1728.37,
-                        "truciolato_t": 145.12
+                        "cartiera_t": 1627.23,
+                        "truciolato_t": 246.26
                     }
                 }
             ],
@@ -17095,9 +17095,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 35289.700000000004,
-            "cartiera_t": 28489.929999999993,
-            "truciolato_t": 11353.670000000002
+            "opera_m3": 36044.979999999996,
+            "cartiera_t": 28369.94,
+            "truciolato_t": 10823.73
         }
     },
     "A8_Primavera": {
@@ -17803,9 +17803,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 35289.700000000004,
-            "cartiera_t": 28489.929999999993,
-            "truciolato_t": 11353.670000000002
+            "opera_m3": 36044.979999999996,
+            "cartiera_t": 28369.94,
+            "truciolato_t": 10823.73
         }
     },
     "A8_Estate": {
@@ -18439,9 +18439,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 35289.700000000004,
-            "cartiera_t": 28489.929999999993,
-            "truciolato_t": 11353.670000000002
+            "opera_m3": 36044.979999999996,
+            "cartiera_t": 28369.94,
+            "truciolato_t": 10823.73
         }
     },
     "A8_Autunno": {
@@ -18985,9 +18985,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 35289.700000000004,
-            "cartiera_t": 28489.929999999993,
-            "truciolato_t": 11353.670000000002
+            "opera_m3": 36044.979999999996,
+            "cartiera_t": 28369.94,
+            "truciolato_t": 10823.73
         }
     },
     "Anno_8_RisorseExtra": {
@@ -19149,18 +19149,18 @@
                     "lotto_id": "LTI-015",
                     "volume_raccolto_m3": 3036.15,
                     "rese": {
-                        "opera_m3": 2342.07,
-                        "cartiera_t": 661.41,
-                        "truciolato_t": 587.99
+                        "opera_m3": 2357.77,
+                        "cartiera_t": 619.44,
+                        "truciolato_t": 617.09
                     }
                 },
                 {
                     "lotto_id": "LTI-016",
                     "volume_raccolto_m3": 2722.53,
                     "rese": {
-                        "opera_m3": 2082.26,
-                        "cartiera_t": 707.67,
-                        "truciolato_t": 510.16
+                        "opera_m3": 2160.26,
+                        "cartiera_t": 645.42,
+                        "truciolato_t": 503.76
                     }
                 },
                 {
@@ -19168,8 +19168,8 @@
                     "volume_raccolto_m3": 908.22,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 847.19,
-                        "truciolato_t": 135.54
+                        "cartiera_t": 889.63,
+                        "truciolato_t": 93.1
                     }
                 },
                 {
@@ -19177,8 +19177,8 @@
                     "volume_raccolto_m3": 1342.15,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1279.54,
-                        "truciolato_t": 190.39
+                        "cartiera_t": 1332.04,
+                        "truciolato_t": 137.89
                     }
                 }
             ],
@@ -19538,9 +19538,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 39714.030000000006,
-            "cartiera_t": 31985.73999999999,
-            "truciolato_t": 12777.750000000002
+            "opera_m3": 40563.009999999995,
+            "cartiera_t": 31856.469999999998,
+            "truciolato_t": 12175.57
         }
     },
     "A9_Primavera": {
@@ -20246,9 +20246,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 39714.030000000006,
-            "cartiera_t": 31985.73999999999,
-            "truciolato_t": 12777.750000000002
+            "opera_m3": 40563.009999999995,
+            "cartiera_t": 31856.469999999998,
+            "truciolato_t": 12175.57
         }
     },
     "A9_Estate": {
@@ -20882,9 +20882,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 39714.030000000006,
-            "cartiera_t": 31985.73999999999,
-            "truciolato_t": 12777.750000000002
+            "opera_m3": 40563.009999999995,
+            "cartiera_t": 31856.469999999998,
+            "truciolato_t": 12175.57
         }
     },
     "A9_Autunno": {
@@ -21428,9 +21428,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 39714.030000000006,
-            "cartiera_t": 31985.73999999999,
-            "truciolato_t": 12777.750000000002
+            "opera_m3": 40563.009999999995,
+            "cartiera_t": 31856.469999999998,
+            "truciolato_t": 12175.57
         }
     },
     "Anno_9_RisorseExtra": {
@@ -21592,18 +21592,18 @@
                     "lotto_id": "LTI-017",
                     "volume_raccolto_m3": 2700.25,
                     "rese": {
-                        "opera_m3": 2142.44,
-                        "cartiera_t": 512.65,
-                        "truciolato_t": 549.32
+                        "opera_m3": 2293.85,
+                        "cartiera_t": 489.15,
+                        "truciolato_t": 448.67
                     }
                 },
                 {
                     "lotto_id": "LTI-018",
                     "volume_raccolto_m3": 3139.19,
                     "rese": {
-                        "opera_m3": 2252.59,
-                        "cartiera_t": 777.18,
-                        "truciolato_t": 723.61
+                        "opera_m3": 2336.31,
+                        "cartiera_t": 711.52,
+                        "truciolato_t": 717.28
                     }
                 },
                 {
@@ -21611,8 +21611,8 @@
                     "volume_raccolto_m3": 1697.33,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1670.77,
-                        "truciolato_t": 167.28
+                        "cartiera_t": 1620.73,
+                        "truciolato_t": 217.33
                     }
                 },
                 {
@@ -21620,8 +21620,8 @@
                     "volume_raccolto_m3": 993.63,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 913.98,
-                        "truciolato_t": 160.87
+                        "cartiera_t": 923.73,
+                        "truciolato_t": 151.11
                     }
                 }
             ],
@@ -21981,9 +21981,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 44109.06000000001,
-            "cartiera_t": 35860.31999999999,
-            "truciolato_t": 14378.830000000004
+            "opera_m3": 45193.16999999999,
+            "cartiera_t": 35601.600000000006,
+            "truciolato_t": 13709.960000000001
         }
     },
     "A10_Primavera": {
@@ -22689,9 +22689,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 44109.06000000001,
-            "cartiera_t": 35860.31999999999,
-            "truciolato_t": 14378.830000000004
+            "opera_m3": 45193.16999999999,
+            "cartiera_t": 35601.600000000006,
+            "truciolato_t": 13709.960000000001
         }
     },
     "A10_Estate": {
@@ -23325,9 +23325,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 44109.06000000001,
-            "cartiera_t": 35860.31999999999,
-            "truciolato_t": 14378.830000000004
+            "opera_m3": 45193.16999999999,
+            "cartiera_t": 35601.600000000006,
+            "truciolato_t": 13709.960000000001
         }
     },
     "A10_Autunno": {
@@ -23871,9 +23871,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 44109.06000000001,
-            "cartiera_t": 35860.31999999999,
-            "truciolato_t": 14378.830000000004
+            "opera_m3": 45193.16999999999,
+            "cartiera_t": 35601.600000000006,
+            "truciolato_t": 13709.960000000001
         }
     },
     "Anno_10_RisorseExtra": {
@@ -24035,18 +24035,18 @@
                     "lotto_id": "LTI-019",
                     "volume_raccolto_m3": 2792.32,
                     "rese": {
-                        "opera_m3": 2222.56,
-                        "cartiera_t": 638.43,
-                        "truciolato_t": 454.41
+                        "opera_m3": 2175.23,
+                        "cartiera_t": 627.4,
+                        "truciolato_t": 504.25
                     }
                 },
                 {
                     "lotto_id": "LTI-020",
                     "volume_raccolto_m3": 2921.79,
                     "rese": {
-                        "opera_m3": 2425.77,
-                        "cartiera_t": 603.3,
-                        "truciolato_t": 535.46
+                        "opera_m3": 2491.82,
+                        "cartiera_t": 508.07,
+                        "truciolato_t": 572.57
                     }
                 },
                 {
@@ -24054,8 +24054,8 @@
                     "volume_raccolto_m3": 1400.3,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1433.92,
-                        "truciolato_t": 100.55
+                        "cartiera_t": 1410.88,
+                        "truciolato_t": 123.58
                     }
                 },
                 {
@@ -24063,8 +24063,8 @@
                     "volume_raccolto_m3": 1731.45,
                     "rese": {
                         "opera_m3": 0.0,
-                        "cartiera_t": 1608.93,
-                        "truciolato_t": 264.56
+                        "cartiera_t": 1551.14,
+                        "truciolato_t": 322.35
                     }
                 }
             ],
@@ -24424,9 +24424,9 @@
             }
         },
         "produzione_cumulata": {
-            "opera_m3": 48757.39000000001,
-            "cartiera_t": 40144.899999999994,
-            "truciolato_t": 15733.810000000003
+            "opera_m3": 49860.219999999994,
+            "cartiera_t": 39699.090000000004,
+            "truciolato_t": 15232.710000000001
         }
     }
 }

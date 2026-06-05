@@ -1,5 +1,8 @@
 import os
 import sys
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtCore import Qt
 
 # Trova il percorso assoluto della cartella che contiene QUESTO file main.py
 
@@ -17,6 +20,35 @@ from GUI.pioppeto_main import PioppetoMain
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    
+    # 2. Crea e applica una Dark Palette globale
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(20, 25, 35))          # Sfondo principale finestre (#141923)
+    palette.setColor(QPalette.WindowText, Qt.white)                # Testo principale
+    palette.setColor(QPalette.Base, QColor(35, 40, 50))            # Sfondo di tabelle, menu a tendina (ComboBox) e campi testo
+    palette.setColor(QPalette.AlternateBase, QColor(45, 50, 60))   # Colore righe alternate nelle tabelle
+    palette.setColor(QPalette.ToolTipBase, Qt.white)
+    palette.setColor(QPalette.ToolTipText, Qt.black)
+    palette.setColor(QPalette.Text, Qt.white)                      # Testo dentro le tabelle/combobox
+    palette.setColor(QPalette.Button, QColor(45, 50, 60))          # Sfondo bottoni generici
+    palette.setColor(QPalette.ButtonText, Qt.white)                # Testo bottoni
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Highlight, QColor(183, 28, 28))      # Colore selezione (es. un rosso scuro)
+    palette.setColor(QPalette.HighlightedText, Qt.white)           # Testo dell'elemento selezionato
+    
+    app.setPalette(palette)
+    
+    # 3. (Opzionale ma consigliato) Forza via CSS le aberrazioni specifiche di Windows sui menu a tendina
+    app.setStyleSheet("""
+        QComboBox QAbstractItemView {
+            background-color: #232832;
+            color: white;
+            selection-background-color: #b71c1c;
+        }
+    """)
+    
+
     finestra = PioppetoMain()
     finestra.show()
     sys.exit(app.exec())
