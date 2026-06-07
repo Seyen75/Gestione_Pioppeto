@@ -74,7 +74,9 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QLabel#label_titolo {\n"
-"    font-family: \"Georgia\", \"Times New Roman\", serif; /* Un font elegante con le grazie come nella bozza */\n"
+"    font-family: \"Georgia\", \"Times New Roman\", serif;\n"
+"    font-size: 32pt;        /* Imposta la dimensione da titolo */\n"
+"    font-weight: bold;      /* Rende il testo in grassetto */\n"
 "    background: transparent;\n"
 "    padding: 10px;\n"
 "}\n"
@@ -82,9 +84,9 @@ class Ui_MainWindow(object):
 "/* --- STATO DISABILITATO PER TUTTI I PULSANTI --- */\n"
 "QPushButton:disabled {\n"
 "    background-color: rgba(40, 50, 60, 0.4);   /* Grigio-blu molto scuro e quasi trasparente */\n"
-"    color: rgba(255, 255, 255, 0.3);          /* Testo bianco fortemente opacizzato (spento) */\n"
-"    border: 1px solid rgba(255, 255, 25"
-                        "5, 0.1);/* Bordino quasi invisibile */\n"
+"    color: rgba(255, 255, 255, 0.3);          /* Testo bi"
+                        "anco fortemente opacizzato (spento) */\n"
+"    border: 1px solid rgba(255, 255, 255, 0.1);/* Bordino quasi invisibile */\n"
 "}\n"
 "\n"
 "/* IMPORTANTE: Disattiviamo l'effetto hover quando il tasto \u00e8 bloccato */\n"
@@ -107,7 +109,7 @@ class Ui_MainWindow(object):
         self.btn_esci.setMaximumSize(QSize(120, 40))
         self.label_titolo = QLabel(self.centralwidget)
         self.label_titolo.setObjectName(u"label_titolo")
-        self.label_titolo.setGeometry(QRect(37, 45, 931, 91))
+        self.label_titolo.setGeometry(QRect(40, 10, 951, 91))
         self.label_titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layoutWidget = QWidget(self.centralwidget)
         self.layoutWidget.setObjectName(u"layoutWidget")
@@ -115,15 +117,6 @@ class Ui_MainWindow(object):
         self.gridLayout = QGridLayout(self.layoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.btn_reset = QPushButton(self.layoutWidget)
-        self.btn_reset.setObjectName(u"btn_reset")
-        self.btn_reset.setEnabled(True)
-        icon = QIcon(QIcon.fromTheme(u"document-revert"))
-        self.btn_reset.setIcon(icon)
-        self.btn_reset.setIconSize(QSize(32, 32))
-
-        self.gridLayout.addWidget(self.btn_reset, 4, 3, 1, 1)
-
         self.label = QLabel(self.layoutWidget)
         self.label.setObjectName(u"label")
         self.label.setTextFormat(Qt.TextFormat.RichText)
@@ -132,13 +125,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
 
-        self.label_3 = QLabel(self.layoutWidget)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
-        self.label_3.setWordWrap(True)
-
-        self.gridLayout.addWidget(self.label_3, 3, 3, 1, 1)
-
         self.btn_gestione_lotti = QPushButton(self.layoutWidget)
         self.btn_gestione_lotti.setObjectName(u"btn_gestione_lotti")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -146,8 +132,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.btn_gestione_lotti.sizePolicy().hasHeightForWidth())
         self.btn_gestione_lotti.setSizePolicy(sizePolicy)
-        icon1 = QIcon(QIcon.fromTheme(u"preferences-desktop-locale"))
-        self.btn_gestione_lotti.setIcon(icon1)
+        icon = QIcon(QIcon.fromTheme(u"text-x-generic"))
+        self.btn_gestione_lotti.setIcon(icon)
         self.btn_gestione_lotti.setIconSize(QSize(32, 32))
 
         self.gridLayout.addWidget(self.btn_gestione_lotti, 0, 1, 1, 1)
@@ -159,13 +145,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_5, 5, 1, 1, 1)
 
-        self.label_6 = QLabel(self.layoutWidget)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignTop)
-        self.label_6.setWordWrap(True)
-
-        self.gridLayout.addWidget(self.label_6, 5, 3, 1, 1)
-
         self.label_4 = QLabel(self.layoutWidget)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
@@ -176,8 +155,8 @@ class Ui_MainWindow(object):
         self.btn_valutazioni = QPushButton(self.layoutWidget)
         self.btn_valutazioni.setObjectName(u"btn_valutazioni")
         self.btn_valutazioni.setEnabled(False)
-        icon2 = QIcon(QIcon.fromTheme(u"document-print"))
-        self.btn_valutazioni.setIcon(icon2)
+        icon1 = QIcon(QIcon.fromTheme(u"document-print"))
+        self.btn_valutazioni.setIcon(icon1)
         self.btn_valutazioni.setIconSize(QSize(32, 32))
 
         self.gridLayout.addWidget(self.btn_valutazioni, 4, 1, 1, 1)
@@ -194,8 +173,8 @@ class Ui_MainWindow(object):
         self.btn_gestione_ditta.setObjectName(u"btn_gestione_ditta")
         sizePolicy.setHeightForWidth(self.btn_gestione_ditta.sizePolicy().hasHeightForWidth())
         self.btn_gestione_ditta.setSizePolicy(sizePolicy)
-        icon3 = QIcon(QIcon.fromTheme(u"contact-new"))
-        self.btn_gestione_ditta.setIcon(icon3)
+        icon2 = QIcon(QIcon.fromTheme(u"contact-new"))
+        self.btn_gestione_ditta.setIcon(icon2)
         self.btn_gestione_ditta.setIconSize(QSize(32, 32))
 
         self.gridLayout.addWidget(self.btn_gestione_ditta, 0, 0, 1, 1)
@@ -203,7 +182,7 @@ class Ui_MainWindow(object):
         self.btn_monitoraggio = QPushButton(self.layoutWidget)
         self.btn_monitoraggio.setObjectName(u"btn_monitoraggio")
         self.btn_monitoraggio.setEnabled(False)
-        self.btn_monitoraggio.setIcon(icon2)
+        self.btn_monitoraggio.setIcon(icon1)
         self.btn_monitoraggio.setIconSize(QSize(32, 32))
 
         self.gridLayout.addWidget(self.btn_monitoraggio, 4, 0, 1, 1)
@@ -211,13 +190,38 @@ class Ui_MainWindow(object):
         self.btn_simulazione = QPushButton(self.layoutWidget)
         self.btn_simulazione.setObjectName(u"btn_simulazione")
         self.btn_simulazione.setEnabled(False)
-        icon4 = QIcon(QIcon.fromTheme(u"media-playback-start"))
-        self.btn_simulazione.setIcon(icon4)
+        icon3 = QIcon(QIcon.fromTheme(u"media-playback-start"))
+        self.btn_simulazione.setIcon(icon3)
         self.btn_simulazione.setIconSize(QSize(32, 32))
 
-        self.gridLayout.addWidget(self.btn_simulazione, 0, 3, 1, 1)
+        self.gridLayout.addWidget(self.btn_simulazione, 0, 2, 1, 1)
+
+        self.label_3 = QLabel(self.layoutWidget)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
+        self.label_3.setWordWrap(True)
+
+        self.gridLayout.addWidget(self.label_3, 3, 2, 1, 1)
+
+        self.btn_reset = QPushButton(self.layoutWidget)
+        self.btn_reset.setObjectName(u"btn_reset")
+        self.btn_reset.setEnabled(True)
+        icon4 = QIcon(QIcon.fromTheme(u"document-revert"))
+        self.btn_reset.setIcon(icon4)
+        self.btn_reset.setIconSize(QSize(32, 32))
+
+        self.gridLayout.addWidget(self.btn_reset, 4, 2, 1, 1)
+
+        self.label_6 = QLabel(self.layoutWidget)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignTop)
+        self.label_6.setWordWrap(True)
+
+        self.gridLayout.addWidget(self.label_6, 5, 2, 1, 1)
 
         self.gridLayout.setColumnStretch(0, 1)
+        self.gridLayout.setColumnStretch(1, 1)
+        self.gridLayout.setColumnStretch(2, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -235,46 +239,36 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.btn_esci.setText(QCoreApplication.translate("MainWindow", u"Esci", None))
-        self.label_titolo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:36px; font-weight:700; color:#ffffff;\">Gestione Pioppicultura</span></p></body></html>", None))
-        self.btn_reset.setText(QCoreApplication.translate("MainWindow", u"Reset Simulazione", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"<b>Pannello Gestione Aziendale:</b><br>\n"
-"Consente di strutturare le squadre e inventariare i mezzi meccanici reali della ditta.<br><br>\n"
-"\u2022 Operai Specializzati (Grado A)<br>\n"
-"\u2022 Manovali Comuni (Grado B)<br>\n"
-"\u2022 Flotta: Trattori, Piattaforme, Harvester<br><br>\n"
-"<i>I dati inseriti determineranno la capacit\u00e0 oraria operativa e i colli di bottiglia nei cantieri stagionali.</i>", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"<b>Motore del Tempo:</b><br>\n"
-"Consolida i dati di input e avvia l'algoritmo di calcolo stocastico su base trimestrale.<br><br>\n"
-"\u2022 Avanzamento per stagioni biologiche<br>\n"
-"\u2022 Esecuzione cantieri e consumo ore<br>\n"
-"\u2022 Chiusura automatica a ciclo concluso<br><br>\n"
-"<i>La simulazione termina quando tutti i lotti raggiungono la maturit\u00e0 e vengono abbattuti.</i>", None))
+        self.label_titolo.setText(QCoreApplication.translate("MainWindow", u"Gestione Pioppicultura", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Pannello Gestione Aziendale:</span><br/>Consente di modificare le squadre e inventariare i mezzi meccanici reali della ditta.<br/><br/>\u2022 Operai Specializzati (Grado A)<br/>\u2022 Manovali Comuni (Grado B)<br/>\u2022 Flotta: Trattori, Piattaforme, Harvester, Forwarder<br/><br/>I dati inseriti determineranno la capacit\u00e0 oraria operativa e i colli di bottiglia nei cantieri stagionali e la necessit\u00e0 di assumere dipendenti stagionali o noleggiare mezzi.</p></body></html>", None))
         self.btn_gestione_lotti.setText(QCoreApplication.translate("MainWindow", u"Gestione e Creazione Lotti", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"<b>Bilancio Consuntivo:</b><br>\n"
-"Analisi e revisione scientifica dei risultati economici e forestali ottenuti a fine ciclo.<br><br>\n"
+"Analisi e revisione scientifica dei risultati economici e forestali ottenuti a fine Simulazione.<br><br>\n"
 "\u2022 Cubature raccolte (m\u00b3) e Masse in fibra (t)<br>\n"
 "\u2022 Confronto rese ettariali tra singoli lotti<br>\n"
-"\u2022 Efficienza e saturazione del capitale meccanico<br><br>\n"
+"\u2022 Efficienza e saturazione del capitale meccanico ed umano<br><br>\n"
 "<i>Fornisce la diagnostica finale sui colli di bottiglia e sui fallimenti colturali della ditta.</i>", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"<b>Reset Simulazione</b><br>\n"
-"Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti<br><br>\n"
-"\n"
-"", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"<b>Analisi Dinamica:</b><br>\n"
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"<b>Simulazione Dinamica:</b><br>\n"
 "Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.<br><br>\n"
 "\u2022 Accrescimento dendrometrico (D_bh / H)<br>\n"
 "\u2022 Saturazione dei serbatoi d'ore ditta<br>\n"
 "\u2022 Insorgenza di stress idrici e anomalie<br><br>\n"
-"<i>Permette di valutare visivamente la reattivit\u00e0 del sistema durante il loop temporale.</i>", None))
+"<i>Permette di valutare visivamente la reattivit\u00e0 del sistema durante il passare delle stagioni e degli anni.</i>", None))
         self.btn_valutazioni.setText(QCoreApplication.translate("MainWindow", u"Report Finale e Statistiche Consuntive", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"<b>Pannello Controllo Pioppeto:</b><br>\n"
-"Consente la creazione e la pianificazione selvicolturale dei lotti a partire dall'Anno 0.<br><br>\n"
-"\u2022 Parametrizzazione Cloni Padani<br>\n"
-"\u2022 Vulnerabilit\u00e0 idrica e Attrito logistico<br>\n"
-"\u2022 Indirizzo produttivo (Opera / Industria)<br><br>\n"
-"<i>Dispone di un sistema a regole integrato per la verifica in tempo reale della coerenza colturale.</i>", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Pannello Controllo Lotti:</span><br/>Consente la creazione e la modifica selvicolturale dei lotti per l'inizio della Simulazione .<br/><br/>\u2022 Parametrizzazione Cloni Padani<br/>\u2022 Vulnerabilit\u00e0 idrica e Attrito logistico<br/>\u2022 Indirizzo produttivo (Opera / Industria)<br/><br/>Dispone di un sistema a regole integrato per la verifica in tempo reale della coerenza colturale.</p></body></html>", None))
         self.btn_gestione_ditta.setText(QCoreApplication.translate("MainWindow", u"Configurazione Ditta Forestale", None))
         self.btn_monitoraggio.setText(QCoreApplication.translate("MainWindow", u"Monitoraggio Grafico Real-Time", None))
         self.btn_simulazione.setText(QCoreApplication.translate("MainWindow", u"Avvia Simulazione", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"<b>Simulazione automatica:</b><br>\n"
+"Avvia l'algoritmo di simulazione delle ditta.<br><br>\n"
+"\u2022 Avanzamento per stagioni biologiche<br>\n"
+"\u2022 Esecuzione cantieri e consumo ore<br>\n"
+"\u2022 Chiusura automatica a ciclo concluso <br><br>\n"
+"<i>La simulazione termina al numero di anni impostato</i>", None))
+        self.btn_reset.setText(QCoreApplication.translate("MainWindow", u"Reset Simulazione", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"<b>Reset Simulazione</b><br>\n"
+"Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti<br><br>\n"
+"\n"
+"", None))
     # retranslateUi
 

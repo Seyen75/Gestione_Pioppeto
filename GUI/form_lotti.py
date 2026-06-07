@@ -84,6 +84,8 @@ class FormLotti(QWidget):
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
 
+    # Funzione che chiude la form dei lotti, notificando alla finestra padre di aggiornare lo stato dell'interfaccia principale per riflettere eventuali modifiche ai lotti, e poi chiudendo la finestra figlia
+
     def showEvent(self, event):
         super().showEvent(event)
         parent = self.parentWidget()
@@ -94,11 +96,16 @@ class FormLotti(QWidget):
             y = geometria_parent.y() + (geometria_parent.height() - altezza_self) // 2
             self.move(x, y)
 
+    # Funzione che si attiva quando la form viene chiusa, notificando alla finestra padre di aggiornare lo stato dell'interfaccia principale 
+    # per riflettere eventuali modifiche ai lotti
+        
     def closeEvent(self, event):
         parent = self.parentWidget()
         if parent and hasattr(parent, "aggiorna_stato_interfaccia"):
             parent.aggiorna_stato_interfaccia()
         super().closeEvent(event)
+
+    # Funzione che popola la combo box dei cloni disponibili leggendo da un file JSON esterno, con fallback a dati hardcoded se il file non esiste o è malformato
 
     def popola_cloni_disponibili(self):
         if not self.combo_clone: return
@@ -124,18 +131,21 @@ class FormLotti(QWidget):
             }
             self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
 
+    # Funzione che popola la combo box dei sesti d'impianto disponibili con opzioni predefinite, permettendo all'utente di scegliere tra configurazioni standard di piantagione
+
     def popola_sesti_disponibili(self):
         if not self.combo_sesto_impianto: return
         self.combo_sesto_impianto.clear()
         self.combo_sesto_impianto.addItems(["6x6", "6x5", "7x6", "7x7"])
+
+    # Funzione che popola la combo box delle destinazioni d'uso disponibili con opzioni predefinite, permettendo all'utente di specificare se il lotto è destinato a biomassa/cartiera o a compensati di pregio
 
     def popola_destinazioni_disponibili(self):
         if not self.combo_destinazione: return
         self.combo_destinazione.clear()
         self.combo_destinazione.addItems(["OPERA", "INDUSTRIA"])
 
-    def Blacklist(self):
-        pass
+    # Funzione che verifica la coerenza selvicolturale tra il clone selezionato e la destinazione d'uso scelta, mostrando un messaggio di avviso se l'abbinamento non è ottimale e spiegando i potenziali rischi o inefficienze derivanti da una scelta non coerente
 
     def verifica_coerenza_selvicolturale(self):
         if not self.combo_clone or not self.combo_destinazione or not self.lbl_avviso_clone:
@@ -144,7 +154,7 @@ class FormLotti(QWidget):
         destinazione_scelta = self.combo_destinazione.currentText().upper().strip()
 
         mappatura_attitudini_cloni = {
-            "I-214": "OPERA", "Neva": "OPERA", "I-45/51": "INDUSTRIA", "Velasco": "INDUSTRIA"
+            "I-214": "OPERA", "Neva": "OPERA", "I-45/51": "INDUSTRIA", "Velasco": "INDUSTRIA", "AF2": "INDUSTRIA"
         }
        
         attitudine_reale = mappatura_attitudini_cloni.get(clone_scelto, "OPERA")
@@ -158,51 +168,47 @@ class FormLotti(QWidget):
                 self.lbl_avviso_clone.setText(f"⚠️ Eccesso Qualitativo: Il clone {clone_scelto} è genetizzato per compensati di pregio. Destinarlo a triturazione abbatte i margini di ditta.")
             self.lbl_avviso_clone.setStyleSheet("color: #FF9800; font-weight: bold; font-style: italic;")
 
+    # Funzione che calcola il prossimo ID progressivo per un nuovo lotto basandosi sul numero di lotti già presenti nella collezione, restituendo una stringa formattata con prefisso e numerazione a tre cifre
+
     def calcola_prossimo_id_progressivo(self) -> str:
         return f"LTI-{len(self.parametri.collezione_lotti) + 1:03d}"
 
+    # Funzione che aggiorna la tabella dei lotti visualizzata nell'interfaccia grafica, leggendo i dati attuali dalla collezione di lotti nei parametri condivisi e popolando ogni riga con le informazioni chiave di ciascun lotto, formattando i valori in modo leggibile e allineando il testo al centro per una migliore estetica
+
     def aggiorna_tabella_da_modello(self):
-        if not self.table_lotti: return
-        self.table_lotti.setRowCount(0)
+        if not self.table_lotti: 
+            return
+        
+        lotti = self.parametri.collezione_lotti
+        self.table_lotti.setRowCount(len(lotti))
+        
+        for riga, lotto in enumerate(lotti):
+            dati = [
+                str(lotto.id_lotto),
+                f"{lotto.superficie_ettari:.2f} ha",
+                str(lotto.clone_assegnato),
+                str(lotto.sesto_impianto),
+                f"{lotto.eta} anni",
+                str(lotto.destinazione_uso)
+            ]
+            
+            for colonna, valore in enumerate(dati):
+                item = QTableWidgetItem(valore)
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                # Opzionale: rendiamo le celle non modificabili dall'utente
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.table_lotti.setItem(riga, colonna, item)
 
-        for lotto in self.parametri.collezione_lotti:
-            riga = self.table_lotti.rowCount()
-            self.table_lotti.insertRow(riga)
-
-            item_id = QTableWidgetItem(str(lotto.id_lotto))
-            item_id.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 0, item_id)
-
-            item_superficie = QTableWidgetItem(f"{lotto.superficie_ettari:.2f} ha")
-            item_superficie.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 1, item_superficie)
-
-            item_clone = QTableWidgetItem(str(lotto.clone_assegnato))
-            item_clone.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 2, item_clone)
-
-            item_sesto = QTableWidgetItem(str(lotto.sesto_impianto))
-            item_sesto.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 3, item_sesto)
-
-            # --- CORRETTO: Punto nativo a lotto.eta ---
-            item_eta = QTableWidgetItem(f"{lotto.eta} anni")
-            item_eta.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 4, item_eta)
-
-            item_dest = QTableWidgetItem(str(lotto.destinazione_uso))
-            item_dest.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.table_lotti.setItem(riga, 5, item_dest)
+    # Funzione che valida i dati di input inseriti dall'utente nei widget grafici prima di aggiungere o modificare un lotto, controllando che la superficie sia non eccessivamente grande, restituendo True se i dati sono validi o mostrando un messaggio di errore e restituendo False se i dati non sono accettabili
 
     def valida_dati_input(self) -> bool:
         ettari = self.spin_ettari.value()
-        if ettari <= 0.0:
-            mostra_messaggio_stilizzato(self, "Errore Validazione", "La superficie deve essere maggiore di 0 ettari.", "avviso")
-            return False
         if ettari > 100.0:
             mostra_messaggio_stilizzato(self, "Errore Critico", "Superficie fuori scala per singolo lotto (>100 ha).", "critico")
             return False
         return True
+
+    # Funzione che gestisce l'azione del pulsante principale, decidendo se aggiungere un nuovo lotto o salvare le modifiche a un lotto esistente in base al testo attuale del pulsante, e chiamando la funzione appropriata per eseguire l'operazione desiderata
 
     def gestisci_azione_pulsante_principale(self):
         if self.btn_azione.text() == "Aggiungi Lotto":
@@ -210,11 +216,15 @@ class FormLotti(QWidget):
         else:
             self.salva_modifica_lotto()
 
+    # Funzione che gestisce l'azione del pulsante secondario, decidendo se svuotare e resettare l'interfaccia per prepararla all'inserimento di un nuovo lotto o eliminare il lotto attualmente selezionato in base al testo attuale del pulsante, e chiamando la funzione appropriata per eseguire l'operazione desiderata
+
     def gestisci_azione_pulsante_secondario(self):
         if self.btn_secondario.text() == "Svuota":
             self.svuota_e_resetta_interfaccia()
         else:
             self.elimina_lotto_selezionato()
+
+    # Funzione che aggiunge un nuovo lotto alla collezione basandosi sui dati inseriti dall'utente nei widget grafici, creando un'istanza di Lotto con i parametri strutturali e dinamici specificati, calcolando la densità iniziale in base al sesto d'impianto scelto, valutando la coerenza selvicolturale per assegnare un moltiplicatore di efficienza clone, inizializzando il ciclo biologico del lotto e aggiornando l'interfaccia grafica per riflettere la nuova aggiunta
 
     def aggiungi_nuovo_lotto(self):
         if not self.valida_dati_input(): return
@@ -229,7 +239,6 @@ class FormLotti(QWidget):
         nuovo_lotto.indice_attrito_spaziale = int(self.spin_attrito.value()) if self.spin_attrito else 0
         nuovo_lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value()) if self.spin_test_idrico else 0.0
         
-        # --- CORRETTO: Uso univoco di .eta ---
         if self.spin_eta_iniziale:
             nuovo_lotto.eta = self.spin_eta_iniziale.value()
             
@@ -248,6 +257,8 @@ class FormLotti(QWidget):
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
 
+    # Funzione che carica i dati del lotto attualmente selezionato nella tabella dei lotti e li visualizza nei widget grafici per permettere all'utente di visualizzare e modificare le informazioni del lotto, aggiornando anche il testo dei pulsanti per riflettere lo stato di modifica
+
     def carica_lotto_selezionato(self):
         righe = self.table_lotti.selectionModel().selectedRows()
         if not righe: return
@@ -260,7 +271,7 @@ class FormLotti(QWidget):
 
         if self.spin_attrito: self.spin_attrito.setValue(lotto.indice_attrito_spaziale)
         if self.spin_test_idrico: self.spin_test_idrico.setValue(lotto.indice_tendenza_idrica)
-        # --- CORRETTO ---
+
         if self.spin_eta_iniziale: self.spin_eta_iniziale.setValue(lotto.eta)
 
         index_clone = self.combo_clone.findText(lotto.clone_assegnato)
@@ -275,6 +286,8 @@ class FormLotti(QWidget):
         self.btn_azione.setText("Aggiorna")
         self.btn_secondario.setText("Elimina")
 
+    # Funzione che salva le modifiche apportate a un lotto esistente basandosi sui dati inseriti dall'utente nei widget grafici, aggiornando i parametri strutturali e dinamici del lotto selezionato, ricalcolando la densità iniziale se il sesto d'impianto è stato modificato, valutando nuovamente la coerenza selvicolturale per aggiornare il moltiplicatore di efficienza clone, e aggiornando l'interfaccia grafica per riflettere le modifiche salvate
+
     def salva_modifica_lotto(self):
         righe = self.table_lotti.selectionModel().selectedRows()
         if not righe or not self.valida_dati_input(): return
@@ -282,15 +295,38 @@ class FormLotti(QWidget):
         riga = righe[0].row()
         lotto = self.parametri.collezione_lotti[riga]
 
+        # Memorizza le vecchie dimensioni per calcolare la proporzione
+        vecchie_piante_teoriche = lotto.superficie_ettari * lotto.densita_iniziale
+
+        # Aggiorna i parametri strutturali
         lotto.superficie_ettari = self.spin_ettari.value()
         lotto.sesto_impianto = self.combo_sesto_impianto.currentText()
         lati = [float(x) for x in lotto.sesto_impianto.split("x")]
-        lotto.densita_iniziale = int((10000 / (lati[0] * lati[1])) * self.spin_ettari.value())
+        
+        lotto.densita_iniziale = int(10000 / (lati[0] * lati[1]))
 
+        # RICALCOLO DINAMICO DELLE PIANTE E DEI VOLUMI
+        nuove_piante_teoriche = lotto.superficie_ettari * lotto.densita_iniziale
+        
+        if vecchie_piante_teoriche > 0:
+            # Calcola di quanto è aumentata/diminuita l'area o la densità
+            fattore_scala = nuove_piante_teoriche / vecchie_piante_teoriche
+            
+            # Scala gli alberi vivi mantenendo la percentuale di mortalità già subita
+            lotto.numero_piante_vive = int(lotto.numero_piante_vive * fattore_scala)
+            
+            # Se si modifica a simulazione già avviata, aggiorna la cache in tempo reale
+            if hasattr(lotto, "dati_correnti") and "volume_singolo_m3" in lotto.dati_correnti:
+                lotto.dati_correnti["piante_attive"] = lotto.numero_piante_vive
+                lotto.dati_correnti["volume_totale_m3"] = round(lotto.dati_correnti["volume_singolo_m3"] * lotto.numero_piante_vive, 2)
+        else:
+            # Fallback di sicurezza se il lotto è a 0
+            lotto.numero_piante_vive = int(nuove_piante_teoriche)
+
+        # Aggiorna gli altri attributi
         lotto.indice_attrito_spaziale = int(self.spin_attrito.value()) if self.spin_attrito else 0
         lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value()) if self.spin_test_idrico else 0.0
         
-        # --- CORRETTO ---
         if self.spin_eta_iniziale:
             lotto.eta = self.spin_eta_iniziale.value()
 
@@ -310,6 +346,8 @@ class FormLotti(QWidget):
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
 
+    # Funzione che elimina il lotto attualmente selezionato nella tabella dei lotti, chiedendo conferma all'utente prima di procedere con l'eliminazione permanente, e aggiornando l'interfaccia grafica per riflettere la rimozione del lotto
+
     def elimina_lotto_selezionato(self):
         righe = self.table_lotti.selectionModel().selectedRows()
         if not righe: return
@@ -322,6 +360,8 @@ class FormLotti(QWidget):
             self.parametri.collezione_lotti.pop(riga)
             self.svuota_e_resetta_interfaccia()
             self.aggiorna_tabella_da_modello()
+
+    # Funzione che genera un lotto casuale con parametri randomizzati all'interno di range accettabili, permettendo di popolare rapidamente la collezione di lotti per test o simulazioni, e aggiornando l'interfaccia grafica per riflettere la nuova aggiunta
 
     def genera_lotto_casuale(self):
         id_progressivo_casuale = self.calcola_prossimo_id_progressivo()
@@ -356,6 +396,8 @@ class FormLotti(QWidget):
         self.parametri.collezione_lotti.append(lotto_random)
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
+    
+    # Funzione che svuota e resetta i widget grafici dell'interfaccia, riportandoli ai valori di default o al prossimo ID progressivo disponibile, e aggiornando il testo dei pulsanti per preparare l'interfaccia all'inserimento di un nuovo lotto o alla visualizzazione dello stato iniziale
         
     def svuota_e_resetta_interfaccia(self):
         if self.table_lotti: self.table_lotti.clearSelection()

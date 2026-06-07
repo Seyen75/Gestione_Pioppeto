@@ -47,7 +47,6 @@ class Ditta:
 
         # REGISTRI DI UTILIZZO E LOGISTICA TOTALI
         self.ore_lavoro_effettivo: float = 0.0
-        self.ore_logistica_trasferta: float = 0.0 
 
         # CONTATORI DI FALLIMENTO DIAGNOSTICI
         self.fallimenti_grado_A: int = 0
@@ -76,27 +75,6 @@ class Ditta:
             "piattaforme": 0.0, "harvester": 0.0, "forwarder": 0.0, "motoseghe": 0.0
         }
 
-    def configura_risorse(self, op_A: int, op_B: int, t_alta: int, t_media: int,
-                          piattaforme: int, harvester: int, forwarder: int, motoseghe: int):
-        self.operai_grado_A = max(0, op_A)
-        self.operai_grado_B = max(0, op_B)
-        self.trattori_alta_potenza = max(0, t_alta)
-        self.trattori_media_potenza = max(0, t_media)
-        self.piattaforme_aeree_semoventi = max(0, piattaforme)
-        self.harvester_abbattitori = max(0, harvester)
-        self.forwarder_caricatori = max(0, forwarder)
-        self.kit_motoseghe_professionali = max(0, motoseghe)
-
-    def _allinea_fallback_singoli(self):
-        """Sincronizza i valori floats esatti con il dizionario master per non rompere la Dashboard padre."""
-        self.serbatoio_ore_grado_A = self.serbatoi_ore["grado_A"]
-        self.serbatoio_ore_grado_B = self.serbatoi_ore["grado_B"]
-        self.serbatoio_ore_trattori_alta = self.serbatoi_ore["trattori_alta"]
-        self.serbatoio_ore_trattori_media = self.serbatoi_ore["trattori_media"]
-        self.serbatoio_ore_piattaforme = self.serbatoi_ore["piattaforme"]
-        self.serbatoio_ore_harvester = self.serbatoi_ore["harvester"]
-        self.serbatoio_ore_forwarder = self.serbatoi_ore["forwarder"]
-        self.serbatoio_ore_motoseghe = self.serbatoi_ore["motoseghe"]
 
     def inizializza_serbatoi_stagionali(self, giorni_utili: int):
         ore_base = giorni_utili * self.ore_giorno_standard
@@ -110,16 +88,24 @@ class Ditta:
         self.serbatoi_ore["harvester"] = self.harvester_abbattitori * ore_base
         self.serbatoi_ore["forwarder"] = self.forwarder_caricatori * ore_base
         self.serbatoi_ore["motoseghe"] = self.kit_motoseghe_professionali * ore_base
-
-        self._allinea_fallback_singoli()
         
-        # Ricarica del plafond del mercato locale (Risorse Esterne)
+        # Ricarica delle ore del mercato locale (Risorse Esterne)
         if not hasattr(self, "serbatoi_noli_correnti"):
             self.serbatoi_noli_correnti = {}
             
         for chiave_mercato, unita_max in self.limiti_noli_stagionali.items():
-            self.serbatoi_noli_correnti[chiave_mercato] = unita_max * ore_base
+            self.serbatoi_noli_correnti[chiave_mercato] = unita_max * ore_base   
 
+    # Funzione per restituire la chiave esatta per compatibilità con il resto del codice
+    def _ottieni_chiave_elasticita(self, nome_risorsa: str) -> str:
+        if nome_risorsa == "grado_A": return "personale_spec"
+        elif nome_risorsa == "grado_B": return "personale_comune"
+        # Per i mezzi, il nome della risorsa coincide esattamente con la chiave di nolo
+        else: return nome_risorsa
+           
+    # Calcola le specifiche che il singolo cartiere e ritorna un dizionario con dentro le informazioni di quante ore totali lorde sono richieste per ogni risorsa, 
+    # quante ore di lavoro puro (senza attriti) e quante linee attive si possono mantenere con la composizione della squadra richiesta
+    
     def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, ore_unitarie: float, composizione_squadra: dict, indice_attrito: int = 0) -> dict:
         if not composizione_squadra or ore_unitarie <= 0: return {}
 
@@ -159,40 +145,41 @@ class Ditta:
 
         return richiesta
 
-    def _ottieni_chiave_elasticita(self, nome_risorsa: str) -> str:
-        """
-        Restituisce la chiave esatta per interrogare il dizionario dei limiti stagionali.
-        Mappa il nome della risorsa del cantiere alla chiave di mercato.
-        """
-        if nome_risorsa == "grado_A": return "personale_spec"
-        elif nome_risorsa == "grado_B": return "personale_comune"
-        # Per i mezzi, il nome della risorsa coincide esattamente con la chiave di nolo
-        else: return nome_risorsa
-
+    # Funzione che verifica la capacità della ditta di affrontare la lavorazione richiesta con le risorse fisse e stagionali
+    # Modifica direttamente i valori del oggetto lotto su cui opera e restituisce un nummero compreso fra 0.0 e 1.0 che è la percentuale
+    # effettiva di completamento della lavorazione richiesta
+    
     def verifica_e_consuma_risorse(self, specifiche_cantiere: dict) -> float:
-        """
-        HARD-CAP: Verifica e consuma le risorse fisiche (interne ed esterne).
-        Se il mercato è esaurito, il cantiere subisce un arresto immediato.
-        """
+        
+        # verifica la presenza di specifiche ed inizializza le variabili interne
         if not specifiche_cantiere: return 0.0
         
         fattore_completamento = 1.0
         risorsa_critica = None
 
-        # 1. VALUTAZIONE FATTIBILITÀ (Esiste abbastanza capienza nei serbatoi?)
+        # VALUTAZIONE FATTIBILITÀ (Esiste abbastanza capienza nei serbatoi?)
+        # Cicla
         for risorsa, ore_richieste in specifiche_cantiere.items():
+            
+            # esce dalla ciclo se si trattano di dati solo ai fini statistici e non per reale modifica
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
         
-            serbatoio_interno = self.serbatoi_ore.get(risorsa, 0.0)
+            # Estrae il dato di ore serbatoio per la risorsa 
+            serbatoio_interno = self.serbatoi_ore[risorsa]
             
+            # Se la richiesta è maggiore della disponibilità prova a ricorrere ai noli\stagionali
             if ore_richieste > serbatoio_interno:
                 deficit = ore_richieste - serbatoio_interno
                 
+                # Verifica la categoria su cui andare a chiedere nolo\stagionale
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
-                ore_nolo_rimaste = getattr(self, "serbatoi_noli_correnti", {}).get(categoria_mercato, 0.0)
                 
+                # Carica il valore delle ore ancora disponibili sul mercato noli\stagionali
+                ore_nolo_rimaste = self.serbatoi_noli_correnti[categoria_mercato]
+                
+                # Verifica se il deficit di ore è possibile o no soddisfarlo con il mercato noli\stagionali
                 if deficit > ore_nolo_rimaste:
-                    # BLOCCO FISICO: Risorse interne e mercato totalmente prosciugati.
+                    # BLOCCO FISICO: Risorse interne e mercato totalmente prosciugati e calcola quanto percentualmente è completabile la lavorazione
                     ore_totali_erogabili = serbatoio_interno + ore_nolo_rimaste
                     quota_possibile = ore_totali_erogabili / ore_richieste
                     
@@ -200,13 +187,19 @@ class Ditta:
                         fattore_completamento = quota_possibile
                         risorsa_critica = risorsa
 
+        
+        # Verifica se il fattore di completamento è 0 (essendo float si utilizza un fattore decimale di sicurezza
+        # Nel caso è 0 allora la lavorazione non viene effettuata ed è inserita la risorsa come critica
+        # Se il fallimento di quella risorsa non è il primo il valore viene incrementato di 1 altrimenti lo si crea
+        # La funzione termina senza erogazione, non essendo fatto il lavoro ed il valore 0.0 come percentuale completamento
         if fattore_completamento <= 0.001:
             if risorsa_critica:
                 attr_f = f"fallimenti_{risorsa_critica}"
                 if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
             return 0.0
 
-        # 2. EROGAZIONE (Svuotamento reale dei serbatoi)
+        # EROGAZIONE (Svuotamento reale dei serbatoi) - Il lavoro ha, almeno parzialemente le risorse per fare il lavoro
+        # vengono quindi tolti dai serbatoi delle ore i valori calcolati
         self.ore_lavoro_effettivo += specifiche_cantiere["meta_lavoro_puro"] * fattore_completamento
         
         for risorsa, ore_richieste in specifiche_cantiere.items():
@@ -219,36 +212,24 @@ class Ditta:
                 self.serbatoi_ore[risorsa] -= ore_effettive_spese
             else:
                 # Fondo raschiato: azzeriamo l'interno e attingiamo al mercato
-                quota_externa = ore_effettive_spese - serbatoio_interno
+                quota_esterna = ore_effettive_spese - serbatoio_interno
                 self.serbatoi_ore[risorsa] = 0.0
                 
-                # Consumiamo fisicamente le ore del terzista!
+                # Consumiamo fisicamente le ore del terzista
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
-                if hasattr(self, "serbatoi_noli_correnti"):
-                    residuo_nolo = self.serbatoi_noli_correnti.get(categoria_mercato, 0.0)
-                    self.serbatoi_noli_correnti[categoria_mercato] = max(0.0, residuo_nolo - quota_externa)
+                # Accesso diretto al serbatoio dei noli\stagionali
+                residuo_nolo = self.serbatoi_noli_correnti[categoria_mercato]
+                self.serbatoi_noli_correnti[categoria_mercato] = max(0.0, residuo_nolo - quota_esterna)
                 
                 # Registriamo l'uso per le statistiche della dashboard
-                self.registro_extra_anno[risorsa] += quota_externa
+                self.registro_extra_anno[risorsa] += quota_esterna
 
-        self._allinea_fallback_singoli()
         
+        # Aggiunge il fallimento per l'esecuzione parziale di una lavorazione
         if fattore_completamento < 0.99 and risorsa_critica:
             attr_f = f"fallimenti_{risorsa_critica}"
             if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
 
-        return fattore_completamento
 
-    def calcola_saturazione_macchinario(self, nome_macchinario: str, giorni_utili: int) -> float:
-        ore_base = giorni_utili * self.ore_giorno_standard
-        mappa_nomi = {
-            "trattori_alta": "trattori_alta_potenza", "trattori_media": "trattori_media_potenza",
-            "piattaforme": "piattaforme_aeree_semoventi", "harvester": "harvester_abbattitori",
-            "forwarder": "forwarder_caricatori", "motoseghe": "kit_motoseghe_professionali"
-        }
-        nome_reale_attr = mappa_nomi.get(nome_macchinario, f"num_{nome_macchinario}")
-        num_mezzi = getattr(self, nome_reale_attr, 0)
-        if num_mezzi == 0: return 0.0
-        ore_totali_disponibili = num_mezzi * ore_base
-        ore_rimaste_serbatoio = self.serbatoi_ore.get(nome_macchinario, 0.0)
-        return round(((ore_totali_disponibili - ore_rimaste_serbatoio) / ore_totali_disponibili) * 100, 1)
+        # Returnoa la percentuale di completamento totale o parziale della lavorazione
+        return fattore_completamento

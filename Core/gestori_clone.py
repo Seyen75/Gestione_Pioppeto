@@ -10,7 +10,7 @@ class GestoreCloni:
         # Definizione dei percorsi dei due file
         self.cartella_radice = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-        # Il file default (protetto) contenente i 4 cloni base
+        # Il file default (protetto) contenente i cloni base
         # Utilità eventualmente per una futura features che permette di implementare nuovi cloni dall'utente e pertanto prevenire cancellazioni pericolose
         self.percorso_master = os.path.join(self.cartella_radice, "Core", "cloni_default.json")
 

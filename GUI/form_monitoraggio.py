@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QVBoxLayout, QHeaderView
@@ -65,6 +65,9 @@ class form_monitoraggio(QWidget):
         stringa_it = stringa_base.replace(",", "X").replace(".", ",").replace("X", ".")
         return stringa_it
 
+
+    # Inizializzazione dei grafici presenti nella form
+    
     def _inizializza_grafici(self):
         colore_sfondo_hex = "#141923"
 
@@ -94,17 +97,25 @@ class form_monitoraggio(QWidget):
         layout_rese.addWidget(self.canvas_rese)
         layout_rese.setContentsMargins(0, 0, 0, 0)
 
+
+    # Funzione che terminata la simulazione di una stagione avvia le funzioni per aggiornare le tabelle ed i grafici
+    
     def _aggiorna_interfaccia_grafica(self, quadro_stato: Dict[str, Any] = None, iniziale: bool = False):
+        # Aggiorna le label con i dati dell'anno e della stagione corrente
         self.ui.lbl_anno.setText(f"ANNO {self.parametri.anno_corrente}")
         self.ui.lbl_stagione.setText(self.parametri.stagione_corrente.upper())
 
+        # Avvia le funzioni di aggiornamento dei vari controlli e popola tabelle e grafici
         self._elabora_e_mostra_consuntivi(quadro_stato, iniziale)
         self._popola_tabella_particellare()
         self._rendiconta_e_disegna_previsione_risorse()
         self._ridisegna_grafico_rese_cumulate()
 
+
+    # Funzione che 
+    
     def _elabora_e_mostra_consuntivi(self, quadro_stato: Dict[str, Any], iniziale: bool):
-        # 1. Leggiamo il registro All-Time dal motore (o usiamo zeri se appena avviato)
+        # Legge il registro del motore e se non esiste 
         stats = getattr(self.motore, "stats_globali", {
             "tagli_strutturali_saltati": 0, 
             "tagli_biologici_saltati": 0, 
@@ -115,92 +126,96 @@ class form_monitoraggio(QWidget):
         t_bio = stats.get("tagli_biologici_saltati", 0)
         l_gen = stats.get("lavorazioni_generiche_saltate", 0)
 
-        # 2. Aggiorniamo le tre Label del Cruscotto Diagnostico
-        if hasattr(self.ui, "lbl_tagli_saltati"):
-            self.ui.lbl_tagli_saltati.setText(f"⛔ Tagli Saltati (Carenza Mezzi): {t_strut}")
-            self.ui.lbl_tagli_saltati.setVisible(True)
-            self.ui.lbl_tagli_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if t_strut > 0 else "color: #00e676; font-weight: bold;")
+        # Aggiorna le Label del Cruscotto Diagnostico con i dati recuperati dal dizionario generale nella chiava stats_globali
 
-        if hasattr(self.ui, "lbl_turni_saltati"):
-            self.ui.lbl_turni_saltati.setText(f"⏳ Tagli Rinviati (Immaturità Biologica): {t_bio}")
-            self.ui.lbl_turni_saltati.setVisible(True)
-            self.ui.lbl_turni_saltati.setStyleSheet("color: #ffb74d; font-weight: bold;" if t_bio > 0 else "color: #00e676; font-weight: bold;")
+        self.ui.lbl_tagli_saltati.setText(f"⛔ Tagli Saltati (Carenza Mezzi): {t_strut}")
+        self.ui.lbl_tagli_saltati.setVisible(True)
+        self.ui.lbl_tagli_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if t_strut > 0 else "color: #00e676; font-weight: bold;")
 
-        if hasattr(self.ui, "lbl_lavori_saltati"):
-            self.ui.lbl_lavori_saltati.setText(f"⚠️ Lavorazioni Fallite (Carenza Risorse): {l_gen}")
-            self.ui.lbl_lavori_saltati.setVisible(True)
-            self.ui.lbl_lavori_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if l_gen > 0 else "color: #00e676; font-weight: bold;")
+        self.ui.lbl_turni_saltati.setText(f"⏳ Tagli Rinviati (Immaturità Biologica): {t_bio}")
+        self.ui.lbl_turni_saltati.setVisible(True)
+        self.ui.lbl_turni_saltati.setStyleSheet("color: #ffb74d; font-weight: bold;" if t_bio > 0 else "color: #00e676; font-weight: bold;")
 
-        # 3. Pulizia di sicurezza: Nascondiamo le vecchie etichette se sono ancora nel file .ui
-        etichette_da_nascondere = ["lbl_opera_totale", "lbl_cartiera_totale", "lbl_truciolato_totale", "lbl_fallanze_totali"]
-        for lbl in etichette_da_nascondere:
-            if hasattr(self.ui, lbl):
-                getattr(self.ui, lbl).setVisible(False)
+        self.ui.lbl_lavori_saltati.setText(f"⚠️ Lavorazioni Fallite (Carenza Risorse): {l_gen}")
+        self.ui.lbl_lavori_saltati.setVisible(True)
+        self.ui.lbl_lavori_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if l_gen > 0 else "color: #00e676; font-weight: bold;")
 
-        # 4. Inizializzazione storico per i grafici a barre inferiori
+        # Inizializzazione storico per i grafici a barre
         if not self.storico_trimestri:
             self.storico_trimestri.append("Avvio")
             self.storico_opera.append(0.0)
             self.storico_cartiera.append(0.0)
             self.storico_truciolato.append(0.0)
 
+
+    # Funzione che recupera i dati dei lotti della collezione ed inserisce i dati nella tabella tbl_monitoraggio
     def _popola_tabella_particellare(self):
+        # azzera le righe se preesistenti
         self.ui.tbl_monitoraggio.setRowCount(0)
+        
+        # Imposta le labels della tabella e sistema le larghezze degli headers
         colonne_labels = ["ID Particella", "Destinazione d'Uso", "Superficie", "N° Piante", "Età Biologica", "Diametro Medio", "Altezza Stimata", "Stato Cantiere"]
         self.ui.tbl_monitoraggio.setColumnCount(len(colonne_labels))
         self.ui.tbl_monitoraggio.setHorizontalHeaderLabels(colonne_labels)
         self.ui.tbl_monitoraggio.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
         
+        # Cicla tutti i lotti presenti nella collezione ed inserisce le righe formattando i dati
+        
         for lotto in self.parametri.collezione_lotti:
+            # Inserisce la riga
             riga = self.ui.tbl_monitoraggio.rowCount()
             self.ui.tbl_monitoraggio.insertRow(riga)
-
-            destinazione = getattr(lotto, "destinazione_uso", "OPERA")
-            eta = getattr(lotto, "eta", 0)
-            superficie = getattr(lotto, "superficie_ettari", 0.0)
             
-            if hasattr(lotto, "dati_correnti") and lotto.dati_correnti:
-                piante_vive = lotto.dati_correnti.get("piante_attive", getattr(lotto, "numero_piante_vive", 0))
-                dbh = lotto.dati_correnti.get("dbh_reale_cm", 0.0)
-                altezza = lotto.dati_correnti.get("altezza_m", 0.0)
+            # Prende i dati del lotto 
+            destinazione = lotto.destinazione_uso
+            eta = lotto.eta
+            superficie = lotto.superficie_ettari
+            
+            if lotto.dati_correnti:
+                piante_vive = lotto.dati_correnti["piante_attive"]
+                dbh = lotto.dati_correnti["dbh_reale_cm"]
+                altezza = lotto.dati_correnti["altezza_m"]
             else:
-                piante_vive = getattr(lotto, "numero_piante_vive", 0)
-                dbh = getattr(lotto, "diametro_medio_fusto", 0.0)
-                altezza = getattr(lotto, "altezza_media_piante", 0.0)
+                piante_vive = lotto.numero_piante_vive
+                dbh = lotto.diametro_medio_fusto
+                altezza = lotto.altezza_media_piante
 
-            # --- FIX: MACCHINA DEL TEMPO PER LO STATO CANTIERE ---
+            # Verifica 
+            # 1. Salva lo stato originale dei dati biologici del lotto
             eta_originale = lotto.eta
-            diametro_originale = getattr(lotto, "diametro_medio_fusto", 0.0)
+            diametro_originale = lotto.diametro_medio_fusto
             
-            if self.parametri.stagione_corrente == "Inverno":
-                if (lotto.eta == 0 and lotto.numero_piante_vive > 0) or lotto.numero_piante_vive > 5:
-                    eta_futura = lotto.eta + 1
-                    profilo = self.motore.dati_cloni[lotto.clone_assegnato]
-                    dati_futuri = lotto.simula_accrescimento(profilo, eta_futura)
-                    
-                    lotto.eta = eta_futura
-                    lotto.diametro_medio_fusto = dati_futuri.get("dbh_reale_cm", 0.0)
+            try:
+                if self.parametri.stagione_corrente == "Inverno":
+                    if (lotto.eta == 0 and lotto.numero_piante_vive > 0) or (lotto.numero_piante_vive > 5):
+                        eta_futura = eta_originale + 1
+                        profilo = self.motore.dati_cloni[lotto.clone_assegnato]
+                        dati_futuri = lotto.simula_accrescimento(profilo, eta_futura)
+                        
+                        # Applica temporaneamente solo se necessario
+                        lotto.eta = eta_futura
+                        lotto.diametro_medio_fusto = dati_futuri["dbh_reale_cm"] # Accesso diretto
+            
+                is_maturo = lotto.verifica_maturita_raccolta()
+            
+            finally:
+                # Ripristino in caso di errore nel blocco sopra
+                lotto.eta = eta_originale
+                lotto.diametro_medio_fusto = diametro_originale
 
-            is_maturo = lotto.verifica_maturita_raccolta()
+            filiera_lotto = STRUTTURA_LAVORAZIONI[lotto.destinazione_uso]
             
-            # Ripristino immediato dello stato originale per la tabella 
-            # (così continui a vedere "9 anni" stampato a schermo)
-            lotto.eta = eta_originale
-            lotto.diametro_medio_fusto = diametro_originale
-            # -----------------------------------------------------
-
-            filiera_lotto = STRUTTURA_LAVORAZIONI.get(lotto.destinazione_uso, STRUTTURA_LAVORAZIONI["OPERA"])
-            
-            if is_maturo or getattr(lotto, "tagliato", False):
+            if is_maturo or lotto.tagliato:
                 if self.parametri.stagione_corrente == "Inverno":
                     stato_stringa = "Pianificato per la Raccolta (Taglio raso)"
                 else:
                     stato_stringa = "In attesa dell'Inverno per Taglio"
             else:
                 f_k = self.motore._get_chiave_fase(lotto.eta)
-                ops_attive = filiera_lotto.get(f_k, {}).get(self.parametri.stagione_corrente, [])
-                stato_stringa = " + ".join([o.get("descrizione", "") for o in ops_attive]) if ops_attive else "Riposo vegetativo"
+                ops_attive = filiera_lotto[f_k][self.parametri.stagione_corrente]
+                stato_stringa = " + ".join([o["descrizione"] for o in ops_attive]) if ops_attive else "Riposo vegetativo"
 
+            # Setta i valori delle varie colonne della riga appena creata
             self.ui.tbl_monitoraggio.setItem(riga, 0, QTableWidgetItem(str(lotto.id_lotto)))
             self.ui.tbl_monitoraggio.setItem(riga, 1, QTableWidgetItem(str(destinazione)))
             self.ui.tbl_monitoraggio.setItem(riga, 2, QTableWidgetItem(f"{self._formatta_numero_it(superficie)} ha"))
@@ -210,21 +225,25 @@ class form_monitoraggio(QWidget):
             self.ui.tbl_monitoraggio.setItem(riga, 6, QTableWidgetItem(f"{self._formatta_numero_it(altezza)} m"))
             self.ui.tbl_monitoraggio.setItem(riga, 7, QTableWidgetItem(stato_stringa))
 
-        # --- FIX: Dimensionamento dinamico e Centratura ---
+        # Dimensionamento dinamico e Centratura
         header = self.ui.tbl_monitoraggio.horizontalHeader()
         
-        # Diciamo a tutte le colonne di adattarsi esattamente alla larghezza del loro contenuto
+        # Tutte le colonne si adattano esattamente alla larghezza del loro contenuto
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
-        # Diciamo all'ultima colonna ("Stato Cantiere") di allungarsi per occupare tutto lo spazio vuoto rimanente
+        # L'ultima colonna ("Stato Cantiere") si allunga per occupare tutto lo spazio vuoto rimanente
         header.setStretchLastSection(True)
 
-        # Ripristiniamo il ciclo per centrare il testo orizzontalmente e verticalmente
+        # Ciclo per centrale i valori nelle celle della tabella
         for r in range(self.ui.tbl_monitoraggio.rowCount()):
             for c in range(self.ui.tbl_monitoraggio.columnCount()):
                 item = self.ui.tbl_monitoraggio.item(r, c)
-                if item: 
-                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                
+                
+    # La funzione disegna il grafico delle uso delle risorse della ditta
+    # La funzione per graficare le necessità delle risorse per la stagione in corso che deve ancora essere materialmente simulata
+    # utilizza un dizionario "interventi_teorici" che lo riempie con i dati che il motore del simulatore avvia in maniera teorica
 
     def _rendiconta_e_disegna_previsione_risorse(self):
         giorni_utili_standard = 55
@@ -234,7 +253,7 @@ class form_monitoraggio(QWidget):
         quota_b_nominale = self.motore.ditta.operai_grado_B * ore_base_stagione
         quota_harv_nominale = self.motore.ditta.harvester_abbattitori * ore_base_stagione
         quota_forw_nominale = self.motore.ditta.forwarder_caricatori * ore_base_stagione
-        # --- FIX 1: Separazione netta dei trattori ---
+
         quota_tratt_alta_nominale = self.motore.ditta.trattori_alta_potenza * ore_base_stagione
         quota_tratt_media_nominale = self.motore.ditta.trattori_media_potenza * ore_base_stagione
         
@@ -248,6 +267,7 @@ class form_monitoraggio(QWidget):
         ore_tratt_media_richieste = 0.0
         ore_piattaforma_richieste = 0.0
 
+        # Avvia la simulazione in versione previsionale (non modifica i dati reali)
         interventi_teorici = self.motore.prevedi_domanda_stagionale()
         
         for intervento in interventi_teorici:
@@ -361,11 +381,15 @@ class form_monitoraggio(QWidget):
 
         self.canvas_rese.draw()
 
+    # Funzione che manda avanti una stagione alla volta della simulazione e si occupa di gestire gli aggiornamenti dei grafici
+
     @Slot()
     def slot_avanza_trimestre(self):
+        # Tiene traccia delle stagione precedente
         stagione_appena_conclusa = self.parametri.stagione_corrente
         anno_appena_concluso = self.parametri.anno_corrente
 
+        # 
         if "Avvio" in self.storico_trimestri:
             self.storico_trimestri.remove("Avvio")
             self.storico_opera.clear()
@@ -398,6 +422,8 @@ class form_monitoraggio(QWidget):
                 self._cumulato_truciolato_precedente = cumulato_truciolato_attuale
 
         self._aggiorna_interfaccia_grafica(quadro_stato=quadro_stato, iniziale=False)
+
+
 
     @Slot()
     def slot_termina_simulazione(self):

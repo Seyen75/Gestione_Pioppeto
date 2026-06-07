@@ -15,10 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox, QHBoxLayout,
-    QHeaderView, QLabel, QPushButton, QSizePolicy,
-    QSlider, QSpacerItem, QTabWidget, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QProgressBar,
+    QPushButton, QSizePolicy, QSpacerItem, QTabWidget,
+    QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout,
+    QWidget)
 
 class Ui_FormValutazioni(object):
     def setupUi(self, FormValutazioni):
@@ -168,6 +169,13 @@ class Ui_FormValutazioni(object):
 "    padding: 6px 12px;\n"
 "}\n"
 "\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #9a2630, stop:1 #5e161b);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #5e161b, stop:1 #2a0a0c);\n"
+"}\n"
 "\n"
 "/* =========================================================================\n"
 "   GROUPBOX INFORMATIVI\n"
@@ -184,15 +192,15 @@ class Ui_FormValutazioni(object):
 "    padding: 0 5px;\n"
 "    left: 10px;\n"
 "}\n"
-"\n"
+""
+                        "\n"
 "QComboBox { \n"
 "                    background-color: #2d181b; \n"
 "                    color: #ffffff; \n"
 "                    border: 1px solid #3d2429; \n"
 "                    border-radius: 4px; \n"
 "                    padding: 4px 10px;\n"
-""
-                        "                }\n"
+"                }\n"
 "                QComboBox::drop-down {\n"
 "                    subcontrol-origin: padding;\n"
 "                    subcontrol-position: top right;\n"
@@ -210,15 +218,15 @@ class Ui_FormValutazioni(object):
 " \n"
 "QSlider::groove:horizontal { \n"
 "                    background: #2d181b; \n"
-"                    height: 6px; \n"
+"                    height:"
+                        " 6px; \n"
 "                    border-radius: 3px; \n"
 "                } \n"
 "                QSlider::handle:horizontal { \n"
 "                    background: #ff8a80; \n"
 "                    width: 14px; \n"
 "                    margin: -4px 0; \n"
-" "
-                        "                   border-radius: 7px; \n"
+"                    border-radius: 7px; \n"
 "                }")
         self.verticalLayout_6 = QVBoxLayout(FormValutazioni)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -244,14 +252,19 @@ class Ui_FormValutazioni(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.lbl_anno_selezionato = QLabel(self.tab_consuntivo_annuale)
         self.lbl_anno_selezionato.setObjectName(u"lbl_anno_selezionato")
+        self.lbl_anno_selezionato.setMaximumSize(QSize(110, 16777215))
 
         self.horizontalLayout_3.addWidget(self.lbl_anno_selezionato)
 
-        self.sld_anno_report = QSlider(self.tab_consuntivo_annuale)
-        self.sld_anno_report.setObjectName(u"sld_anno_report")
-        self.sld_anno_report.setOrientation(Qt.Orientation.Horizontal)
+        self.cmb_anno_report = QComboBox(self.tab_consuntivo_annuale)
+        self.cmb_anno_report.setObjectName(u"cmb_anno_report")
+        self.cmb_anno_report.setMaximumSize(QSize(75, 16777215))
 
-        self.horizontalLayout_3.addWidget(self.sld_anno_report)
+        self.horizontalLayout_3.addWidget(self.cmb_anno_report)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_4)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
@@ -413,20 +426,25 @@ class Ui_FormValutazioni(object):
         self.tab_efficienza.setObjectName(u"tab_efficienza")
         self.layoutWidget = QWidget(self.tab_efficienza)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(20, 10, 1061, 27))
+        self.layoutWidget.setGeometry(QRect(20, 10, 1061, 30))
         self.horizontalLayout_7 = QHBoxLayout(self.layoutWidget)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.lbl_anno_selezionato_2 = QLabel(self.layoutWidget)
         self.lbl_anno_selezionato_2.setObjectName(u"lbl_anno_selezionato_2")
+        self.lbl_anno_selezionato_2.setMaximumSize(QSize(110, 16777215))
 
         self.horizontalLayout_7.addWidget(self.lbl_anno_selezionato_2)
 
-        self.sld_anno_report_capacita = QSlider(self.layoutWidget)
-        self.sld_anno_report_capacita.setObjectName(u"sld_anno_report_capacita")
-        self.sld_anno_report_capacita.setOrientation(Qt.Orientation.Horizontal)
+        self.cmb_anno_report_capacita = QComboBox(self.layoutWidget)
+        self.cmb_anno_report_capacita.setObjectName(u"cmb_anno_report_capacita")
+        self.cmb_anno_report_capacita.setMaximumSize(QSize(75, 16777215))
 
-        self.horizontalLayout_7.addWidget(self.sld_anno_report_capacita)
+        self.horizontalLayout_7.addWidget(self.cmb_anno_report_capacita)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_3)
 
         self.groupBox = QGroupBox(self.tab_efficienza)
         self.groupBox.setObjectName(u"groupBox")
@@ -502,6 +520,86 @@ class Ui_FormValutazioni(object):
         self.horizontalLayout_2.addWidget(self.groupBox_3)
 
         self.tab_valutazioni_root.addTab(self.tab_efficienza, "")
+        self.tab_anomalie = QWidget()
+        self.tab_anomalie.setObjectName(u"tab_anomalie")
+        self.verticalLayout_12 = QVBoxLayout(self.tab_anomalie)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.groupBox_4 = QGroupBox(self.tab_anomalie)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.verticalLayout_10 = QVBoxLayout(self.groupBox_4)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.tbl_log_anomalie = QTableWidget(self.groupBox_4)
+        if (self.tbl_log_anomalie.columnCount() < 5):
+            self.tbl_log_anomalie.setColumnCount(5)
+        __qtablewidgetitem29 = QTableWidgetItem()
+        self.tbl_log_anomalie.setHorizontalHeaderItem(0, __qtablewidgetitem29)
+        __qtablewidgetitem30 = QTableWidgetItem()
+        self.tbl_log_anomalie.setHorizontalHeaderItem(1, __qtablewidgetitem30)
+        __qtablewidgetitem31 = QTableWidgetItem()
+        self.tbl_log_anomalie.setHorizontalHeaderItem(2, __qtablewidgetitem31)
+        __qtablewidgetitem32 = QTableWidgetItem()
+        self.tbl_log_anomalie.setHorizontalHeaderItem(3, __qtablewidgetitem32)
+        __qtablewidgetitem33 = QTableWidgetItem()
+        self.tbl_log_anomalie.setHorizontalHeaderItem(4, __qtablewidgetitem33)
+        self.tbl_log_anomalie.setObjectName(u"tbl_log_anomalie")
+        self.tbl_log_anomalie.setMaximumSize(QSize(16777203, 16777215))
+        self.tbl_log_anomalie.verticalHeader().setStretchLastSection(False)
+
+        self.verticalLayout_10.addWidget(self.tbl_log_anomalie)
+
+
+        self.verticalLayout_12.addWidget(self.groupBox_4)
+
+        self.groupBox_5 = QGroupBox(self.tab_anomalie)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.verticalLayout_11 = QVBoxLayout(self.groupBox_5)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.tbl_bilancio_risorse = QTableWidget(self.groupBox_5)
+        if (self.tbl_bilancio_risorse.columnCount() < 4):
+            self.tbl_bilancio_risorse.setColumnCount(4)
+        __qtablewidgetitem34 = QTableWidgetItem()
+        self.tbl_bilancio_risorse.setHorizontalHeaderItem(0, __qtablewidgetitem34)
+        __qtablewidgetitem35 = QTableWidgetItem()
+        self.tbl_bilancio_risorse.setHorizontalHeaderItem(1, __qtablewidgetitem35)
+        __qtablewidgetitem36 = QTableWidgetItem()
+        self.tbl_bilancio_risorse.setHorizontalHeaderItem(2, __qtablewidgetitem36)
+        __qtablewidgetitem37 = QTableWidgetItem()
+        self.tbl_bilancio_risorse.setHorizontalHeaderItem(3, __qtablewidgetitem37)
+        self.tbl_bilancio_risorse.setObjectName(u"tbl_bilancio_risorse")
+
+        self.gridLayout.addWidget(self.tbl_bilancio_risorse, 1, 0, 1, 1)
+
+        self.lbl_stato_dettaglio = QLabel(self.groupBox_5)
+        self.lbl_stato_dettaglio.setObjectName(u"lbl_stato_dettaglio")
+
+        self.gridLayout.addWidget(self.lbl_stato_dettaglio, 0, 0, 1, 1)
+
+        self.txt_diagnostica = QTextEdit(self.groupBox_5)
+        self.txt_diagnostica.setObjectName(u"txt_diagnostica")
+
+        self.gridLayout.addWidget(self.txt_diagnostica, 1, 1, 1, 1)
+
+        self.pb_avanzamento_cantiere = QProgressBar(self.groupBox_5)
+        self.pb_avanzamento_cantiere.setObjectName(u"pb_avanzamento_cantiere")
+        self.pb_avanzamento_cantiere.setValue(0)
+
+        self.gridLayout.addWidget(self.pb_avanzamento_cantiere, 0, 1, 1, 1)
+
+        self.btn_vai_allo_storico = QPushButton(self.groupBox_5)
+        self.btn_vai_allo_storico.setObjectName(u"btn_vai_allo_storico")
+        self.btn_vai_allo_storico.setMaximumSize(QSize(200, 16777215))
+
+        self.gridLayout.addWidget(self.btn_vai_allo_storico, 2, 0, 1, 1)
+
+
+        self.verticalLayout_11.addLayout(self.gridLayout)
+
+
+        self.verticalLayout_12.addWidget(self.groupBox_5)
+
+        self.tab_valutazioni_root.addTab(self.tab_anomalie, "")
 
         self.verticalLayout_6.addWidget(self.tab_valutazioni_root)
 
@@ -524,7 +622,7 @@ class Ui_FormValutazioni(object):
 
         self.retranslateUi(FormValutazioni)
 
-        self.tab_valutazioni_root.setCurrentIndex(0)
+        self.tab_valutazioni_root.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(FormValutazioni)
@@ -611,6 +709,29 @@ class Ui_FormValutazioni(object):
         ___qtablewidgetitem28 = self.tbl_stagionali_noli.horizontalHeaderItem(3)
         ___qtablewidgetitem28.setText(QCoreApplication.translate("FormValutazioni", u"Massimo Utilizzabile", None))
         self.tab_valutazioni_root.setTabText(self.tab_valutazioni_root.indexOf(self.tab_efficienza), QCoreApplication.translate("FormValutazioni", u"\u2699\ufe0f Capacit\u00e0 Operative", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("FormValutazioni", u"Lista Fallanze Operative", None))
+        ___qtablewidgetitem29 = self.tbl_log_anomalie.horizontalHeaderItem(0)
+        ___qtablewidgetitem29.setText(QCoreApplication.translate("FormValutazioni", u"Anno", None))
+        ___qtablewidgetitem30 = self.tbl_log_anomalie.horizontalHeaderItem(1)
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("FormValutazioni", u"Stagione", None))
+        ___qtablewidgetitem31 = self.tbl_log_anomalie.horizontalHeaderItem(2)
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("FormValutazioni", u"Lotto ID", None))
+        ___qtablewidgetitem32 = self.tbl_log_anomalie.horizontalHeaderItem(3)
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("FormValutazioni", u"Descrizione Lavorazione", None))
+        ___qtablewidgetitem33 = self.tbl_log_anomalie.horizontalHeaderItem(4)
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("FormValutazioni", u"Stato\\Anomalia", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("FormValutazioni", u"Descrizione Fallanza Lotto Selezionato", None))
+        ___qtablewidgetitem34 = self.tbl_bilancio_risorse.horizontalHeaderItem(0)
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("FormValutazioni", u"Risorsa", None))
+        ___qtablewidgetitem35 = self.tbl_bilancio_risorse.horizontalHeaderItem(1)
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("FormValutazioni", u"Fabbisogno", None))
+        ___qtablewidgetitem36 = self.tbl_bilancio_risorse.horizontalHeaderItem(2)
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("FormValutazioni", u"Ore Lavorate", None))
+        ___qtablewidgetitem37 = self.tbl_bilancio_risorse.horizontalHeaderItem(3)
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("FormValutazioni", u"Ore Mancanti", None))
+        self.lbl_stato_dettaglio.setText(QCoreApplication.translate("FormValutazioni", u"STATO LOTTO", None))
+        self.btn_vai_allo_storico.setText(QCoreApplication.translate("FormValutazioni", u"Controlla Storico Lotto", None))
+        self.tab_valutazioni_root.setTabText(self.tab_valutazioni_root.indexOf(self.tab_anomalie), QCoreApplication.translate("FormValutazioni", u"\u26a0\ufe0f Registro dei Fallimenti Operativi", None))
         self.btn_esci.setText(QCoreApplication.translate("FormValutazioni", u"Esci", None))
     # retranslateUi
 

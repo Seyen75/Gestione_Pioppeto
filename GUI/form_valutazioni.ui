@@ -163,6 +163,13 @@ QPushButton {
     padding: 6px 12px;
 }
 
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #9a2630, stop:1 #5e161b);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #5e161b, stop:1 #2a0a0c);
+}
 
 /* =========================================================================
    GROUPBOX INFORMATIVI
@@ -248,7 +255,7 @@ QSlider::groove:horizontal {
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::TextElideMode::ElideNone</enum>
@@ -273,17 +280,39 @@ QSlider::groove:horizontal {
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QLabel" name="lbl_anno_selezionato">
+             <property name="maximumSize">
+              <size>
+               <width>110</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>Anno Simulazione</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="sld_anno_report">
+            <widget class="QComboBox" name="cmb_anno_report">
+             <property name="maximumSize">
+              <size>
+               <width>75</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_4">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
-            </widget>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -548,23 +577,45 @@ QSlider::groove:horizontal {
          <x>20</x>
          <y>10</y>
          <width>1061</width>
-         <height>27</height>
+         <height>30</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
          <widget class="QLabel" name="lbl_anno_selezionato_2">
+          <property name="maximumSize">
+           <size>
+            <width>110</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>Anno Simulazione</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="sld_anno_report_capacita">
+         <widget class="QComboBox" name="cmb_anno_report_capacita">
+          <property name="maximumSize">
+           <size>
+            <width>75</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
-         </widget>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -693,6 +744,127 @@ QSlider::groove:horizontal {
         </item>
        </layout>
       </widget>
+     </widget>
+     <widget class="QWidget" name="tab_anomalie">
+      <attribute name="title">
+       <string>⚠️ Registro dei Fallimenti Operativi</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Lista Fallanze Operative</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QTableWidget" name="tbl_log_anomalie">
+            <property name="maximumSize">
+             <size>
+              <width>16777203</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <attribute name="verticalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>Anno</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Stagione</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Lotto ID</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Descrizione Lavorazione</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Stato\Anomalia</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Descrizione Fallanza Lotto Selezionato</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="0">
+             <widget class="QTableWidget" name="tbl_bilancio_risorse">
+              <column>
+               <property name="text">
+                <string>Risorsa</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Fabbisogno</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Ore Lavorate</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Ore Mancanti</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="lbl_stato_dettaglio">
+              <property name="text">
+               <string>STATO LOTTO</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QTextEdit" name="txt_diagnostica"/>
+            </item>
+            <item row="0" column="1">
+             <widget class="QProgressBar" name="pb_avanzamento_cantiere">
+              <property name="value">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QPushButton" name="btn_vai_allo_storico">
+              <property name="maximumSize">
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Controlla Storico Lotto</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

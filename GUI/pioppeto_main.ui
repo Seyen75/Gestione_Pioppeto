@@ -76,7 +76,9 @@ QPushButton#btn_esci:hover, QPushButton[text=&quot;Esci&quot;]:hover {
 }
 
 QLabel#label_titolo {
-    font-family: &quot;Georgia&quot;, &quot;Times New Roman&quot;, serif; /* Un font elegante con le grazie come nella bozza */
+    font-family: &quot;Georgia&quot;, &quot;Times New Roman&quot;, serif;
+    font-size: 32pt;        /* Imposta la dimensione da titolo */
+    font-weight: bold;      /* Rende il testo in grassetto */
     background: transparent;
     padding: 10px;
 }
@@ -130,14 +132,14 @@ QLabel {
    <widget class="QLabel" name="label_titolo">
     <property name="geometry">
      <rect>
-      <x>37</x>
-      <y>45</y>
-      <width>931</width>
+      <x>40</x>
+      <y>10</y>
+      <width>951</width>
       <height>91</height>
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:36px; font-weight:700; color:#ffffff;&quot;&gt;Gestione Pioppicultura&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>Gestione Pioppicultura</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -152,56 +154,14 @@ QLabel {
       <height>451</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0,0">
-     <item row="4" column="3">
-      <widget class="QPushButton" name="btn_reset">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Reset Simulazione</string>
-       </property>
-       <property name="icon">
-        <iconset theme="document-revert"/>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
+    <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1,0">
      <item row="3" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>&lt;b&gt;Pannello Gestione Aziendale:&lt;/b&gt;&lt;br&gt;
-Consente di strutturare le squadre e inventariare i mezzi meccanici reali della ditta.&lt;br&gt;&lt;br&gt;
-• Operai Specializzati (Grado A)&lt;br&gt;
-• Manovali Comuni (Grado B)&lt;br&gt;
-• Flotta: Trattori, Piattaforme, Harvester&lt;br&gt;&lt;br&gt;
-&lt;i&gt;I dati inseriti determineranno la capacità oraria operativa e i colli di bottiglia nei cantieri stagionali.&lt;/i&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pannello Gestione Aziendale:&lt;/span&gt;&lt;br/&gt;Consente di modificare le squadre e inventariare i mezzi meccanici reali della ditta.&lt;br/&gt;&lt;br/&gt;• Operai Specializzati (Grado A)&lt;br/&gt;• Manovali Comuni (Grado B)&lt;br/&gt;• Flotta: Trattori, Piattaforme, Harvester, Forwarder&lt;br/&gt;&lt;br/&gt;I dati inseriti determineranno la capacità oraria operativa e i colli di bottiglia nei cantieri stagionali e la necessità di assumere dipendenti stagionali o noleggiare mezzi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::TextFormat::RichText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="3">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>&lt;b&gt;Motore del Tempo:&lt;/b&gt;&lt;br&gt;
-Consolida i dati di input e avvia l'algoritmo di calcolo stocastico su base trimestrale.&lt;br&gt;&lt;br&gt;
-• Avanzamento per stagioni biologiche&lt;br&gt;
-• Esecuzione cantieri e consumo ore&lt;br&gt;
-• Chiusura automatica a ciclo concluso&lt;br&gt;&lt;br&gt;
-&lt;i&gt;La simulazione termina quando tutti i lotti raggiungono la maturità e vengono abbattuti.&lt;/i&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
@@ -223,7 +183,7 @@ Consolida i dati di input e avvia l'algoritmo di calcolo stocastico su base trim
         <string>Gestione e Creazione Lotti</string>
        </property>
        <property name="icon">
-        <iconset theme="preferences-desktop-locale"/>
+        <iconset theme="text-x-generic"/>
        </property>
        <property name="iconSize">
         <size>
@@ -237,10 +197,10 @@ Consolida i dati di input e avvia l'algoritmo di calcolo stocastico su base trim
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>&lt;b&gt;Bilancio Consuntivo:&lt;/b&gt;&lt;br&gt;
-Analisi e revisione scientifica dei risultati economici e forestali ottenuti a fine ciclo.&lt;br&gt;&lt;br&gt;
+Analisi e revisione scientifica dei risultati economici e forestali ottenuti a fine Simulazione.&lt;br&gt;&lt;br&gt;
 • Cubature raccolte (m³) e Masse in fibra (t)&lt;br&gt;
 • Confronto rese ettariali tra singoli lotti&lt;br&gt;
-• Efficienza e saturazione del capitale meccanico&lt;br&gt;&lt;br&gt;
+• Efficienza e saturazione del capitale meccanico ed umano&lt;br&gt;&lt;br&gt;
 &lt;i&gt;Fornisce la diagnostica finale sui colli di bottiglia e sui fallimenti colturali della ditta.&lt;/i&gt;</string>
        </property>
        <property name="alignment">
@@ -251,31 +211,15 @@ Analisi e revisione scientifica dei risultati economici e forestali ottenuti a f
        </property>
       </widget>
      </item>
-     <item row="5" column="3">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>&lt;b&gt;Reset Simulazione&lt;/b&gt;&lt;br&gt;
-Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti&lt;br&gt;&lt;br&gt;
-
-</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>&lt;b&gt;Analisi Dinamica:&lt;/b&gt;&lt;br&gt;
+        <string>&lt;b&gt;Simulazione Dinamica:&lt;/b&gt;&lt;br&gt;
 Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;br&gt;&lt;br&gt;
 • Accrescimento dendrometrico (D_bh / H)&lt;br&gt;
 • Saturazione dei serbatoi d'ore ditta&lt;br&gt;
 • Insorgenza di stress idrici e anomalie&lt;br&gt;&lt;br&gt;
-&lt;i&gt;Permette di valutare visivamente la reattività del sistema durante il loop temporale.&lt;/i&gt;</string>
+&lt;i&gt;Permette di valutare visivamente la reattività del sistema durante il passare delle stagioni e degli anni.&lt;/i&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
@@ -307,12 +251,7 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
      <item row="3" column="1">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>&lt;b&gt;Pannello Controllo Pioppeto:&lt;/b&gt;&lt;br&gt;
-Consente la creazione e la pianificazione selvicolturale dei lotti a partire dall'Anno 0.&lt;br&gt;&lt;br&gt;
-• Parametrizzazione Cloni Padani&lt;br&gt;
-• Vulnerabilità idrica e Attrito logistico&lt;br&gt;
-• Indirizzo produttivo (Opera / Industria)&lt;br&gt;&lt;br&gt;
-&lt;i&gt;Dispone di un sistema a regole integrato per la verifica in tempo reale della coerenza colturale.&lt;/i&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pannello Controllo Lotti:&lt;/span&gt;&lt;br/&gt;Consente la creazione e la modifica selvicolturale dei lotti per l'inizio della Simulazione .&lt;br/&gt;&lt;br/&gt;• Parametrizzazione Cloni Padani&lt;br/&gt;• Vulnerabilità idrica e Attrito logistico&lt;br/&gt;• Indirizzo produttivo (Opera / Industria)&lt;br/&gt;&lt;br/&gt;Dispone di un sistema a regole integrato per la verifica in tempo reale della coerenza colturale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::TextFormat::RichText</enum>
@@ -366,7 +305,7 @@ Consente la creazione e la pianificazione selvicolturale dei lotti a partire dal
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
+     <item row="0" column="2">
       <widget class="QPushButton" name="btn_simulazione">
        <property name="enabled">
         <bool>false</bool>
@@ -382,6 +321,59 @@ Consente la creazione e la pianificazione selvicolturale dei lotti a partire dal
          <width>32</width>
          <height>32</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>&lt;b&gt;Simulazione automatica:&lt;/b&gt;&lt;br&gt;
+Avvia l'algoritmo di simulazione delle ditta.&lt;br&gt;&lt;br&gt;
+• Avanzamento per stagioni biologiche&lt;br&gt;
+• Esecuzione cantieri e consumo ore&lt;br&gt;
+• Chiusura automatica a ciclo concluso &lt;br&gt;&lt;br&gt;
+&lt;i&gt;La simulazione termina al numero di anni impostato&lt;/i&gt;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QPushButton" name="btn_reset">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Reset Simulazione</string>
+       </property>
+       <property name="icon">
+        <iconset theme="document-revert"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>&lt;b&gt;Reset Simulazione&lt;/b&gt;&lt;br&gt;
+Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti&lt;br&gt;&lt;br&gt;
+
+</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

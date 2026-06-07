@@ -1,5 +1,6 @@
 import os
 import sys
+from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtCore import Qt
@@ -14,9 +15,6 @@ os.chdir(cartella_progetto)
 # Inserisci questa cartella in cima alla lista dei percorsi di ricerca dei moduli
 if cartella_progetto not in sys.path:
     sys.path.insert(0, cartella_progetto)
-
-from PySide6.QtWidgets import QApplication
-from GUI.pioppeto_main import PioppetoMain
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

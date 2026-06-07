@@ -35,16 +35,20 @@ class Lotto:
         self.archivio_storico_lavorazioni_saltate: list = []
         self.report_resa_finale: dict = {}
 
+
+
     def _calcola_densita(self, sesto: str) -> int:
         """Mappa il sesto di impianto alla densità piante/ha."""
         # Esempio: 6x6=36mq -> 10000/36 = 277 piante/ha
         mappa = {"6x6": 277, "6x5": 333, "5x5": 400, "5x4": 500, "4x4": 625, "7x6": 238, "7x7": 204}
         return mappa.get(sesto, 277)
 
+
+
     def inizializza_nuovo_ciclo(self):
         """Resetta le variabili per un nuovo ciclo di vita del pioppeto."""
                 
-        # 1. Reset operativo (sempre necessario)
+        # 1. Reset operativo
         self.immissione_effettuata = False 
         self.malus_colturale_accumulato = 0.0
         self.anni_ritardo_taglio = 0
@@ -61,7 +65,7 @@ class Lotto:
         # 3. Reset piante (calcolo base)
         self.numero_piante_vive = int(self.superficie_ettari * self.densita_iniziale)
 
-        # 4. RESET DELLA CACHE DEL SIMULATORE (Aggiungi questo!)
+        # 4. RESET DELLA CACHE DEL SIMULATORE
         self.dati_correnti = {
             "dbh_reale_cm": 0.0, 
             "altezza_m": 0.0, 
@@ -69,6 +73,7 @@ class Lotto:
             "piante_attive": self.numero_piante_vive, 
             "volume_totale_m3": 0.0
         }
+
 
     # --- PROPERTIES DI ALIAS ---
     @property
@@ -87,6 +92,8 @@ class Lotto:
             "proprieta_tecnologiche": {"densita_verde_t_m3": 0.85},
             "esigenze_trattamenti": {"sensibilita_marsonina": "Media"}
         }
+
+
 
     def registra_fallimento_intervento(self, operazione: str, stagione: str, anno: int):
         record_anomalia = {"anno": anno, "stagione": stagione, "operazione": operazione}
@@ -111,8 +118,11 @@ class Lotto:
             return False
         return True
 
-    import random
-    
+    # Funzione per calcolare sul singolo lotti in fase di taglio le quantità di resa per tipologia che si otterrà
+    # La funzione distingue fra lotti da OPERA e INDUSTRIA. I lotti da OPERA daranno porzione di resa anche alla resa per cartiera e truciolato con le percentuali di alberi non idonei
+    # I lotti da INDUSTRIA invece non danno mai resa da opera, ma ha una porzione di materiale che va in truciolato
+    # La funzione, attraverso la valutazione di una curva guassiana stima, con una porzione piccola randomica per evitare rese eccessiavamente simili, le ripartizioni
+
     def calcola_ripartizione_assortimenti(self, parametri_clone_selezionato: dict, piante_abbattute: int) -> dict:
         
         # INIZIALIZZAZIONE SICURA DELLE VARIABILI
@@ -201,7 +211,9 @@ class Lotto:
             "cartiera_t": round(resa_cartiera_ton, 2),
             "truciolato_t": round(resa_truciolato_ton, 2)
         }
-        
+    
+    # Funzione che valuta l'adattabilità del clone al terreno del lotto, restituendo un moltiplicatore che influenzerà la crescita biologica simulata
+  
     def calcola_moltiplicatore_idrico(self) -> float:
         """
         Valuta l'adattabilità (vocazione) del clone al terreno del lotto.
@@ -220,7 +232,8 @@ class Lotto:
             # Malus lineare morbido: fino a un massimo del -15%
             return 1.0 - (0.15 * abs(idx))
 
-        
+    # Funzione che simula l'accrescimento biologico del lotto per un anno, restituendo i dati aggiornati di diametro, altezza, volume e piante vive
+
     def simula_accrescimento(self, profilo_clone: dict, eta_anno: int) -> dict:
         if eta_anno == 0:
             return {"dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, "piante_attive": self.numero_piante_vive, "volume_totale_m3": 0.0}

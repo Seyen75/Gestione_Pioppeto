@@ -81,6 +81,9 @@ class FormDitta(QWidget):
         if parent:
             self.centra_rispetto_al_parent(parent)
 
+    # Funzione che aggiorna i valori dei widget grafici in base ai dati attuali salvati nell'istanza della ditta, 
+    # in modo da riflettere sempre lo stato reale del modello quando la form viene aperta
+    
     def aggiorna_interfaccia_da_modello(self):
         # Estrae i valori reali dall'oggetto ditta e popola gli SpinBox grafici
         if self.spin_operaio_A: self.spin_operaio_A.setValue(self.ditta.operai_grado_A)
@@ -104,6 +107,9 @@ class FormDitta(QWidget):
         if self.spin_harvester_noleggio and "harvester" in limiti: self.spin_harvester_noleggio.setValue(limiti["harvester"])
         if self.spin_forwarder_noleggio and "forwarder" in limiti: self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
         if self.spin_motoseghe_noleggio and "motoseghe" in limiti: self.spin_motoseghe_noleggio.setValue(limiti["motoseghe"])
+
+    # Funzione che legge i valori inseriti dall'utente nei widget grafici, esegue i controlli di consistenza e aggiorna l'istanza della ditta con i nuovi dati, 
+    # chiudendo la form al termine
 
     def salva_dati_in_modello(self):
         # Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati
@@ -153,6 +159,9 @@ class FormDitta(QWidget):
             }
 
         self.close()
+
+    # Funzione che posiziona la form al centro esatto della form padre, calcolando le geometrie di entrambe le finestre 
+    # spostando di conseguenza la posizione della form figlia
 
     def centra_rispetto_al_parent(self, parent):
         # Posiziona la form al centro esatto della form padre
