@@ -137,11 +137,13 @@ class Ditta:
         
         richiesta = {}
         for risorsa, quantita in composizione_squadra.items():
-            richiesta[risorsa] = ore_totali_lorde * quantita
+            # Arrotondamento del monte ore per singola risorsa
+            richiesta[risorsa] = round(ore_totali_lorde * quantita, 2)
 
-        richiesta["meta_lavoro_puro"] = ore_lavoro_puro
-        richiesta["meta_linee_attive"] = linee_attive
-        richiesta["ore_richieste"] = ore_totali_lorde / linee_attive
+        # Arrotondamento dei metadati del cantiere
+        richiesta["meta_lavoro_puro"] = round(ore_lavoro_puro, 2)
+        richiesta["meta_linee_attive"] = linee_attive # È un intero, non serve arrotondarlo
+        richiesta["ore_richieste"] = round(ore_totali_lorde / linee_attive, 2)
 
         return richiesta
 
@@ -157,72 +159,72 @@ class Ditta:
         fattore_completamento = 1.0
         risorsa_critica = None
 
-        # VALUTAZIONE FATTIBILITÀ (Esiste abbastanza capienza nei serbatoi?)
-        # Cicla
+        # Per ogni risorsa richiesta si verifica se il serbatoio interno è sufficiente, altrimenti si ricorre al mercato dei noli\stagionali
         for risorsa, ore_richieste in specifiche_cantiere.items():
             
-            # esce dalla ciclo se si trattano di dati solo ai fini statistici e non per reale modifica
+            # esce dalla ciclo se si trattano di dati solo ai fini statistici e non per reale modifica
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
         
-            # Estrae il dato di ore serbatoio per la risorsa 
-            serbatoio_interno = self.serbatoi_ore[risorsa]
+            # Arrotonda la richiesta in entrata
+            ore_richieste = round(float(ore_richieste), 2)
+            
+            # Estrae e arrotonda il dato di ore serbatoio per la risorsa 
+            serbatoio_interno = round(float(self.serbatoi_ore[risorsa]), 2)
             
             # Se la richiesta è maggiore della disponibilità prova a ricorrere ai noli\stagionali
             if ore_richieste > serbatoio_interno:
-                deficit = ore_richieste - serbatoio_interno
+                deficit = round(ore_richieste - serbatoio_interno, 2)
                 
                 # Verifica la categoria su cui andare a chiedere nolo\stagionale
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
                 
                 # Carica il valore delle ore ancora disponibili sul mercato noli\stagionali
-                ore_nolo_rimaste = self.serbatoi_noli_correnti[categoria_mercato]
+                ore_nolo_rimaste = round(float(self.serbatoi_noli_correnti[categoria_mercato]), 2)
                 
                 # Verifica se il deficit di ore è possibile o no soddisfarlo con il mercato noli\stagionali
                 if deficit > ore_nolo_rimaste:
-                    # BLOCCO FISICO: Risorse interne e mercato totalmente prosciugati e calcola quanto percentualmente è completabile la lavorazione
-                    ore_totali_erogabili = serbatoio_interno + ore_nolo_rimaste
-                    quota_possibile = ore_totali_erogabili / ore_richieste
+                    # BLOCCO FISICO: Risorse interne e mercato totalmente prosciugati
+                    ore_totali_erogabili = round(serbatoio_interno + ore_nolo_rimaste, 2)
+                    quota_possibile = round(ore_totali_erogabili / ore_richieste, 2) 
                     
                     if quota_possibile < fattore_completamento:
                         fattore_completamento = quota_possibile
                         risorsa_critica = risorsa
 
         
-        # Verifica se il fattore di completamento è 0 (essendo float si utilizza un fattore decimale di sicurezza
-        # Nel caso è 0 allora la lavorazione non viene effettuata ed è inserita la risorsa come critica
-        # Se il fallimento di quella risorsa non è il primo il valore viene incrementato di 1 altrimenti lo si crea
-        # La funzione termina senza erogazione, non essendo fatto il lavoro ed il valore 0.0 come percentuale completamento
+        # Se il fattore_completamento è sceso a 0, il lavoro non viene effettuato
         if fattore_completamento <= 0.001:
             if risorsa_critica:
                 attr_f = f"fallimenti_{risorsa_critica}"
                 if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
             return 0.0
 
-        # EROGAZIONE (Svuotamento reale dei serbatoi) - Il lavoro ha, almeno parzialemente le risorse per fare il lavoro
-        # vengono quindi tolti dai serbatoi delle ore i valori calcolati
-        self.ore_lavoro_effettivo += specifiche_cantiere["meta_lavoro_puro"] * fattore_completamento
+        # EROGAZIONE (Svuotamento reale dei serbatoi)
+        lavoro_puro_effettivo = round(specifiche_cantiere["meta_lavoro_puro"] * fattore_completamento, 2)
+        self.ore_lavoro_effettivo = round(self.ore_lavoro_effettivo + lavoro_puro_effettivo, 2)
         
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
             
-            ore_effettive_spese = ore_richieste * fattore_completamento
-            serbatoio_interno = self.serbatoi_ore.get(risorsa, 0.0)
+            ore_richieste = round(float(ore_richieste), 2)
+            ore_effettive_spese = round(ore_richieste * fattore_completamento, 2)
+            serbatoio_interno = round(float(self.serbatoi_ore.get(risorsa, 0.0)), 2)
             
             if ore_effettive_spese <= serbatoio_interno:
-                self.serbatoi_ore[risorsa] -= ore_effettive_spese
+                self.serbatoi_ore[risorsa] = round(serbatoio_interno - ore_effettive_spese, 2)
             else:
                 # Fondo raschiato: azzeriamo l'interno e attingiamo al mercato
-                quota_esterna = ore_effettive_spese - serbatoio_interno
+                quota_esterna = round(ore_effettive_spese - serbatoio_interno, 2)
                 self.serbatoi_ore[risorsa] = 0.0
                 
                 # Consumiamo fisicamente le ore del terzista
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
-                # Accesso diretto al serbatoio dei noli\stagionali
-                residuo_nolo = self.serbatoi_noli_correnti[categoria_mercato]
-                self.serbatoi_noli_correnti[categoria_mercato] = max(0.0, residuo_nolo - quota_esterna)
+                residuo_nolo = round(float(self.serbatoi_noli_correnti[categoria_mercato]), 2)
+                
+                self.serbatoi_noli_correnti[categoria_mercato] = round(max(0.0, residuo_nolo - quota_esterna), 2)
                 
                 # Registriamo l'uso per le statistiche della dashboard
-                self.registro_extra_anno[risorsa] += quota_esterna
+                self.registro_extra_anno[risorsa] = round(self.registro_extra_anno.get(risorsa, 0.0) + quota_esterna, 2)
 
         
         # Aggiunge il fallimento per l'esecuzione parziale di una lavorazione
@@ -230,6 +232,4 @@ class Ditta:
             attr_f = f"fallimenti_{risorsa_critica}"
             if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
 
-
-        # Returnoa la percentuale di completamento totale o parziale della lavorazione
         return fattore_completamento

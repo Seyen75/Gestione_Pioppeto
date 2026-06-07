@@ -35,6 +35,8 @@ class FormValutazioni(QWidget):
         # 2. Configurazione e popolamento iniziale dei dati
         self._configura_stato_iniziale_selettori()
 
+    # Funzione che carica l'interfaccia grafica da file .ui, mappa i componenti principali come attributi della classe e imposta il layout generale della form
+    
     def _carica_interfaccia(self):
         loader = QUiLoader()
         percorso_ui = os.path.join(os.path.dirname(__file__), "form_valutazioni.ui")
@@ -45,7 +47,9 @@ class FormValutazioni(QWidget):
         layout_principale.setContentsMargins(15, 15, 15, 15)
         
         self.setWindowTitle("Report Finale e Statistiche Consuntive")
-        
+    
+    # Funzione che centra la finestra sullo schermo, tenendo conto di eventuali finestre genitore e delle dimensioni dinamiche della form
+    
     def _centra_finestra_su_schermo(self):
         self.adjustSize()
         schermo: QScreen = QGuiApplication.primaryScreen()
@@ -59,6 +63,9 @@ class FormValutazioni(QWidget):
             x = (geometria_schermo.width() - larghezza_form) // 2
             y = (geometria_schermo.height() - altezza_form) // 2
             self.move(geometria_schermo.x() + x, geometria_schermo.y() + y)
+
+    # Funzione che mappa i componenti principali dell'interfaccia grafica come attributi della classe, 
+    # facilitando l'accesso e la manipolazione dei dati nei vari slot e funzioni di aggiornamento
 
     def _mappa_componenti_ui(self):
         self.tab_root = self.ui.findChild(QTabWidget, "tab_valutazioni_root")
@@ -99,8 +106,11 @@ class FormValutazioni(QWidget):
         
         self.btn_esci = self.ui.findChild(QPushButton, "btn_esci")
 
+    # Funzione che configura le tabelle di valutazione dell'efficienza, impostando il numero di colonne, le intestazioni, 
+    # il dimensionamento e lo stile generale per garantire chiarezza e leggibilità dei dati presentati
+
     def _tabelle_efficienza(self):
-        # --- Setup Tabella 1: Saturazione Interna ---
+        # Setup Tabella Saturazione Interna Risorse
         if hasattr(self.ui, 'tbl_saturazione'):
             col_sat = ["Risorsa", "Stagione", "Ore\nDisponibili", "Ore\nLavorate", "%\nSaturaz."]
             self.ui.tbl_saturazione.setColumnCount(len(col_sat))
@@ -111,7 +121,7 @@ class FormValutazioni(QWidget):
             header_sat.setSectionResizeMode(0, QHeaderView.Stretch)
             header_sat.setStretchLastSection(False)
         
-        # --- Setup Tabella 2: Stress Test Noli ---
+        # Setup Tabella Stress Test Noli
         if hasattr(self.ui, 'tbl_stagionali_noli'):
             col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim.", "Ore Sforate\n(Criticità)"]
             self.ui.tbl_stagionali_noli.setColumnCount(len(col_stress))
@@ -122,7 +132,7 @@ class FormValutazioni(QWidget):
             header_stress.setSectionResizeMode(0, QHeaderView.Stretch)
             header_stress.setStretchLastSection(False)
             
-        # --- Setup Tabelle Anomalie ---
+        # Setup Tabelle Anomalie
         if hasattr(self, 'tbl_log_anomalie') and self.tbl_log_anomalie:
             col_anomalie = ["Anno", "Stagione", "Lotto ID", "Operazione", "Stato / Anomalia"]
             self.tbl_log_anomalie.setColumnCount(len(col_anomalie))
@@ -137,11 +147,14 @@ class FormValutazioni(QWidget):
             header_anom.setSectionResizeMode(4, QHeaderView.Stretch)
             
         if hasattr(self, 'tbl_bilancio_risorse') and self.tbl_bilancio_risorse:
-            # Intestazioni inequivocabili
+            # Intestazioni colonne per il bilancio risorse, con testo su più righe per chiarezza
             col_bil = ["Risorsa", "Fabbisogno Tot.", "Ore Lavorate", "Ore Mancanti"]
             self.tbl_bilancio_risorse.setColumnCount(len(col_bil))
             self.tbl_bilancio_risorse.setHorizontalHeaderLabels(col_bil)
             self.tbl_bilancio_risorse.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+    # Funzione che inizializza il canvas del grafico di ripartizione dei risultati, impostando dimensioni, 
+    # colori e layout per integrarsi armoniosamente con il tema scuro dell'applicazione e garantire una visualizzazione chiara dei dati
 
     def _inizializza_canvas_grafico(self):
         colore_sfondo_hex = "#141923"
@@ -154,6 +167,9 @@ class FormValutazioni(QWidget):
             layout_grafico = QVBoxLayout(self.widget_canvas_tab1)
             layout_grafico.addWidget(self.canvas_ripartizione)
             layout_grafico.setContentsMargins(0, 0, 0, 0)
+
+    # Funzione che connette i segnali dei componenti interattivi della form (come combobox, tabelle e bottoni) ai rispettivi slot, 
+    # garantendo che le azioni dell'utente attivino le funzioni di aggiornamento e visualizzazione dei dati in modo coerente e reattivo
 
     def _connetti_segnali(self):
         if self.btn_esci:
@@ -178,52 +194,48 @@ class FormValutazioni(QWidget):
         if self.tbl_log_anomalie:
             # Sostituito cellClicked con itemSelectionChanged per prendere anche il click sull'header
             self.tbl_log_anomalie.itemSelectionChanged.connect(self.on_riga_anomalia_selezionata)
+    
+    # Funzione che configura lo stato iniziale dei selettori (combobox) e delle tabelle, popolando i dati iniziali 
+    # in base alle informazioni presenti nei parametri del motore di simulazione,
         
     def _configura_stato_iniziale_selettori(self):
-        anni_presenti = set()
         dizionario_storia = getattr(self.parametri, "storico_stagionale", {}) 
+        anni_presenti = set()
         
-        for chiave_stagione in dizionario_storia.keys(): 
-            if chiave_stagione.startswith("A"):
-                try:
-                    anno = int(chiave_stagione.split("_")[0][1:])
-                    anni_presenti.add(anno)
-                except ValueError:
-                    continue
-        
+        # Scansione sicura delle chiavi
+        for k in dizionario_storia.keys():
+            if k.startswith("A") and "_" in k:
+                parte_anno = k.split("_")[0][1:]
+                if parte_anno.isdigit(): # Verifica che sia effettivamente un numero
+                    anni_presenti.add(int(parte_anno))
+                    
         self.anno_max = max(anni_presenti) if anni_presenti else 1
         lista_anni = [str(a) for a in range(1, self.anno_max + 1)]
         
-        if hasattr(self, 'cmb_anno_report') and self.cmb_anno_report:
-            self.cmb_anno_report.clear()
-            self.cmb_anno_report.addItems(lista_anni)
+        # Popolamento componenti
+        self.cmb_anno_report.clear()
+        self.cmb_anno_report.addItems(lista_anni)
         
-        if self.cmb_scelta_lotto:
-            self.cmb_scelta_lotto.clear()
-            for lotto in self.parametri.collezione_lotti:
-                self.cmb_scelta_lotto.addItem(lotto.id_lotto)
+        self.cmb_scelta_lotto.clear()
+        self.cmb_scelta_lotto.addItems([lotto.id_lotto for lotto in self.parametri.collezione_lotti])
 
-        if self.tbl_storico_lotto:
-            header = self.tbl_storico_lotto.horizontalHeader()
-            header.setSectionResizeMode(QHeaderView.ResizeToContents)
-            header.setStretchLastSection(False)
+        self.tbl_storico_lotto.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.tbl_storico_lotto.horizontalHeader().setStretchLastSection(False)
         
-        if hasattr(self, 'cmb_anno_report_capacita') and self.cmb_anno_report_capacita:
-            self.cmb_anno_report_capacita.clear()
-            self.cmb_anno_report_capacita.addItems(lista_anni)
+        self.cmb_anno_report_capacita.clear()
+        self.cmb_anno_report_capacita.addItems(lista_anni)
         
-        # Scateniamo i popolamenti iniziali
-        if hasattr(self, 'slot_cambio_anno_combobox'):
-            self.slot_cambio_anno_combobox("1")
+        # Esecuzione popolamenti iniziali
+        self.slot_cambio_anno_combobox("1")
+        self._aggiorna_tab_efficienza("1")
             
-        if hasattr(self, '_aggiorna_tab_efficienza'):
-            self._aggiorna_tab_efficienza("1")
-            
-        if self.cmb_scelta_lotto and self.cmb_scelta_lotto.count() > 0:
+        if self.cmb_scelta_lotto.count() > 0:
             self.slot_cambio_lotto_combobox(self.cmb_scelta_lotto.currentText())
             
-        # Popoliamo la tabella delle anomalie all'avvio
         self._popola_tabella_anomalie()
+    
+    # Funzione che costruisce una mappa rapida tra ID operazione e descrizione, facilitando la visualizzazione dei dati di raccolta 
+    # lavorazione nei report e nelle tabelle di valutazione
     
     def _costruisci_mappa_operazioni(self) -> dict:
         mappa = {}
@@ -233,6 +245,8 @@ class FormValutazioni(QWidget):
                     for op in operazioni:
                         mappa[op["id_operazione"]] = op["descrizione"]
         return mappa
+
+    # Slot che si attiva al cambio di anno nella combobox, aggiornando la tabella dei tagli effettuati nell'anno selezionato,
 
     @Slot(str)
     def slot_cambio_anno_combobox(self, testo_anno: str):
@@ -321,6 +335,9 @@ class FormValutazioni(QWidget):
 
         self._aggiorna_grafico_ripartizione(dati_grafico_lotti)
 
+    # Slot che si attiva al cambio di lotto nella combobox, aggiornando la tabella dello storico del lotto selezionato con i dati di crescita, 
+    # biometria e tagli effettuati negli anni precedenti,
+
     @Slot(str)
     def slot_cambio_lotto_combobox(self, id_lotto_selezionato: str):
         if not id_lotto_selezionato or self.tbl_storico_lotto is None:
@@ -330,7 +347,11 @@ class FormValutazioni(QWidget):
         if self.lbl_tipo_filiera_lotto:
             self.lbl_tipo_filiera_lotto.setText(f"Indirizzo Produttivo: Filiera da {lotto_reale.destinazione_uso} | Clone: {lotto_reale.clone_assegnato}")
         self._popola_tabella_lotto(lotto_reale)
-        
+    
+    # Funzione che popola la tabella dello storico del lotto selezionato, estraendo i dati di crescita, biometria e tagli effettuati negli anni precedenti
+    # e valutando se il lotto era pronto al taglio in base a criteri di età, diametro e stato di taglio, evidenziando con colori e formattazioneù
+    # le condizioni di prontezza e i risultati dei tagli effettuati negli anni per facilitare l'analisi visiva da parte dell'utente
+    
     def _popola_tabella_lotto(self, lotto_reale):
         if self.tbl_storico_lotto is None: return
         self.tbl_storico_lotto.setRowCount(0)
@@ -415,6 +436,11 @@ class FormValutazioni(QWidget):
             for c in range(10):
                 item = self.tbl_storico_lotto.item(riga, c)
                 if item: item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    
+    # Funzione che aggiorna il grafico di ripartizione dei risultati dei tagli effettuati nell'anno selezionato, 
+    # visualizzando la distribuzione in termini di volume raccolto per opera, cartiera e truciolato
+    # per ogni lotto tagliato, con una formattazione chiara e coerente con il tema scuro dell'applicazione 
+    # con l'aggiunta di una legenda per facilitare l'interpretazione dei dati da parte dell'utente, evidenziando eventuali assenze
             
     def _aggiorna_grafico_ripartizione(self, dati_lotti: List[Dict[str, Any]]):
         if not hasattr(self, 'ax_ripartizione'): return
@@ -456,7 +482,11 @@ class FormValutazioni(QWidget):
 
         self.fig_ripartizione.subplots_adjust(top=0.78, bottom=0.15, left=0.15, right=0.95)
         self.canvas_ripartizione.draw()
-        
+    
+    # Funzione che aggiorna le tabelle di valutazione dell'efficienza delle risorse interne e del ricorso a noli stagionali,
+    # calcolando per ogni risorsa e stagione le ore disponibili, le ore lavorate, le ore ricorse a noli, i tetti massimi di mercato e le eventuali
+    # ore sforate, evidenziando con formattazione e colori le criticità e i risultati di saturazione ed esaurimento delle risorse per facilitare l'analisi da parte dell'utente
+    
     def _aggiorna_tab_efficienza(self, testo_anno: str):
         if not testo_anno: return
         anno = int(testo_anno)
@@ -520,6 +550,10 @@ class FormValutazioni(QWidget):
         if hasattr(self.ui, 'lbl_tagli_falliti'): self.ui.lbl_tagli_falliti.setText(f"Tagli Raso Saltati (Mancanza Risorse): {stats.get('tagli_strutturali_saltati', 0)}")
         if hasattr(self.ui, 'lbl_biologici_falliti'): self.ui.lbl_biologici_falliti.setText(f"Tagli Ritardati (Oltre Maturità): {stats.get('tagli_biologici_saltati', 0)}")
         if hasattr(self.ui, 'lbl_generici_falliti'): self.ui.lbl_generici_falliti.setText(f"Lavorazioni Agronomiche Saltate: {stats.get('lavorazioni_generiche_saltate', 0)}")
+    
+    # Funzione che inserisce una riga nella tabella di saturazione delle risorse, formattando i dati di ore disponibili, ore lavorate e percentuale di saturazione,
+    # evidenziando con colori le condizioni di saturazione critica o ottimale e formattando in grassetto le righe totali per facilitare l'analisi visiva da parte dell'utente, 
+    # con attenzione alla coerenza stilistica e alla chiarezza dei dati presentati
                     
     def _inserisci_riga_saturazione(self, nome, stagione, disp, lav, is_totale=False):
         r = self.ui.tbl_saturazione.rowCount()
@@ -543,6 +577,10 @@ class FormValutazioni(QWidget):
                     item.setFont(QFont("Arial", 11, QFont.Bold))
                     if c != 4: item.setForeground(QColor("#ffecb3"))
                 elif c != 4: item.setForeground(QColor("#ffffff"))
+
+    # Funzione che inserisce una riga nella tabella di stress da noli stagionali, formattando i dati di ore ricorse a noli, tetti di mercato e percentuale di esaurimento,
+    # evidenziando con colori le condizioni di esaurimento critico o sostenibile e formattando in grassetto le righe totali per facilitare l'analisi visiva da parte dell'utente, con attenzione alla coerenza stilistica e alla chiarezza dei dati presentati,
+    # con un focus particolare sulle ore sforate evidenziate in rosso per facilitare l'identificazione delle criticità legate al ricorso a noli stagionali
 
     def _inserisci_riga_stress(self, nome, stagione, noli, tetto, sforate, is_totale=False):
         r = self.ui.tbl_stagionali_noli.rowCount()
@@ -574,6 +612,9 @@ class FormValutazioni(QWidget):
     # TAB 4: DIAGNOSTICA ANOMALIE
     # =========================================================
 
+    # Funzione che popola la tabella delle anomalie operative e biologiche rilevate durante l'analisi dello storico stagionale, evidenziando con formattazione e colori le condizioni di anomalia e i motivi di fallimento dei tagli,
+    # facilitando l'identificazione visiva delle criticità e dei pattern ricorrenti nelle operazioni di taglio e nelle condizioni biologiche dei lotti, con un focus particolare sui ritardi biologici e sulle omissioni di taglio evidenziati in rosso per facilitare l'analisi da parte dell'utente
+    
     def _popola_tabella_anomalie(self):
         if not self.tbl_log_anomalie: return
         self.tbl_log_anomalie.setRowCount(0)
@@ -657,8 +698,10 @@ class FormValutazioni(QWidget):
                             item_stato.setForeground(QColor("#c2185b")) 
                             self.tbl_log_anomalie.setItem(riga, 4, item_stato) 
                             
-                            
-                            
+    # Funzione che fornisce una diagnosi dettagliata del motivo di fallimento di un'operazione di taglio, analizzando lo storico stagionale del lotto e confrontando i dati biometrici, l'età, le condizioni operative e le risorse disponibili,
+    # per identificare se il fallimento è dovuto a ritardi biologici, omissioni di taglio per mancanza di risorse o interruzioni operative, fornendo una spiegazione chiara e dettagliata delle cause alla base del fallimento, con un focus particolare sui
+    # ritardi biologici evidenziati in rosso per facilitare l'identificazione delle criticità legate alla maturità dei lotti e alle condizioni di crescita, e sulle omissioni di taglio evidenziate in arancione per facilitare l'analisi delle criticità 
+    # legate alla pianificazione e alla gestione delle risorse nei cantieri di taglio               
 
     def _diagnostica_fallimento(self, chiave_stagione, id_lotto, operazione, stato, op_data, fabbisogno, lavorate, perc, piante_rimaste_txt):
         storico = getattr(self.parametri, "storico_stagionale", {})
@@ -700,6 +743,9 @@ class FormValutazioni(QWidget):
             
         return "Nessuna informazione di dettaglio disponibile nel log storico."
     
+    # Slot che si attiva quando l'utente seleziona una riga nella tabella delle anomalie, mostrando una diagnosi dettagliata del motivo di fallimento dell'operazione di taglio associata all'anomalia selezionata, con un focus particolare sui ritardi biologici evidenziati in rosso e sulle omissioni di taglio evidenziate 
+    # in arancione per facilitare l'identificazione delle criticità legate alla maturità dei lotti e alla pianificazione delle risorse nei cantieri di taglio    
+    
     @Slot()
     def on_riga_anomalia_selezionata(self):
         if not hasattr(self, 'tbl_log_anomalie') or not self.tbl_log_anomalie: return
@@ -727,74 +773,75 @@ class FormValutazioni(QWidget):
         perc = 0
         piante_rimaste_txt = ""
 
-        if self.tbl_bilancio_risorse:
+        if hasattr(self, 'tbl_bilancio_risorse') and self.tbl_bilancio_risorse:
             self.tbl_bilancio_risorse.setRowCount(0)
+            
             if op_data:
-                richieste_json = float(op_data.get("durata_cantiere_h", 0.0))
+                # 1. Lettura diretta dei dati corretti salvati dal simulatore
+                fabbisogno = float(op_data.get("durata_cantiere_h", 0.0))
                 lavorate = float(op_data.get("ore_lavoro_totali", 0.0))
-                lotto_obj = next((l for l in self.parametri.collezione_lotti if l.id_lotto == id_lotto), None)
                 
-                # RICALCOLO INTELLIGENTE DEL FABBISOGNO REALE
-                if "Taglio" in operazione or "RAC" in op_data.get("id_operazione", ""):
-                    tagli_eff = dati_stagione.get("risultati_cantieri", {}).get("tagli_effettuati", [])
-                    taglio = next((t for t in tagli_eff if t.get("lotto_id") == id_lotto), None)
+                # 2. Uso della chiave percentuale_completamento (già in scala 0-100 grazie al round(x * 100, 2))
+                perc_json = float(op_data.get("percentuale_completamento", 0.0))
+                
+                perc = int(perc_json)                 # Per la progress bar (numero intero 0-100)
+                fattore = perc_json / 100.0           # Per la matematica delle piante (scala 0.0 - 1.0)
+
+                # 3. Calcolo piante rimaste (solo per i cantieri di taglio parziali)
+                if ("Taglio" in operazione or "RAC" in op_data.get("id_operazione", "")) and 0.0 < fattore < 1.0:
                     stato_pre = dati_stagione.get("stato_lotti_pre", {}).get(id_lotto, {})
-                    vol_pre = float(stato_pre.get("biometria", {}).get("volume_totale_m3", 0.001))
                     piante_pre = int(stato_pre.get("biometria", {}).get("piante_attive", 0))
-
-                    if taglio and vol_pre > 0:
-                        vol_raccolto = float(taglio.get("volume_raccolto_m3", 0.0))
-                        perc_reale = vol_raccolto / vol_pre
-                        perc = int(perc_reale * 100)
-                        
-                        piante_tagliate = int(piante_pre * perc_reale)
+                    
+                    if lavorate > 0 and piante_pre > 0:
+                        piante_tagliate = int(piante_pre * fattore)
                         piante_rimaste = piante_pre - piante_tagliate
-                        if piante_rimaste > 0: piante_rimaste_txt = str(piante_rimaste)
+                        if piante_rimaste > 0: 
+                            piante_rimaste_txt = str(piante_rimaste)
 
-                        if 0 < perc_reale < 1: fabbisogno = lavorate / perc_reale
-                        else: fabbisogno = lavorate
-                    else:
-                        fabbisogno = lotto_obj.superficie_ettari * 30.0 if lotto_obj else lavorate * 2
-                else:
-                    if "Parziale" in stato and lavorate == richieste_json:
-                        ore_ha = 4.5 if "Sarchiatura" in operazione else 8.0
-                        fabbisogno = (lotto_obj.superficie_ettari * ore_ha) if lotto_obj else lavorate * 2
-                        if fabbisogno > 0: perc = int((lavorate / fabbisogno) * 100)
-                    else:
-                        fabbisogno = richieste_json
-                        if fabbisogno > 0: perc = int((lavorate / fabbisogno) * 100)
-
-                if "Bloccato" in stato or lavorate == 0: perc = 0
+                # 4. Regole restrittive in caso di blocco totale
+                if "Bloccato" in stato or lavorate == 0: 
+                    perc = 0
+                    
                 perc = max(0, min(perc, 100))
-                fabbisogno = max(fabbisogno, lavorate)
-                deficit = fabbisogno - lavorate
+                deficit = max(0.0, fabbisogno - lavorate)
                 
+                # 5. Aggiornamento UI della barra
                 if hasattr(self, 'pb_avanzamento_cantiere') and self.pb_avanzamento_cantiere: 
                     self.pb_avanzamento_cantiere.setValue(perc)
                 
+                # 6. Popolamento Tabella Risorse
                 riga_tab = self.tbl_bilancio_risorse.rowCount()
                 self.tbl_bilancio_risorse.insertRow(riga_tab)
                 
-                macchina_str = "Harvester/Forwarder" if "Taglio" in operazione else "Squadra/Trattori"
+                macchina_str = "Harvester/Forwarder" if ("Taglio" in operazione or "RAC" in op_data.get("id_operazione", "")) else "Squadra/Trattori"
                 self.tbl_bilancio_risorse.setItem(riga_tab, 0, QTableWidgetItem(macchina_str))
-                self.tbl_bilancio_risorse.setItem(riga_tab, 1, QTableWidgetItem(f"{fabbisogno:.1f} h"))
-                self.tbl_bilancio_risorse.setItem(riga_tab, 2, QTableWidgetItem(f"{lavorate:.1f} h"))
+                self.tbl_bilancio_risorse.setItem(riga_tab, 1, QTableWidgetItem(f"{fabbisogno:.2f} h"))
+                self.tbl_bilancio_risorse.setItem(riga_tab, 2, QTableWidgetItem(f"{lavorate:.2f} h"))
                 
-                item_def = QTableWidgetItem(f"{deficit:.1f} h")
+                item_def = QTableWidgetItem(f"{deficit:.2f} h")
                 if deficit > 0: item_def.setForeground(QColor("#ff5252")) 
                 self.tbl_bilancio_risorse.setItem(riga_tab, 3, item_def)
+                
+                # Centriamo i valori nella tabella
+                for col in range(4):
+                    self.tbl_bilancio_risorse.item(riga_tab, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
             else:
                 if hasattr(self, 'pb_avanzamento_cantiere') and self.pb_avanzamento_cantiere: 
                     self.pb_avanzamento_cantiere.setValue(0)
             
+        # 7. Aggiornamento del testo diagnostico
         if hasattr(self, 'txt_diagnostica') and self.txt_diagnostica:
             spiegazione = self._diagnostica_fallimento(chiave_stagione, id_lotto, operazione, stato, op_data, fabbisogno, lavorate, perc, piante_rimaste_txt)
             self.txt_diagnostica.setText(spiegazione)
             
+        # 8. Abilitazione del bottone di navigazione
         if hasattr(self, 'btn_vai_allo_storico') and self.btn_vai_allo_storico:
             self.btn_vai_allo_storico.setEnabled(True)
             self.btn_vai_allo_storico.setProperty("lotto_target", id_lotto)
             
+    # Slot che si attiva quando l'utente clicca sul pulsante "Vai allo Storico" dopo aver selezionato un'anomalia, portando l'utente al tab dello storico stagionale e selezionando automaticamente il lotto associato all'anomalia per facilitare l'analisi dettagliata dello storico del lotto e delle operazioni di taglio ad esso associate, con un focus particolare sui lotti con ritardi biologici evidenziati in rosso e sulle omissioni di taglio evidenziate in arancione 
+    # per facilitare l'identificazione delle criticità legate alla maturità dei lotti e alla pianificazione delle risorse nei cantieri di taglio    
             
     @Slot()
     def azione_vai_allo_storico(self):

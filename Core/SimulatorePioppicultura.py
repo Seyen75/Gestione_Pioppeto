@@ -250,19 +250,20 @@ class SimulatorePioppicoltura:
             elif intervento["priorita"] == 4: 
                 lotto_target.malus_colturale_accumulato += 0.03
 
-        # Calcolo ore lavorate realmente
-        ore_lavoro_puro_cantiere = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
+        # ---> LA CORREZIONE È QUI <---
+        ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
+        ore_effettive = ore_teoriche * percentuale_completamento
 
         report_stagionale["dettaglio_operazioni"].append({
             "lotto_id": lotto_target.id_lotto, 
             "id_operazione": intervento["id_operazione"],
             "priorita": intervento["priorita"], 
             "durata_cantiere_h": round(spec["ore_richieste"], 2),
-            "ore_lavoro_totali": round(ore_lavoro_puro_cantiere, 2),
+            "ore_lavoro_totali": round(ore_effettive, 2),
+            "percentuale_completamento": round(percentuale_completamento * 100, 2),
             "squadre_attive": spec.get("meta_linee_attive", 1),
             "stato": stato_esecuzione
         })
-
     # Funzione che gestisce le lavorazioni di raccolta, valutando se sono state eseguite completamente, parzialmente o bloccate
 
     def _gestisci_raccolta(self, intervento, lotto_target, spec, percentuale_completamento, report_stagionale):
@@ -310,20 +311,22 @@ class SimulatorePioppicoltura:
             if p_abbattute > 0: lotto_target.tagliato = True
             lotto_target.anni_ritardo_taglio += 1
             
-            # --- CORREZIONE LOGICA FONDAMENTALE ---
-            # Se p_abbattute è 0 significa che il cantiere non ha operato per niente.
             if p_abbattute == 0:
                 stato_esecuzione = "Bloccato (Risorse Insufficienti)"
             else:
                 stato_esecuzione = f"Eseguito Parziale (In piedi {lotto_target.numero_piante_vive} piante)"
 
-        ore_lavoro_puro_cantiere = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
+
+        # Calcoliamo le ore teoriche E le moltiplichiamo per quanto lavoro è stato effettivamente svolto
+        ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
+        ore_effettive = ore_teoriche * percentuale_completamento
 
         report_stagionale["dettaglio_operazioni"].append({
             "lotto_id": lotto_target.id_lotto, 
             "id_operazione": intervento["id_operazione"], 
-            "durata_cantiere_h": round(spec.get("ore_richieste", 0.0), 2),
-            "ore_lavoro_totali": round(ore_lavoro_puro_cantiere, 2),
+            "durata_cantiere_h": round(spec.get("ore_richieste", 0.0), 2), # FABBISOGNO TEORICO
+            "ore_lavoro_totali": round(ore_effettive, 2),                  # ORE LAVORATE REALI
+            "percentuale_completamento": round(percentuale_completamento * 100, 2),
             "squadre_attive": spec.get("meta_linee_attive", 1),
             "stato": stato_esecuzione
         })
