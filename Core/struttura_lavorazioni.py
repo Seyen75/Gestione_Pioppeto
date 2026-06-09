@@ -35,11 +35,9 @@ OP_POT_02 = {"id_operazione": "OP_POT_02", "descrizione": "Potatura di elevazion
 
 OP_RAC_01 = {"id_operazione": "OP_RAC_01", "descrizione": "Abbattimento ed esbosco avanzato Opera", "macrocategoria": "raccolta", "priorita": 1, "ore_ha": 12.0, "risorse": {"grado_A": 2.0, "harvester": 1.0, "forwarder": 1.0}}
 OP_RAC_02 = {"id_operazione": "OP_RAC_02", "descrizione": "Abbattimento e cippatura meccanizzata Cartiera", "macrocategoria": "raccolta", "priorita": 1, "ore_ha": 9.0, "risorse": {"grado_A": 2.0, "harvester": 1.0, "forwarder": 1.0}}
+OP_RAC_03 = {"id_operazione": "OP_RAC_03", "descrizione": "Abbattimento tradizionale (Motosega)", "macrocategoria": "raccolta_tradizionale", "priorita": 2, "ore_ha": 25.0, "risorse": {"grado_A": 3.0, "trattori_media": 1.0}}
 
-
-# =====================================================================
 # CALENDARIO STRUTTURALE DELLE LAVORAZIONI
-# =====================================================================
 
 STRUTTURA_LAVORAZIONI = {
     "OPERA": {
@@ -70,6 +68,10 @@ STRUTTURA_LAVORAZIONI = {
         "Raccolta": {
             "Inverno": [OP_RAC_01],
             "Primavera": [], "Estate": [], "Autunno": []
+        },
+        "Raccolta_tradizionale": {
+            "Inverno": [OP_RAC_03],
+            "Primavera": [], "Estate": [], "Autunno": []
         }
     },
     "INDUSTRIA": {
@@ -99,6 +101,10 @@ STRUTTURA_LAVORAZIONI = {
         },
         "Raccolta": {
             "Inverno": [OP_RAC_02],
+            "Primavera": [], "Estate": [], "Autunno": []
+        },
+        "Raccolta_tradizionale": {
+            "Inverno": [OP_RAC_03],
             "Primavera": [], "Estate": [], "Autunno": []
         }
     }

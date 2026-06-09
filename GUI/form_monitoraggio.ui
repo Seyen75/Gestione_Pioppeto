@@ -42,7 +42,7 @@ QGroupBox {
     font-weight: bold;
 }
 
-/* Titoli dei GroupBox (Azzurro Ciano Tecnologico) */
+/* Titoli dei GroupBox (Azzurro Ciano) */
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
@@ -56,7 +56,7 @@ QLabel {
     font-size: 13px;
 }
 
-/* FORZATURA STRUTTURALE: Stile specifico per la Label dell'Anno */
+/* Stile specifico per la Label dell'Anno */
 QGroupBox QLabel#lbl_anno, QLabel#lbl_anno {
     color: #ffffff !important;          /* Bianco puro per massima leggibilità */
     font-size: 22px !important;         /* Molto grande */
@@ -64,7 +64,7 @@ QGroupBox QLabel#lbl_anno, QLabel#lbl_anno {
     font-family: &quot;Courier New&quot;, monospace !important; 
 }
 
-/* FORZATURA STRUTTURALE: Stile specifico per la Label della Stagione */
+/* Stile specifico per la Label della Stagione */
 QGroupBox QLabel#lbl_stagione, QLabel#lbl_stagione {
     color: #00e5ff !important;          /* Azzurro Ciano Neon ad alta visibilità */
     font-size: 18px !important;         /* Evidente */
@@ -93,7 +93,6 @@ QPushButton:pressed {
 }
 
 /* Variante per il Pulsante di Chiusura/Termina Sessione (Rosso Corallo) */
-/* Nota: applicheremo questo objectName specifico nel Designer al tasto di interruzione */
 QPushButton#btn_termina_sessione {
     background-color: #d32f2f;
 }

@@ -26,13 +26,13 @@
    <string>Reportistica Simulazione</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* SFONDO DELLA FINESTRA E DEI PANNELLI (Nuovo tono caldo armonizzato) */
+   <string notr="true">/* SFONDO DELLA FINESTRA E DEI PANNELLI*/
 
 QWidget#FormValutazioni, QTabWidget::pane {
     background-color: #1a1516;  /* Antracite */
 }
 
-/* STILE RADICALE DELLE LINGUETTE (Ancoraggio forzato a sinistra) */
+/* Stile radicale delle Tab (Ancoraggio forzato a sinistra) */
 QTabWidget::tab-bar {
     left: 0px;
 }
@@ -52,17 +52,15 @@ QTabBar::tab {
     padding: 8px 20px; 
     font-weight: bold;
     font-size: 11px;
-    
-    /* Usiamo width fisso anziché min-width per impedire a Qt qualsiasi ricalcolo */
     width: 200px; 
 }
 
-/* Tab Attivo (Selezionato) */
+/* Tab Attivo */
 QTabBar::tab:selected {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8a1c24, stop:1 #4f0e13);
     color: #ffffff;
     border: 1px solid #a8222d;
-    border-bottom: 1px solid #1a1516; /* Si fonde con il nuovo sfondo caldo */
+    border-bottom: 1px solid #1a1516;
 }
 
 QTabBar::tab:hover:!selected {
@@ -70,9 +68,7 @@ QTabBar::tab:hover:!selected {
     color: #ffffff;
 }
 
-/* =========================================================================
-   ETICHETTE TESTUALI (QLabel - Tutto in Rosso Corallo Chiaro)
-   ========================================================================= */
+/* ETICHETTE TESTUALI (QLabel - Tutto in Rosso Corallo Chiaro)*/
 #FormValutazioni QLabel, 
 QGroupBox QLabel, 
 QTabWidget QLabel, 
@@ -83,6 +79,7 @@ QLabel {
     background: transparent;
 }
 
+/* Label dei GroupBox e dei controlli base  */
 QLabel#lbl_anno_selezionato,
 QLabel#lbl_anno_selezionato_2,
 QLabel#lbl_titolo_lotto, 
@@ -91,7 +88,7 @@ QGroupBox {
     font-size: 11px !important;
 }
 
-/* ---Label interne al GroupBox Rese Totali --- */
+/* Label interne al GroupBox Rese Totali  */
 QLabel#lbl_tot_3,
 QLabel#lbl_tot_4,
 QLabel#lbl_tot_5,
@@ -111,20 +108,18 @@ QGroupBox#GroupBoxReseTotali {
 }
 
 QLabel#lbl_tipo_filiera_lotto {
-    color: #ffca28 !important;         /* Un bellissimo Giallo Ambra/Oro luminoso */
-    font-size: 16px !important;        /* Dimensione maggiorata per dominare la tabella */
-    font-weight: bold !important;      /* Grassetto marcato */
-    font-family: &quot;Georgia&quot;, serif;     /* Font elegante coerente con il titolo main */
-    padding-top: 10px;                 /* Distanza dal selettore sopra */
-    padding-bottom: 5px;               /* Distanza dalla tabella sotto */
+    color: #ffca28 !important;        
+    font-size: 16px !important;        
+    font-weight: bold !important;     
+    font-family: &quot;Georgia&quot;, serif;     
+    padding-top: 10px;              
+    padding-bottom: 5px;             
     background: transparent;
 }
 
-/* =========================================================================
-   TABELLE (QTableWidget) - Sintonizzate sui toni caldi
-   ========================================================================= */
+/* TABELLE (QTableWidget) - Sintonizzate sui toni caldi */
 QTableWidget {
-    background-color: #151011; /* Celle scure calde */
+    background-color: #151011; 
     gridline-color: #2b1d20;
     color: #ffffff;
     border: 1px solid #3d2429;
@@ -141,6 +136,7 @@ QTableWidget::item:selected {
     color: #ffffff;
 }
 
+/* Testo dei titoli delle colonne  */
 QHeaderView::section {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2d181b, stop:1 #1f1012);
     color: #ff8a80;
@@ -150,9 +146,7 @@ QHeaderView::section {
     font-size: 11px;
 }
 
-/* =========================================================================
-   PULSANTI GENERALI E DI USCITA
-   ========================================================================= */
+/* Pulsanti */
 QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7d1820, stop:1 #420f13);
     color: white;
@@ -171,9 +165,7 @@ QPushButton:pressed {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #5e161b, stop:1 #2a0a0c);
 }
 
-/* =========================================================================
-   GROUPBOX INFORMATIVI
-   ========================================================================= */
+/* GROUPBOX INFORMATIVI */
 QGroupBox {
     border: 1px solid #4a282d;
     border-radius: 6px;
@@ -255,7 +247,7 @@ QSlider::groove:horizontal {
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::TextElideMode::ElideNone</enum>

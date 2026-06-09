@@ -47,7 +47,7 @@ QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
     left: 12px;
-    color: #8cbfa4; /* Verde salvia chiaro coordinato */
+    color: #8cbfa4; /* Verde salvia chiaro */
     padding: 0 5px;
 }
 
@@ -94,7 +94,7 @@ QPushButton:pressed {
 }
 
 QTableWidget {
-                    background-color: #1e2422;      /* Sfondo delle celle leggermente più chiaro dello sfondo app */
+                    background-color: #1e2422;      /* Sfondo delle celle leggermente più chiaro dello sfondo */
                     gridline-color: #3a4743;          /* Il colore dei quadretti di separazione */
                     color: #ffffff;                  /* Colore del testo delle celle */
                     font-size: 13px;
@@ -104,7 +104,7 @@ QTableWidget {
                 /* Stile dei titoli delle colonne in alto */
                 QHeaderView::section {
                     background-color: #2d3835;       /* Sfondo dei titoli */
-                    color: #a3b8b0;                  /* Testo dei titoli (verde oliva chiaro/grigio) */
+                    color: #a3b8b0;                  /* Testo dei titoli  */
                     padding: 6px;
                     font-weight: bold;
                     border: 1px solid #3a4743;       /* Confine dei titoli per allinearsi alla griglia */
@@ -261,6 +261,26 @@ QTableWidget {
        </property>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Attrito spaziale</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="spin_attrito">
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>90</height>
+        </size>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -374,7 +394,7 @@ QTableWidget {
       <x>9</x>
       <y>29</y>
       <width>281</width>
-      <height>140</height>
+      <height>112</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_2">
@@ -431,33 +451,13 @@ QTableWidget {
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Attrito spaziale</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="spin_attrito">
-       <property name="maximumSize">
-        <size>
-         <width>90</width>
-         <height>90</height>
-        </size>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Stress idrico</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="QDoubleSpinBox" name="spin_test_idrico">
        <property name="minimumSize">
         <size>
@@ -488,9 +488,9 @@ QTableWidget {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>180</y>
+      <y>150</y>
       <width>271</width>
-      <height>51</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="text">

@@ -72,7 +72,6 @@ class PioppetoMain(QMainWindow):
         # Strumentazioni avanzate della ditta
         self.ditta_attiva.harvester_abbattitori = 1
         self.ditta_attiva.forwarder_caricatori = 1
-        self.ditta_attiva.kit_motoseghe_professionali = 4
         
         # Dichiarazione della variabile IUFRO (International Union of Forest Research Organizations)
         # Variabile che indica l'operatività media di un cantiere, pari all'80% delle ore disponibili totali
@@ -89,7 +88,6 @@ class PioppetoMain(QMainWindow):
             "trattori_media": 4,
             "piattaforme": 2
         }
-        
         
         # Iniziali i serbatoi stagionali con il parametro di 55 giorni lavorativi per stagione
         # Il numero 55 è dato dal conteggio medio (tolti sabati, domeniche e festivi) dei giorni lavorativi in un trimestre
@@ -155,9 +153,9 @@ class PioppetoMain(QMainWindow):
         # Muove fisicamente la finestra verso le nuove coordinate calcolate (in alto a sinistra)
         self.move(geometria_finestra.topLeft())
 
-    
     # Aggiorna l'interfaccia della form alla variazione dei dati della ditta e dei lotti
     # ed aggiorna la status bar con i messaggi della situazione dell'applicazione
+    
     def aggiorna_stato_interfaccia(self):
         ditta_pronta = (self.ditta_attiva.operai_grado_A + self.ditta_attiva.operai_grado_B) > 0
         lotti_pronti = len(self.parametri_condivisi.collezione_lotti) > 0
@@ -183,8 +181,8 @@ class PioppetoMain(QMainWindow):
             if self.btn_valutazioni: self.btn_valutazioni.setEnabled(True)
             self.statusBar().showMessage("📊 Simulazione conclusa! Analisi diagnostica disponibili in 'Report Finale'.")
        
-    
     # Carica i lotti della ditta standard "Azienda Pioppicola Padana" e li inizializza allo stato dinamico per l'avvio della simulazione
+    
     def _carica_lotti_iniziali(self):
         """Inizializza i 30 lotti di default (20 Opera, 10 Industria) allo stato zero."""
         configurazione_lotti_default = [
@@ -258,8 +256,8 @@ class PioppetoMain(QMainWindow):
             lotto.moltiplicatore_efficienza_clone = 1.0
             self.parametri_condivisi.collezione_lotti.append(lotto)
 
-    
     # Abilita i pulsanti per la reportistica a simulazione effettuata
+    
     def abilita_report_finale(self):
         self.simulazione_eseguita = True
         self.aggiorna_stato_interfaccia()
@@ -312,9 +310,8 @@ class PioppetoMain(QMainWindow):
         self.finestra_lotti.destroyed.connect(self.aggiorna_stato_interfaccia)
         self.finestra_lotti.show()
         
-    
     # Funzione che avvia la simulazione veloce che automatizza l'avanzamento delle stagioni e degli anni per il numero di anni impostato
-
+    
     def simulazione(self):
         self.statusBar().showMessage("Inizializzazione del calcolo forestale in corso...")
         self.parametri_condivisi.reset_simulazione_globale()
@@ -326,16 +323,16 @@ class PioppetoMain(QMainWindow):
 
         try:
             self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
-            fine_scatto = False
+            fine_simulazione = False
             
-            while not fine_scatto:
+            while not fine_simulazione:
                 if progress.wasCanceled():
                     self.statusBar().showMessage("🔄 Simulazione interrotta.")
                     self.motore_condiviso = None
                     return
 
-                stato_tempo = self.motore_condiviso.avanza_passo_simulazione()
-                fine_scatto = stato_tempo["simulazione_terminata"]
+                stato_simulazione = self.motore_condiviso.avanza_passo_simulazione()
+                fine_simulazione = stato_simulazione["simulazione_terminata"]
                 
                 anno = self.parametri_condivisi.anno_corrente
                 stagione = self.parametri_condivisi.stagione_corrente
@@ -354,8 +351,6 @@ class PioppetoMain(QMainWindow):
 
         self.aggiorna_stato_interfaccia()
         
-
-
     # Avvio form monitoraggio Real-Time con la quale effettuare la simulazione passo passo e visualizzare le attività stagionali
     
     def monitoraggio(self):

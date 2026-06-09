@@ -12,7 +12,7 @@ def mostra_messaggio_stilizzato(parent, titolo, testo, tipo="info"):
     msg.setWindowTitle(titolo)
     msg.setText(testo)
     
-    # Configurazione del font di sistema nativo Mac
+    # Configurazione del font di sistema nativo Mac (effettuato per garantire la compatibilità con i sistemi Mac)
     font_sistema = msg.font()
     font_sistema.setPointSize(13)
     msg.setFont(font_sistema)
@@ -63,5 +63,4 @@ def mostra_messaggio_stilizzato(parent, titolo, testo, tipo="info"):
         }
     """)
     
-    # Esegue e ritorna il codice del pulsante premuto
     return msg.exec()

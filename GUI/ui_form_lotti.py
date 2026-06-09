@@ -48,7 +48,7 @@ class Ui_FormLotti(object):
 "    subcontrol-origin: margin;\n"
 "    subcontrol-position: top left;\n"
 "    left: 12px;\n"
-"    color: #8cbfa4; /* Verde salvia chiaro coordinato */\n"
+"    color: #8cbfa4; /* Verde salvia chiaro */\n"
 "    padding: 0 5px;\n"
 "}\n"
 "\n"
@@ -62,8 +62,8 @@ class Ui_FormLotti(object):
 "    min-width: 65px;\n"
 "}\n"
 "\n"
-"/* Evidenziazione del "
-                        "campo quando l'utente ci clicca dentro */\n"
+"/* Evidenziazione del campo quand"
+                        "o l'utente ci clicca dentro */\n"
 "QSpinBox:focus {\n"
 "    border: 1px solid #8cbfa4;\n"
 "    background-color: #313c37;\n"
@@ -96,10 +96,10 @@ class Ui_FormLotti(object):
 "}\n"
 "\n"
 "QTableWidget {\n"
-"                    background-color: #1e2422;      /* Sfondo delle celle leggermente pi\u00f9 chiaro dello sfondo app */\n"
+"                    background-color: #1e2422;      /* Sfondo delle celle leggermente pi\u00f9 chiaro dello sfondo */\n"
 "                    gridline-color: #3a4743;          /* Il colore dei quadretti di separazione */\n"
-"                    color: #ffffff;      "
-                        "            /* Colore del testo delle celle */\n"
+"                    color: #ffffff;                  /* "
+                        "Colore del testo delle celle */\n"
 "                    font-size: 13px;\n"
 "                    border: 1px solid #3a4743;\n"
 "                }\n"
@@ -107,7 +107,7 @@ class Ui_FormLotti(object):
 "                /* Stile dei titoli delle colonne in alto */\n"
 "                QHeaderView::section {\n"
 "                    background-color: #2d3835;       /* Sfondo dei titoli */\n"
-"                    color: #a3b8b0;                  /* Testo dei titoli (verde oliva chiaro/grigio) */\n"
+"                    color: #a3b8b0;                  /* Testo dei titoli  */\n"
 "                    padding: 6px;\n"
 "                    font-weight: bold;\n"
 "                    border: 1px solid #3a4743;       /* Confine dei titoli per allinearsi alla griglia */\n"
@@ -116,8 +116,7 @@ class Ui_FormLotti(object):
 "                /* Stile quando l'utente seleziona una riga */\n"
 "                QTableWidget::item:selected {\n"
 "                    background-color: #2e6b4e;       /* Colore verde foresta per la riga selezionata */\n"
-"                    color: #ffffff;                  /* Testo bianco sulla selezion"
-                        "e */\n"
+"                    color: #ffffff;                  /* Testo bianco sulla selezione */\n"
 "                }\n"
 "")
         self.groupBox = QGroupBox(FormLotti)
@@ -188,6 +187,18 @@ class Ui_FormLotti(object):
 
         self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_3)
 
+        self.label_7 = QLabel(self.formLayoutWidget)
+        self.label_7.setObjectName(u"label_7")
+
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_7)
+
+        self.spin_attrito = QSpinBox(self.formLayoutWidget)
+        self.spin_attrito.setObjectName(u"spin_attrito")
+        self.spin_attrito.setMaximumSize(QSize(90, 90))
+        self.spin_attrito.setMaximum(10)
+
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.spin_attrito)
+
         self.table_lotti = QTableWidget(FormLotti)
         if (self.table_lotti.columnCount() < 6):
             self.table_lotti.setColumnCount(6)
@@ -238,7 +249,7 @@ class Ui_FormLotti(object):
         self.groupBox_2.setGeometry(QRect(330, 10, 301, 241))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(9, 29, 281, 140))
+        self.formLayoutWidget_2.setGeometry(QRect(9, 29, 281, 112))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
@@ -268,22 +279,10 @@ class Ui_FormLotti(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.combo_sesto_impianto)
 
-        self.label_7 = QLabel(self.formLayoutWidget_2)
-        self.label_7.setObjectName(u"label_7")
-
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_7)
-
-        self.spin_attrito = QSpinBox(self.formLayoutWidget_2)
-        self.spin_attrito.setObjectName(u"spin_attrito")
-        self.spin_attrito.setMaximumSize(QSize(90, 90))
-        self.spin_attrito.setMaximum(10)
-
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_attrito)
-
         self.label_6 = QLabel(self.formLayoutWidget_2)
         self.label_6.setObjectName(u"label_6")
 
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_6)
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_6)
 
         self.spin_test_idrico = QDoubleSpinBox(self.formLayoutWidget_2)
         self.spin_test_idrico.setObjectName(u"spin_test_idrico")
@@ -293,11 +292,11 @@ class Ui_FormLotti(object):
         self.spin_test_idrico.setMaximum(1.000000000000000)
         self.spin_test_idrico.setSingleStep(0.100000000000000)
 
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spin_test_idrico)
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_test_idrico)
 
         self.lbl_avviso_clone = QLabel(self.groupBox_2)
         self.lbl_avviso_clone.setObjectName(u"lbl_avviso_clone")
-        self.lbl_avviso_clone.setGeometry(QRect(10, 180, 271, 51))
+        self.lbl_avviso_clone.setGeometry(QRect(10, 150, 271, 81))
         self.lbl_avviso_clone.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignTop)
         self.lbl_avviso_clone.setWordWrap(True)
 
@@ -315,6 +314,7 @@ class Ui_FormLotti(object):
         self.spin_ettari.setSuffix(QCoreApplication.translate("FormLotti", u" ha", None))
         self.spin_eta_iniziale.setSuffix(QCoreApplication.translate("FormLotti", u" anni", None))
         self.label_3.setText(QCoreApplication.translate("FormLotti", u"Et\u00e0 lotto", None))
+        self.label_7.setText(QCoreApplication.translate("FormLotti", u"Attrito spaziale", None))
         ___qtablewidgetitem = self.table_lotti.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("FormLotti", u"ID Lotto", None))
         ___qtablewidgetitem1 = self.table_lotti.horizontalHeaderItem(1)
@@ -334,7 +334,6 @@ class Ui_FormLotti(object):
         self.groupBox_2.setTitle(QCoreApplication.translate("FormLotti", u"Dati Tipologia Impianto", None))
         self.label_4.setText(QCoreApplication.translate("FormLotti", u"Clone", None))
         self.label_5.setText(QCoreApplication.translate("FormLotti", u"Sesto d'impianto", None))
-        self.label_7.setText(QCoreApplication.translate("FormLotti", u"Attrito spaziale", None))
         self.label_6.setText(QCoreApplication.translate("FormLotti", u"Stress idrico", None))
         self.lbl_avviso_clone.setText("")
     # retranslateUi

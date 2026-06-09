@@ -251,22 +251,23 @@ class Lotto:
 
         p = 1.02 if profilo_clone["esigenze_trattamenti"].get("frequenza_irrigazione_anni_1_2") == "Alta" else 1.05
         
-        # 1. Moltiplicatore ambientale (Vocazione fissa del terreno + Errori colturali accumulati)
+        # Moltiplicatore ambientale (Vocazione fissa del terreno + Errori colturali accumulati)
         vocazione_terreno = self.calcola_moltiplicatore_idrico()
         mult_reale = max(0.40, vocazione_terreno - getattr(self, "malus_colturale_accumulato", 0.0))
 
-        # 2. CALCOLO ASSOLUTO (Ripristinato: sicuro per l'architettura del tuo motore)
+        # Calcolo del DBH teorico con la formula di crescita modificata da un coefficiente di forma e 
+        # dal moltiplicatore reale che tiene conto della vocazione del terreno e dei malus accumulati
         dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * mult_reale
         
         # Salvaguardia: la pianta mantiene il diametro massimo raggiunto in caso di malus estremi
-        dbh_precedente = getattr(self, "diametro_medio_fusto", 0.0)
+        dbh_precedente = self.diametro_medio_fusto
         dbh = max(dbh_precedente, dbh_teorico)
 
-        # 3. Calcolo Altezza e Volume
+        # Calcolo Altezza e Volume
         h = (dbh * 0.6) + 4.0 if eta_anno <= 5 else min(27.5, 17.0 + (1.2 * (dbh - 20)))
         vol_singolo = (math.pi * ((dbh / 200) ** 2)) * h * param["coefficiente_forma"]
 
-        # 4. Mortalità
+        # Calcolo mortalità piante del lotto (con tasso più alto nei primi anni e in caso di malus colturali)
         if eta_anno == 1:
             immissione_fatta = getattr(self, "immissione_effettuata", False)
             tasso = 0.007 if immissione_fatta else 0.07

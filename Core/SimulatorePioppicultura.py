@@ -48,11 +48,12 @@ class SimulatorePioppicoltura:
         # Cicla su tutti i lotti presenti all'interno della collezione di lotti presenti nella ditta da simulare
         
         for lotto in self.parametri.collezione_lotti:
+            
             # Se i dati correnti del lotto non sono stati ancora calcolati o caricati vengono creati
             if not hasattr(lotto, "dati_correnti") or not lotto.dati_correnti:
                 profilo = self.dati_cloni[lotto.clone_assegnato]
                 lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
-            
+
             # Se siamo nella fase di pianificazione invernale, verifichiamo che il lotto sia maturo per il taglio
             # per evitare che i dati originali del lotto non siano modificati durante la simulazione di accrescimento
             # che diranno se potremmo tagliare si salvano i dati originali e finita la verifica si reimpostano
@@ -83,12 +84,26 @@ class SimulatorePioppicoltura:
             
             # Controllo che verifica lo stato del lotto. Se è maturo e non è stato tagliato allora mette fra le operazioni
             # da fare presenti nella lista. Se è inverno non deve fare alcuna operazione perchè ci sarà raccolta
-            if is_maturo or getattr(lotto, "tagliato", False):
-                ops = filiera["Raccolta"][stagione] if stagione == "Inverno" else []
+            if is_maturo or lotto.tagliato:  # Usiamo la sintassi pulita senza getattr!
+                if stagione == "Inverno":
+                    # Verifichiamo la presenza della "flotta pesante" (Proprietà + Mercato Noli)
+                    harvesters = self.ditta.harvester_abbattitori + self.ditta.limiti_noli_stagionali["harvester"]
+                    forwarders = self.ditta.forwarder_caricatori + self.ditta.limiti_noli_stagionali["forwarder"]
+                    
+                    if harvesters > 0 or forwarders > 0:
+                        # Tutto ok, si procede con la raccolta avanzata da filiera (OP_RAC_01 o OP_RAC_02)
+                        ops = filiera["Raccolta"]["Inverno"]
+                    else:
+                        # Mancano i mezzi: si dirotta forzatamente sulla raccolta tradizionale
+                        # Assicurati che OP_RAC_03 sia importato/disponibile in questo modulo
+                        ops = filiera["Raccolta_tradizionale"]["Inverno"]
+                else:
+                    ops = []
+                    
                 is_raccolta = (stagione == "Inverno")
-            # se non è maturo o tagliato allora carica fra le operazioni quelle che trova nella lista operazioni
+
+            # se non è maturo o tagliato allora carica fra le operazioni quelle di mantenimento
             else:
-                # Verifica che tipo di stato di maturazione si trova il lotto per caricare le operazioni specifiche per quella fase di crescita, altrimenti carica quelle generiche per la stagione
                 chiave_fase = self._get_chiave_fase(lotto.eta)
                 ops = filiera.get(chiave_fase, {}).get(stagione, []) if chiave_fase is not None else []
                 is_raccolta = False
@@ -96,21 +111,21 @@ class SimulatorePioppicoltura:
             
             # Trasforma la lista di operazioni teoriche ops in un preventivo tecnico dettagliato (interventi), calcolando quanto lavoro serve, con quali macchine e per quale superficie.
             for op in ops:
-                id_univoco = op.get("id_operazione", "OP_GEN")
+                id_univoco = op["id_operazione"]
                 # carica nella variabile la descrizione della operazione id_operazione e della macrocategoria utile per i passi successivi
-                if "descrizione" not in op or not op.get("macrocategoria"):
+                """ if "descrizione" not in op or not op.get("macrocategoria"):
                     id_op = op.get("id_operazione", "ID_SCONOSCIUTO")
-                    raise ValueError(f"Configurazione errata per l'operazione '{id_op}': 'descrizione' e 'macrocategoria' sono obbligatorie.")
+                    raise ValueError(f"Configurazione errata per l'operazione '{id_op}': 'descrizione' e 'macrocategoria' sono obbligatorie.") """
                 
                 descrizione_ui = op["descrizione"]
                 macrocategoria = op["macrocategoria"]
                 
                 # Valutazione disponibilità totale (Proprietà + Nolo) per la lavorazione di raccolta sugli harvester.
                 # Nel caso non ci fossero harvester la raccolta passerebbe da quella meccanica a quella tradizionale con motosega
-                if is_raccolta: 
+                """ if is_raccolta: 
                     harvester_noleggiabili = getattr(self.ditta, "limiti_noli_stagionali", {}).get("harvester", 0)
                     harvester_totali_disponibili = self.ditta.harvester_abbattitori + harvester_noleggiabili
-                    macrocategoria = "raccolta_avanzata" if harvester_totali_disponibili > 0 else "raccolta_tradizionale"
+                    macrocategoria = "raccolta_avanzata" if harvester_totali_disponibili > 0 else "raccolta_tradizionale" """
                 
                 # Calcolo proporzionale superficie per raccolta nel caso si stia per fare una raccolto o altra operazione
                 # Nel caso della raccolta rapporta il lavoro rispetto al numero di piante realmente presenti e non alla mera estensione del lotto
@@ -123,16 +138,17 @@ class SimulatorePioppicoltura:
                     unita = lotto.superficie_ettari
                 
                 # carica dall'operazione quante ore per ettaro servono per la specifica operazione e quante persone\strumentazioni servono
-                ore_unitarie = op["ore_ha"]
+                ore_ettaro = op["ore_ha"]
                 squadra = op["risorse"]
                 
                 # avvia la funzione che calcola le specifiche del cantiere per le specifiche
                 # fornisce oltre i dati ottenuti prima anche l'indice di attrito spaziale del lotto, che indica le difficoltà tecniche del lotto
-                # per la sua morfologia (pendenza del terreno, vicinanza alla strada, accessibilità, etc)
+                # per la sua morfologia (pendenza del terreno, vicinanza alla strada, accessibilità, etc). 
+                # L'unità_lavoro è specifica per la macrocategoria, numero piante per raccolta, ettari per le altre operazioni, in modo da adattare il calcolo alle specificità di ogni tipo di lavorazione 
                 spec = self.ditta.calcola_specifiche_richiesta_cantiere(
                     tipo_cantiere = macrocategoria, 
                     unita_lavoro = unita, 
-                    ore_unitarie = ore_unitarie,
+                    ore_unitarie = ore_ettaro,
                     composizione_squadra = squadra,
                     indice_attrito = lotto.indice_attrito_spaziale
                 )
@@ -157,10 +173,13 @@ class SimulatorePioppicoltura:
     # Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
     # che sarà utilizzato per la reportistica di fine simulazione
     
+    # Funzione che esegue le lavorazioni necessarie per la stagione da simulare.
+    # Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
+    # che sarà utilizzato per la reportistica di fine simulazione
+    
     def esegui_fase_lavorazioni_stagionali(self) -> Dict[str, Any]:
-        """Metodo principale che orchestra le lavorazioni della singola stagione."""
         
-        # 1. Inizializzazione serbatoi
+        # Inizializzazione serbatoi
         stagione_attiva = self.parametri.stagione_corrente
         giorni_utili_stagione = 55 
         self.ditta.inizializza_serbatoi_stagionali(giorni_utili_stagione)
@@ -169,21 +188,19 @@ class SimulatorePioppicoltura:
         serbatoi_iniziali = self.ditta.serbatoi_ore.copy()
         extra_iniziali = self.ditta.registro_extra_anno.copy()
         
-        # Inizializza il report
+        # Inizializza il report finale che sarà restituito alla fine della funzione con il dettaglio di tutte le operazioni e i tagli effettuati durante la stagione
         report_stagionale = {
             "dettaglio_operazioni": [], 
             "tagli_effettuati": []
         }
     
+        # Previsione domanda stagionale (Creazione lista interventi da eseguire)
         lista_interventi_richiesti = self.prevedi_domanda_stagionale(is_esecuzione=True)
     
-        # 2. Ciclo di elaborazione degli interventi
+        # Esecuzione interventi stagionali (Aggiornamento stato dei lotti e consumo risorse)
         for intervento in lista_interventi_richiesti:
             lotto_target = intervento["lotto"]
             spec = intervento["specifiche_richiesta"]
-            
-            # Assicurati che i dati di accrescimento siano aggiornati
-            self._assicura_dati_lotto_aggiornati(lotto_target)
     
             # Consumo delle risorse
             percentuale_completamento = self.ditta.verifica_e_consuma_risorse(spec)
@@ -198,25 +215,14 @@ class SimulatorePioppicoltura:
                     intervento, lotto_target, spec, percentuale_completamento, report_stagionale
                 )
     
-        # 3. Finalizzazione report dei consumi aziendali
+        # Finalizzazione report dei consumi aziendali
         return self._finalizza_report_risorse(report_stagionale, serbatoi_iniziali, extra_iniziali)
 
-    # Funzione che data un intervento e il lotto su cui deve essere eseguito, verifica che i dati di accrescimento del lotto siano aggiornati e se non lo sono li calcola
-
-    def _assicura_dati_lotto_aggiornati(self, lotto_target):
-        """Verifica ed eventualmente calcola l'accrescimento biologico del lotto."""
-        if not hasattr(lotto_target, "dati_correnti") or not lotto_target.dati_correnti:
-            if lotto_target.clone_assegnato not in self.dati_cloni:
-                raise ValueError(f"Inconsistenza: Il clone {lotto_target.clone_assegnato} non esiste in self.dati_cloni per il lotto {lotto_target.id_lotto}")
-            
-            profilo = self.dati_cloni[lotto_target.clone_assegnato]
-            lotto_target.dati_correnti = lotto_target.simula_accrescimento(profilo, lotto_target.eta)
 
     # Funzione che gestisce le lavorazioni che non sono raccolta, valutando se sono state eseguite completamente, parzialmente o bloccate
     # aggiornando di conseguenza lo stato del lotto e il report stagionale
 
     def _gestisci_lavorazione_non_raccolta(self, intervento, lotto_target, spec, percentuale_completamento, report_stagionale, stagione_attiva):
-        """Gestisce le lavorazioni generiche (impianto, sarchiatura, ecc.)."""
         tipo_cantiere_chiave = intervento["tipo_cantiere_chiave"]
         
         # Lavoro eseguito al 100%
@@ -238,7 +244,9 @@ class SimulatorePioppicoltura:
         # Completamente Bloccato
         else:
             self.stats_globali["lavorazioni_generiche_saltate"] += 1
-            stato_esecuzione = "Bloccato (Risorse Insufficienti)"
+            # Legge il motivo salvato dall'orologio, o di default usa le Risorse Insufficienti
+            motivo = intervento.get("motivo_blocco", "Risorse Insufficienti") 
+            stato_esecuzione = f"Bloccato ({motivo})"
             lotto_target.registra_fallimento_intervento(intervento["operazione"], stagione_attiva, self.parametri.anno_corrente)
             
             sensibilita = self.dati_cloni[lotto_target.clone_assegnato]["esigenze_trattamenti"]["sensibilita_marsonina"]
@@ -264,10 +272,10 @@ class SimulatorePioppicoltura:
             "squadre_attive": spec.get("meta_linee_attive", 1),
             "stato": stato_esecuzione
         })
+    
     # Funzione che gestisce le lavorazioni di raccolta, valutando se sono state eseguite completamente, parzialmente o bloccate
 
     def _gestisci_raccolta(self, intervento, lotto_target, spec, percentuale_completamento, report_stagionale):
-        """Gestisce in via esclusiva l'abbattimento (taglio raso) e le sue rese."""
         piante_totali = lotto_target.dati_correnti["piante_attive"]
         p_abbattute = int(piante_totali * percentuale_completamento) if percentuale_completamento < 0.98 else piante_totali
         
@@ -373,13 +381,12 @@ class SimulatorePioppicoltura:
                     lotto.eta += 1
                     lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 
-                lotto.diametro_medio_fusto = lotto.dati_correnti.get("dbh_reale_cm", 0.0)
-                lotto.altezza_media_piante = lotto.dati_correnti.get("altezza_m", 0.0)
-                if "piante_attive" in lotto.dati_correnti:
-                    lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
+                lotto.diametro_medio_fusto = lotto.dati_correnti["dbh_reale_cm"]
+                lotto.altezza_media_piante = lotto.dati_correnti["altezza_m"]   
+                lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
                 lotto.malus_colturale_accumulato = 0.0
 
-        # --- FOTOGRAFIA PRE-LAVORAZIONI (La Verità Biologica) ---
+        # FOTOGRAFIA PRE-LAVORAZIONI (Punto di partenza per valutare l'impatto delle lavorazioni)
         stato_lotti_pre = {}
         for lotto in self.parametri.collezione_lotti:
             stato_lotti_pre[lotto.id_lotto] = {
@@ -391,7 +398,7 @@ class SimulatorePioppicoltura:
                 }
             }
 
-        # --- ESECUZIONE CANTIERI ---
+        # ESECUZIONE CANTIERI STAGIONALI E CALCOLO RISULTATI
         risultati_cantieri = self.esegui_fase_lavorazioni_stagionali()
 
         # --- FOTOGRAFIA POST-LAVORAZIONI (Il nuovo punto di partenza) ---

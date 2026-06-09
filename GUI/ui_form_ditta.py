@@ -47,7 +47,7 @@ class Ui_FormDitta(object):
 "    subcontrol-origin: margin;\n"
 "    subcontrol-position: top left;\n"
 "    left: 12px;\n"
-"    color: #8cbfa4; /* Verde salvia chiaro coordinato */\n"
+"    color: #8cbfa4; /* Verde salvia chiaro */\n"
 "    padding: 0 5px;\n"
 "}\n"
 "\n"
@@ -61,8 +61,8 @@ class Ui_FormDitta(object):
 "    min-width: 65px;\n"
 "}\n"
 "\n"
-"/* Evidenziazione del "
-                        "campo quando l'utente ci clicca dentro */\n"
+"/* Evidenziazione del campo quand"
+                        "o l'utente ci clicca dentro */\n"
 "QSpinBox:focus {\n"
 "    border: 1px solid #8cbfa4;\n"
 "    background-color: #313c37;\n"
@@ -109,6 +109,7 @@ class Ui_FormDitta(object):
         self.spin_operaio_A = QSpinBox(self.groupBox)
         self.spin_operaio_A.setObjectName(u"spin_operaio_A")
         self.spin_operaio_A.setMaximumSize(QSize(75, 16777215))
+        self.spin_operaio_A.setMinimum(1)
         self.spin_operaio_A.setMaximum(200)
 
         self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.spin_operaio_A)
@@ -121,6 +122,7 @@ class Ui_FormDitta(object):
         self.spin_operaio_B = QSpinBox(self.groupBox)
         self.spin_operaio_B.setObjectName(u"spin_operaio_B")
         self.spin_operaio_B.setMaximumSize(QSize(75, 16777215))
+        self.spin_operaio_B.setMinimum(1)
         self.spin_operaio_B.setMaximum(200)
 
         self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spin_operaio_B)
@@ -167,6 +169,11 @@ class Ui_FormDitta(object):
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.formLayout_2.setFormAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.label_3 = QLabel(self.groupBox_2)
+        self.label_3.setObjectName(u"label_3")
+
+        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_3)
+
         self.spin_trattori_alta = QSpinBox(self.groupBox_2)
         self.spin_trattori_alta.setObjectName(u"spin_trattori_alta")
         self.spin_trattori_alta.setMaximumSize(QSize(75, 16777215))
@@ -182,6 +189,7 @@ class Ui_FormDitta(object):
         self.spin_trattori_media = QSpinBox(self.groupBox_2)
         self.spin_trattori_media.setObjectName(u"spin_trattori_media")
         self.spin_trattori_media.setMaximumSize(QSize(75, 16777215))
+        self.spin_trattori_media.setMinimum(1)
         self.spin_trattori_media.setMaximum(100)
 
         self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spin_trattori_media)
@@ -220,22 +228,6 @@ class Ui_FormDitta(object):
 
         self.formLayout_2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.spin_forwarder)
 
-        self.label_8 = QLabel(self.groupBox_2)
-        self.label_8.setObjectName(u"label_8")
-
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_8)
-
-        self.spin_motoseghe = QSpinBox(self.groupBox_2)
-        self.spin_motoseghe.setObjectName(u"spin_motoseghe")
-        self.spin_motoseghe.setMaximumSize(QSize(75, 16777215))
-
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.spin_motoseghe)
-
-        self.label_3 = QLabel(self.groupBox_2)
-        self.label_3.setObjectName(u"label_3")
-
-        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_3)
-
 
         self.horizontalLayout_3.addLayout(self.formLayout_2)
 
@@ -247,36 +239,16 @@ class Ui_FormDitta(object):
 
         self.formLayout_4.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_12)
 
-        self.label_13 = QLabel(self.groupBox_2)
-        self.label_13.setObjectName(u"label_13")
-
-        self.formLayout_4.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_13)
-
-        self.label_14 = QLabel(self.groupBox_2)
-        self.label_14.setObjectName(u"label_14")
-
-        self.formLayout_4.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_14)
-
-        self.label_15 = QLabel(self.groupBox_2)
-        self.label_15.setObjectName(u"label_15")
-
-        self.formLayout_4.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_15)
-
-        self.label_16 = QLabel(self.groupBox_2)
-        self.label_16.setObjectName(u"label_16")
-
-        self.formLayout_4.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_16)
-
-        self.label_17 = QLabel(self.groupBox_2)
-        self.label_17.setObjectName(u"label_17")
-
-        self.formLayout_4.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_17)
-
         self.spin_trattori_alta_noleggio = QSpinBox(self.groupBox_2)
         self.spin_trattori_alta_noleggio.setObjectName(u"spin_trattori_alta_noleggio")
         self.spin_trattori_alta_noleggio.setMaximumSize(QSize(75, 16777215))
 
         self.formLayout_4.setWidget(0, QFormLayout.ItemRole.FieldRole, self.spin_trattori_alta_noleggio)
+
+        self.label_13 = QLabel(self.groupBox_2)
+        self.label_13.setObjectName(u"label_13")
+
+        self.formLayout_4.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_13)
 
         self.spin_trattori_media_noleggio = QSpinBox(self.groupBox_2)
         self.spin_trattori_media_noleggio.setObjectName(u"spin_trattori_media_noleggio")
@@ -284,11 +256,21 @@ class Ui_FormDitta(object):
 
         self.formLayout_4.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spin_trattori_media_noleggio)
 
+        self.label_14 = QLabel(self.groupBox_2)
+        self.label_14.setObjectName(u"label_14")
+
+        self.formLayout_4.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_14)
+
         self.spin_piattaforme_noleggio = QSpinBox(self.groupBox_2)
         self.spin_piattaforme_noleggio.setObjectName(u"spin_piattaforme_noleggio")
         self.spin_piattaforme_noleggio.setMaximumSize(QSize(75, 16777215))
 
         self.formLayout_4.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spin_piattaforme_noleggio)
+
+        self.label_15 = QLabel(self.groupBox_2)
+        self.label_15.setObjectName(u"label_15")
+
+        self.formLayout_4.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_15)
 
         self.spin_harvester_noleggio = QSpinBox(self.groupBox_2)
         self.spin_harvester_noleggio.setObjectName(u"spin_harvester_noleggio")
@@ -296,17 +278,16 @@ class Ui_FormDitta(object):
 
         self.formLayout_4.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spin_harvester_noleggio)
 
+        self.label_16 = QLabel(self.groupBox_2)
+        self.label_16.setObjectName(u"label_16")
+
+        self.formLayout_4.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_16)
+
         self.spin_forwarder_noleggio = QSpinBox(self.groupBox_2)
         self.spin_forwarder_noleggio.setObjectName(u"spin_forwarder_noleggio")
         self.spin_forwarder_noleggio.setMaximumSize(QSize(75, 16777215))
 
         self.formLayout_4.setWidget(4, QFormLayout.ItemRole.FieldRole, self.spin_forwarder_noleggio)
-
-        self.spin_motoseghe_noleggio = QSpinBox(self.groupBox_2)
-        self.spin_motoseghe_noleggio.setObjectName(u"spin_motoseghe_noleggio")
-        self.spin_motoseghe_noleggio.setMaximumSize(QSize(75, 16777215))
-
-        self.formLayout_4.setWidget(5, QFormLayout.ItemRole.FieldRole, self.spin_motoseghe_noleggio)
 
 
         self.horizontalLayout_3.addLayout(self.formLayout_4)
@@ -352,18 +333,16 @@ class Ui_FormDitta(object):
         self.label_10.setText(QCoreApplication.translate("FormDitta", u"Massimo Personale Specializzato Stagionale", None))
         self.label_11.setText(QCoreApplication.translate("FormDitta", u"Massimo Personale Generico Stagionale", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("FormDitta", u"Mezzi e Attrezzature Meccaniche di propriet\u00e0 e noleggiabili", None))
+        self.label_3.setText(QCoreApplication.translate("FormDitta", u"Trattori Alta Potenza", None))
         self.label_4.setText(QCoreApplication.translate("FormDitta", u"Trattori Media Potenza", None))
         self.label_5.setText(QCoreApplication.translate("FormDitta", u"Piattaforme Aeree", None))
         self.label_6.setText(QCoreApplication.translate("FormDitta", u"Abbattitrici (Harvester)", None))
         self.label_7.setText(QCoreApplication.translate("FormDitta", u"Caricatori (Forwarder)", None))
-        self.label_8.setText(QCoreApplication.translate("FormDitta", u"Motoseghe professionali", None))
-        self.label_3.setText(QCoreApplication.translate("FormDitta", u"Trattori Alta Potenza", None))
         self.label_12.setText(QCoreApplication.translate("FormDitta", u"Trattori Alta Potenza Noleggiabili", None))
         self.label_13.setText(QCoreApplication.translate("FormDitta", u"Trattori Media Potenza Noleggiabili", None))
         self.label_14.setText(QCoreApplication.translate("FormDitta", u"Piattaforme Aeree Noleggiabili", None))
         self.label_15.setText(QCoreApplication.translate("FormDitta", u"Abbattitrici (Harvester) Noleggiabili", None))
         self.label_16.setText(QCoreApplication.translate("FormDitta", u"Caricatori (Forwarder) Noleggiabili", None))
-        self.label_17.setText(QCoreApplication.translate("FormDitta", u"Motoseghe professionali Noleggiabili", None))
         self.btn_salva.setText(QCoreApplication.translate("FormDitta", u"Salva Ditta", None))
         self.btn_esci.setText(QCoreApplication.translate("FormDitta", u"Esci", None))
         self.spin_durata_piano.setSuffix(QCoreApplication.translate("FormDitta", u" anni", None))

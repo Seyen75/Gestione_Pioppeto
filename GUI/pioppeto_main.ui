@@ -154,7 +154,7 @@ QLabel {
       <height>451</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1,0">
+    <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1">
      <item row="3" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -234,6 +234,12 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Report Finale e Statistiche Consuntive</string>
        </property>
@@ -291,6 +297,12 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Monitoraggio Grafico Real-Time</string>
        </property>
@@ -309,6 +321,12 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
       <widget class="QPushButton" name="btn_simulazione">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="text">
         <string>Avvia Simulazione</string>
@@ -346,6 +364,12 @@ Avvia l'algoritmo di simulazione delle ditta.&lt;br&gt;&lt;br&gt;
       <widget class="QPushButton" name="btn_reset">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="text">
         <string>Reset Simulazione</string>

@@ -11,7 +11,7 @@ class Ditta:
         self.coefficiente_iufro: float = 0.80              
 
         # FORZA LAVORO
-        self.operai_grado_A: int = 0  # Specializzati (Conduttori macchine complesse/Motoseghisti avanzati)
+        self.operai_grado_A: int = 0  # Specializzati (Conduttori macchine complesse,qualificati per potature alte, ecc.)
         self.operai_grado_B: int = 0  # Generici (Manovali a terra, supporto impianti)
 
         # PARCO MACCHINE E STRUMENTAZIONI
@@ -20,7 +20,6 @@ class Ditta:
         self.piattaforme_aeree_semoventi: int = 0   # Ragni elevatori per potatura alta
         self.harvester_abbattitori: int = 0         # Abbattitori pioppicoli a testa rotante
         self.forwarder_caricatori: int = 0          # Caricatori forestali pesanti con ralle
-        self.kit_motoseghe_professionali: int = 0   # Per cantiere abbattimento tradicional
 
         # DIZIONARIO CENTRALIZZATO UNICO DEI SERBATOI ORE (Struttura Master)
         self.serbatoi_ore = {
@@ -31,7 +30,6 @@ class Ditta:
             "piattaforme": 0.0,
             "harvester": 0.0,
             "forwarder": 0.0,
-            "motoseghe": 0.0
         }
 
         # Sincronizziamo anche le variabili singole nominali per retrocompatibilità assoluta con la GUI
@@ -42,7 +40,6 @@ class Ditta:
         self.serbatoio_ore_piattaforme: float = 0.0
         self.serbatoio_ore_harvester: float = 0.0
         self.serbatoio_ore_forwarder: float = 0.0
-        self.serbatoio_ore_motoseghe: float = 0.0
 
 
         # REGISTRI DI UTILIZZO E LOGISTICA TOTALI
@@ -56,7 +53,7 @@ class Ditta:
         self.fallimenti_piattaforme: int = 0
         self.fallimenti_harvester: int = 0
         self.fallimenti_forwarder: int = 0
-        self.fallimenti_motoseghe: int = 0
+
 
         self.limiti_noli_stagionali = {
             "personale_spec": 10,     
@@ -66,13 +63,12 @@ class Ditta:
             "piattaforme": 5,         
             "harvester": 2,
             "forwarder" : 2,
-            "motoseghe" : 10         
         }
         
         # Registro annuale cumulativo delle ore extra prestate (misure statistiche)
         self.registro_extra_anno = {
             "grado_A": 0.0, "grado_B": 0.0, "trattori_alta": 0.0, "trattori_media": 0.0,
-            "piattaforme": 0.0, "harvester": 0.0, "forwarder": 0.0, "motoseghe": 0.0
+            "piattaforme": 0.0, "harvester": 0.0, "forwarder": 0.0, 
         }
 
 
@@ -87,7 +83,6 @@ class Ditta:
         self.serbatoi_ore["piattaforme"] = self.piattaforme_aeree_semoventi * ore_base
         self.serbatoi_ore["harvester"] = self.harvester_abbattitori * ore_base
         self.serbatoi_ore["forwarder"] = self.forwarder_caricatori * ore_base
-        self.serbatoi_ore["motoseghe"] = self.kit_motoseghe_professionali * ore_base
         
         # Ricarica delle ore del mercato locale (Risorse Esterne)
         if not hasattr(self, "serbatoi_noli_correnti"):
@@ -106,6 +101,9 @@ class Ditta:
     # Calcola le specifiche che il singolo cartiere e ritorna un dizionario con dentro le informazioni di quante ore totali lorde sono richieste per ogni risorsa, 
     # quante ore di lavoro puro (senza attriti) e quante linee attive si possono mantenere con la composizione della squadra richiesta
     
+    # Calcola le specifiche che il singolo cartiere e ritorna un dizionario con dentro le informazioni di quante ore totali lorde sono richieste per ogni risorsa, 
+    # quante ore di lavoro puro (senza attriti) e quante linee attive si possono mantenere con la composizione della squadra richiesta
+    
     def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, ore_unitarie: float, composizione_squadra: dict, indice_attrito: int = 0) -> dict:
         if not composizione_squadra or ore_unitarie <= 0: return {}
 
@@ -113,14 +111,13 @@ class Ditta:
         for risorsa, quantita_richiesta in composizione_squadra.items():
             if quantita_richiesta > 0:
                 mappa_mezzi = {
-                    "trattori_alta": getattr(self, "trattori_alta_potenza", 0),
-                    "trattori_media": getattr(self, "trattori_media_potenza", 0),
-                    "piattaforme": getattr(self, "piattaforme_aeree_semoventi", 0),
-                    "harvester": getattr(self, "harvester_abbattitori", 0),
-                    "forwarder": getattr(self, "forwarder_caricatori", 0),
-                    "motoseghe": getattr(self, "kit_motoseghe_professionali", 0),
-                    "grado_A": getattr(self, "operai_grado_A", 0),
-                    "grado_B": getattr(self, "operai_grado_B", 0)
+                    "trattori_alta": self.trattori_alta_potenza,
+                    "trattori_media": self.trattori_media_potenza,
+                    "piattaforme": self.piattaforme_aeree_semoventi,
+                    "harvester": self.harvester_abbattitori,
+                    "forwarder": self.forwarder_caricatori,
+                    "grado_A": self.operai_grado_A,
+                    "grado_B": self.operai_grado_B
                 }
                 disponibilita_fisica = mappa_mezzi.get(risorsa, 999)
                 linee_possibili.append(disponibilita_fisica // int(quantita_richiesta))
@@ -147,8 +144,8 @@ class Ditta:
 
         return richiesta
 
-    # Funzione che verifica la capacità della ditta di affrontare la lavorazione richiesta con le risorse fisse e stagionali
-    # Modifica direttamente i valori del oggetto lotto su cui opera e restituisce un nummero compreso fra 0.0 e 1.0 che è la percentuale
+    # Funzione che verifica la capacità della ditta di affrontare la lavorazione richiesta con le risorse fisse e stagionali
+    # Modifica direttamente i valori del oggetto lotto su cui opera e restituisce un nummero compreso fra 0.0 e 1.0 che è la percentuale
     # effettiva di completamento della lavorazione richiesta
     
     def verifica_e_consuma_risorse(self, specifiche_cantiere: dict) -> float:

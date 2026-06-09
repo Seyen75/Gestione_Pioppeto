@@ -47,7 +47,7 @@ QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
     left: 12px;
-    color: #8cbfa4; /* Verde salvia chiaro coordinato */
+    color: #8cbfa4; /* Verde salvia chiaro */
     padding: 0 5px;
 }
 
@@ -128,6 +128,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
          <number>200</number>
         </property>
@@ -147,6 +150,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="minimum">
+         <number>1</number>
         </property>
         <property name="maximum">
          <number>200</number>
@@ -225,6 +231,13 @@ QPushButton:pressed {
       <property name="formAlignment">
        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
       </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Trattori Alta Potenza</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="spin_trattori_alta">
         <property name="maximumSize">
@@ -252,6 +265,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="minimum">
+         <number>1</number>
         </property>
         <property name="maximum">
          <number>100</number>
@@ -312,30 +328,6 @@ QPushButton:pressed {
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Motoseghe professionali</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QSpinBox" name="spin_motoseghe">
-        <property name="maximumSize">
-         <size>
-          <width>75</width>
-          <height>16777215</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Trattori Alta Potenza</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -350,41 +342,6 @@ QPushButton:pressed {
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_13">
-        <property name="text">
-         <string>Trattori Media Potenza Noleggiabili</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_14">
-        <property name="text">
-         <string>Piattaforme Aeree Noleggiabili</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>Abbattitrici (Harvester) Noleggiabili</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_16">
-        <property name="text">
-         <string>Caricatori (Forwarder) Noleggiabili</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>Motoseghe professionali Noleggiabili</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="spin_trattori_alta_noleggio">
         <property name="maximumSize">
@@ -392,6 +349,13 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Trattori Media Potenza Noleggiabili</string>
         </property>
        </widget>
       </item>
@@ -405,6 +369,13 @@ QPushButton:pressed {
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Piattaforme Aeree Noleggiabili</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="1">
        <widget class="QSpinBox" name="spin_piattaforme_noleggio">
         <property name="maximumSize">
@@ -412,6 +383,13 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Abbattitrici (Harvester) Noleggiabili</string>
         </property>
        </widget>
       </item>
@@ -425,18 +403,15 @@ QPushButton:pressed {
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QSpinBox" name="spin_forwarder_noleggio">
-        <property name="maximumSize">
-         <size>
-          <width>75</width>
-          <height>16777215</height>
-         </size>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Caricatori (Forwarder) Noleggiabili</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QSpinBox" name="spin_motoseghe_noleggio">
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="spin_forwarder_noleggio">
         <property name="maximumSize">
          <size>
           <width>75</width>

@@ -39,20 +39,19 @@ class FormDitta(QWidget):
 
         # RECUPERO DEI PUNTATORI AI WIDGET
 
-        # Comparto Risorse Umane
+        # Comparto Risorse Umane dipendenti diretti
         self.spin_operaio_A = self.ui_interfaccia.findChild(object, "spin_operaio_A")
         self.spin_operaio_B = self.ui_interfaccia.findChild(object, "spin_operaio_B")
 
-        # Comparto Flotta Trazione e Manutenzione
+        # Comparto Flotta Trazione e Manutenzione di proprietà
         self.spin_trattori_alta = self.ui_interfaccia.findChild(object, "spin_trattori_alta")
         self.spin_trattori_media = self.ui_interfaccia.findChild(object, "spin_trattori_media")
         self.spin_piattaforme = self.ui_interfaccia.findChild(object, "spin_piattaforme")
         self.spin_harvester = self.ui_interfaccia.findChild(object, "spin_harvester")
         self.spin_forwarder = self.ui_interfaccia.findChild(object, "spin_forwarder")
-        self.spin_motoseghe = self.ui_interfaccia.findChild(object, "spin_motoseghe")
         self.spin_durata_piano = self.ui_interfaccia.findChild(object, "spin_durata_piano")
 
-        # === COMPARTO FLUIDITÀ E LIMITI ELASTICITÀ DI MERCATO ===
+        # Comparto Noli e Stagionali
         self.spin_operaio_A_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_A_noleggio")
         self.spin_operaio_B_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_B_noleggio")
         self.spin_trattori_alta_noleggio = self.ui_interfaccia.findChild(object, "spin_trattori_alta_noleggio")
@@ -60,7 +59,6 @@ class FormDitta(QWidget):
         self.spin_piattaforme_noleggio = self.ui_interfaccia.findChild(object, "spin_piattaforme_noleggio")
         self.spin_harvester_noleggio = self.ui_interfaccia.findChild(object, "spin_harvester_noleggio")
         self.spin_forwarder_noleggio = self.ui_interfaccia.findChild(object, "spin_forwarder_noleggio")
-        self.spin_motoseghe_noleggio = self.ui_interfaccia.findChild(object, "spin_motoseghe_noleggio")
         
         # Pulsanti di Comando
         self.btn_salva = self.ui_interfaccia.findChild(object, "btn_salva")
@@ -94,7 +92,6 @@ class FormDitta(QWidget):
         if self.spin_piattaforme: self.spin_piattaforme.setValue(self.ditta.piattaforme_aeree_semoventi)
         if self.spin_harvester: self.spin_harvester.setValue(self.ditta.harvester_abbattitori)
         if self.spin_forwarder: self.spin_forwarder.setValue(self.ditta.forwarder_caricatori)
-        if self.spin_motoseghe: self.spin_motoseghe.setValue(self.ditta.kit_motoseghe_professionali)
         if self.spin_durata_piano: self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
 
         # Allineamento dei valori correnti dei moltiplicatori di elasticità disaccoppiati
@@ -106,48 +103,62 @@ class FormDitta(QWidget):
         if self.spin_piattaforme_noleggio and "piattaforme" in limiti: self.spin_piattaforme_noleggio.setValue(limiti["piattaforme"])
         if self.spin_harvester_noleggio and "harvester" in limiti: self.spin_harvester_noleggio.setValue(limiti["harvester"])
         if self.spin_forwarder_noleggio and "forwarder" in limiti: self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
-        if self.spin_motoseghe_noleggio and "motoseghe" in limiti: self.spin_motoseghe_noleggio.setValue(limiti["motoseghe"])
 
     # Funzione che legge i valori inseriti dall'utente nei widget grafici, esegue i controlli di consistenza e aggiorna l'istanza della ditta con i nuovi dati, 
     # chiudendo la form al termine
 
     def salva_dati_in_modello(self):
         # Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati
-        op_A = self.spin_operaio_A.value() if self.spin_operaio_A else 0
-        op_B = self.spin_operaio_B.value() if self.spin_operaio_B else 0
+        op_A = self.spin_operaio_A.value() 
+        op_B = self.spin_operaio_B.value()
+        trattori_media = self.spin_trattori_media.value()
 
-        if (op_A + op_B) == 0:
+
+        if ((op_A + op_B) == 0) or (trattori_media == 0):
             mostra_messaggio_stilizzato(
                             self, 
                             "Inconsistenza Organico", 
-                            "Impossibile salvare: la ditta deve disporre di almeno un lavoratore per operare nei cantieri.", 
+                            "Impossibile salvare: la ditta deve disporre di almeno un lavoratore e di un trattore per operare nei cantieri.", 
                             "avviso"
                         )
             return
 
-        if self.spin_operaio_A: self.ditta.operai_grado_A = op_A
-        if self.spin_operaio_B: self.ditta.operai_grado_B = op_B
+
+        piattaforme = self.spin_piattaforme.value()
+        piattaforme_noleggio = self.spin_piattaforme_noleggio.value()
+        trattori_alta = self.spin_trattori_alta.value()
+        trattori_alta_noleggio = self.spin_trattori_alta_noleggio.value()
         
-        if self.spin_trattori_alta: self.ditta.trattori_alta_potenza = self.spin_trattori_alta.value()
-        if self.spin_trattori_media: self.ditta.trattori_media_potenza = self.spin_trattori_media.value()
-        if self.spin_piattaforme: self.ditta.piattaforme_aeree_semoventi = self.spin_piattaforme.value()
-        if self.spin_harvester: self.ditta.harvester_abbattitori = self.spin_harvester.value()
-        if self.spin_forwarder: self.ditta.forwarder_caricatori = self.spin_forwarder.value()
-        if self.spin_motoseghe: self.ditta.kit_motoseghe_professionali = self.spin_motoseghe.value()
+        if ((piattaforme + piattaforme_noleggio) == 0) or ((trattori_alta + trattori_alta_noleggio) == 0):
+            mostra_messaggio_stilizzato(
+                            self, 
+                            "Inconsistenza Flotta", 
+                            "Impossibile salvare: la ditta deve disporre di almeno una piattaforma aerea o di un trattore ad alta potenza (di proprietà o a noleggio) per operare nei cantieri.", 
+                            "avviso"
+                        )
+            return
+
+        self.ditta.operai_grado_A = op_A
+        self.ditta.operai_grado_B = op_B
+        
+        self.ditta.trattori_alta_potenza = self.spin_trattori_alta.value()
+        self.ditta.trattori_media_potenza = self.spin_trattori_media.value()
+        self.ditta.piattaforme_aeree_semoventi = self.spin_piattaforme.value()
+        self.ditta.harvester_abbattitori = self.spin_harvester.value()
+        self.ditta.forwarder_caricatori = self.spin_forwarder.value()
         
         # Salvataggio delle nuove impostazioni di elasticità disaccoppiata inserite dall'utente
-        if hasattr(self.ditta, "limiti_noli_stagionali"):
-            if self.spin_operaio_A_noleggio: self.ditta.limiti_noli_stagionali["personale_spec"] = int(self.spin_operaio_A_noleggio.value())
-            if self.spin_operaio_B_noleggio: self.ditta.limiti_noli_stagionali["personale_comune"] = int(self.spin_operaio_B_noleggio.value())
-            if self.spin_trattori_alta_noleggio: self.ditta.limiti_noli_stagionali["trattori_alta"] = int(self.spin_trattori_alta_noleggio.value())
-            if self.spin_trattori_media_noleggio: self.ditta.limiti_noli_stagionali["trattori_media"] = int(self.spin_trattori_media_noleggio.value())
-            if self.spin_piattaforme_noleggio: self.ditta.limiti_noli_stagionali["piattaforme"] = int(self.spin_piattaforme_noleggio.value())
-            if self.spin_harvester_noleggio: self.ditta.limiti_noli_stagionali["harvester"] = int(self.spin_harvester_noleggio.value())
-            if self.spin_forwarder_noleggio: self.ditta.limiti_noli_stagionali["forwarder"] = int(self.spin_forwarder_noleggio.value())
-            if self.spin_motoseghe_noleggio: self.ditta.limiti_noli_stagionali["motoseghe"] = int(self.spin_motoseghe_noleggio.value())
+
+        self.ditta.limiti_noli_stagionali["personale_spec"] = int(self.spin_operaio_A_noleggio.value())
+        self.ditta.limiti_noli_stagionali["personale_comune"] = int(self.spin_operaio_B_noleggio.value())
+        self.ditta.limiti_noli_stagionali["trattori_alta"] = int(self.spin_trattori_alta_noleggio.value())
+        self.ditta.limiti_noli_stagionali["trattori_media"] = int(self.spin_trattori_media_noleggio.value())
+        self.ditta.limiti_noli_stagionali["piattaforme"] = int(self.spin_piattaforme_noleggio.value())
+        self.ditta.limiti_noli_stagionali["harvester"] = int(self.spin_harvester_noleggio.value())
+        self.ditta.limiti_noli_stagionali["forwarder"] = int(self.spin_forwarder_noleggio.value())
 
         # Salva la durata target degli anni all'interno della configurazione globale parametri
-        if self.spin_durata_piano: self.parametri.anni_durata_target = self.spin_durata_piano.value()
+        self.parametri.anni_durata_target = self.spin_durata_piano.value()
 
         # Sincronizzazione immediata del monte ore stagionale nominale con il nuovo organico salvato
         if hasattr(self.ditta, "inizializza_serbatoi_stagionali"):

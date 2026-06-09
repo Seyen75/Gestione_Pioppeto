@@ -20,7 +20,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     
-    # 2. Crea e applica una Dark Palette globale
+    # Crea e applica una Dark Palette globale
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(20, 25, 35))          # Sfondo principale finestre (#141923)
     palette.setColor(QPalette.WindowText, Qt.white)                # Testo principale
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     
     app.setPalette(palette)
     
-    # 3. (Opzionale ma consigliato) Forza via CSS le aberrazioni specifiche di Windows sui menu a tendina
+    # Forza via CSS le aberrazioni specifiche di Windows sui menu a tendina
     app.setStyleSheet("""
         QComboBox QAbstractItemView {
             background-color: #232832;
@@ -46,7 +46,6 @@ if __name__ == "__main__":
         }
     """)
     
-
     finestra = PioppetoMain()
     finestra.show()
     sys.exit(app.exec())

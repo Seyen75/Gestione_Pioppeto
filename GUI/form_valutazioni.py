@@ -300,16 +300,17 @@ class FormValutazioni(QWidget):
                 
                 dati_grafico_lotti.append({"id": id_lotto, "opera": vol_opera, "cartiera": massa_cartiera, "truciolato": massa_truciolato})
                 
+                # Inserimento dati in tabella con le unità di misura aggiunte
                 self.tbl_tagli_anno.setItem(riga, 0, QTableWidgetItem(id_lotto))
                 self.tbl_tagli_anno.setItem(riga, 1, QTableWidgetItem(destinazione))
-                self.tbl_tagli_anno.setItem(riga, 2, QTableWidgetItem(self.locale_it.toString(float(superficie), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 3, QTableWidgetItem(self.locale_it.toString(float(volume_totale_cantiere), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 4, QTableWidgetItem(self.locale_it.toString(float(vol_opera), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 5, QTableWidgetItem(self.locale_it.toString(float(massa_cartiera), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 6, QTableWidgetItem(self.locale_it.toString(float(massa_truciolato), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 7, QTableWidgetItem(self.locale_it.toString(float(resa_ha_opera), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 8, QTableWidgetItem(self.locale_it.toString(float(resa_ha_cartiera), 'f', 2)))
-                self.tbl_tagli_anno.setItem(riga, 9, QTableWidgetItem(self.locale_it.toString(float(resa_ha_truciolato), 'f', 2)))
+                self.tbl_tagli_anno.setItem(riga, 2, QTableWidgetItem(f"{self.locale_it.toString(float(superficie), 'f', 2)} ha"))
+                self.tbl_tagli_anno.setItem(riga, 3, QTableWidgetItem(f"{self.locale_it.toString(float(volume_totale_cantiere), 'f', 2)} m³"))
+                self.tbl_tagli_anno.setItem(riga, 4, QTableWidgetItem(f"{self.locale_it.toString(float(vol_opera), 'f', 2)} m³"))
+                self.tbl_tagli_anno.setItem(riga, 5, QTableWidgetItem(f"{self.locale_it.toString(float(massa_cartiera), 'f', 2)} t"))
+                self.tbl_tagli_anno.setItem(riga, 6, QTableWidgetItem(f"{self.locale_it.toString(float(massa_truciolato), 'f', 2)} t"))
+                self.tbl_tagli_anno.setItem(riga, 7, QTableWidgetItem(f"{self.locale_it.toString(float(resa_ha_opera), 'f', 2)} m³"))
+                self.tbl_tagli_anno.setItem(riga, 8, QTableWidgetItem(f"{self.locale_it.toString(float(resa_ha_cartiera), 'f', 2)} t"))
+                self.tbl_tagli_anno.setItem(riga, 9, QTableWidgetItem(f"{self.locale_it.toString(float(resa_ha_truciolato), 'f', 2)} t"))
 
                 for c in range(10):
                     item = self.tbl_tagli_anno.item(riga, c)
@@ -322,8 +323,11 @@ class FormValutazioni(QWidget):
         media_ha_cartiera = (tot_cartiera / sup_industria) if sup_industria > 0 else 0.0
         media_ha_truciolato = (tot_truciolato / sup_industria) if sup_industria > 0 else 0.0
 
+        # Dizionario con i valori totali e mappatura delle relative unità di misura
         valori_colonne = {3: tot_vol_raccolto, 4: tot_opera, 5: tot_cartiera, 6: tot_truciolato, 7: media_ha_opera, 8: media_ha_cartiera, 9: media_ha_truciolato}
+        unita_misura = {3: "m³", 4: "m³", 5: "t", 6: "t", 7: "m³", 8: "t", 9: "t"}
 
+        # Aggiornamento delle etichette sottostanti la tabella
         for col, valore in valori_colonne.items():
             nome_obj = f"lbl_tot_{col}"
             label_obj = self.ui.findChild(QLabel, nome_obj)
@@ -331,7 +335,8 @@ class FormValutazioni(QWidget):
                 header_item = self.tbl_tagli_anno.horizontalHeaderItem(col)
                 testo_header = header_item.text().replace('\n', ' ') if header_item else f"Colonna {col}"
                 valore_formattato = self.locale_it.toString(float(valore), 'f', 2)
-                label_obj.setText(f"Totale {testo_header}: {valore_formattato}")
+                unita = unita_misura.get(col, "")
+                label_obj.setText(f"Totale {testo_header}: {valore_formattato} {unita}")
 
         self._aggiorna_grafico_ripartizione(dati_grafico_lotti)
 
