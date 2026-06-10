@@ -80,13 +80,13 @@ class PioppetoMain(QMainWindow):
 
         # Livelli standard di limite ricorso del mercato degli stagionali e dei Noli per la ditta standard
         self.ditta_attiva.limiti_noli_stagionali = {
-            "personale_spec": 6,   
-            "personale_comune": 15, 
-            "harvester": 1,        
-            "forwarder": 1,
-            "trattori_alta": 1,
-            "trattori_media": 4,
-            "piattaforme": 2
+            "personale_spec": 9,   
+            "personale_comune": 50, 
+            "harvester": 3,        
+            "forwarder": 3,
+            "trattori_alta": 3,
+            "trattori_media": 5,
+            "piattaforme": 3
         }
         
         # Iniziali i serbatoi stagionali con il parametro di 55 giorni lavorativi per stagione

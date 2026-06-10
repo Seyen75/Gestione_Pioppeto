@@ -236,7 +236,13 @@ class Lotto:
 
     def simula_accrescimento(self, profilo_clone: dict, eta_anno: int) -> dict:
         if eta_anno == 0:
-            return {"dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, "piante_attive": self.numero_piante_vive, "volume_totale_m3": 0.0}
+            return {
+                "dbh_reale_cm": 0.0, 
+                "altezza_m": 0.0, 
+                "volume_singolo_m3": 0.0, 
+                "piante_attive": self.numero_piante_vive, 
+                "volume_totale_m3": 0.0
+            }
 
         param = profilo_clone["parametri_crescita"]
         
@@ -251,30 +257,49 @@ class Lotto:
 
         p = 1.02 if profilo_clone["esigenze_trattamenti"].get("frequenza_irrigazione_anni_1_2") == "Alta" else 1.05
         
-        # Moltiplicatore ambientale (Vocazione fissa del terreno + Errori colturali accumulati)
+        # --- INTRODUZIONE COMPONENTE STOCASTICA AMBIENTALE ---
+        # Simula l'andamento meteo annuale (un numero casuale gaussiano centrato sullo 0 con deviazione standard del 5%)
+        # Es: un anno ottimo darà +8%, un anno di siccità imprevista o gelata tardiva darà -7%
+        fluttuazione_stagionale = random.gauss(0.0, 0.05) 
+        
+        # Moltiplicatore ambientale dinamico
         vocazione_terreno = self.calcola_moltiplicatore_idrico()
-        mult_reale = max(0.40, vocazione_terreno - getattr(self, "malus_colturale_accumulato", 0.0))
+        
+        # Integriamo la fluttuazione stocastica direttamente nel moltiplicatore reale di crescita
+        mult_reale = vocazione_terreno - self.malus_colturale_accumulato + fluttuazione_stagionale
+        mult_reale = max(0.35, min(1.30, mult_reale)) # Cap di sicurezza per evitare crescite o blocchi assurdi
 
-        # Calcolo del DBH teorico con la formula di crescita modificata da un coefficiente di forma e 
-        # dal moltiplicatore reale che tiene conto della vocazione del terreno e dei malus accumulati
+        # Calcolo del DBH teorico condizionato dall'ambiente stocastico
         dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * mult_reale
         
-        # Salvaguardia: la pianta mantiene il diametro massimo raggiunto in caso di malus estremi
+        # Salvaguardia biologica (il diametro non si restringe se l'anno è pessimo)
         dbh_precedente = self.diametro_medio_fusto
         dbh = max(dbh_precedente, dbh_teorico)
 
-        # Calcolo Altezza e Volume
-        h = (dbh * 0.6) + 4.0 if eta_anno <= 5 else min(27.5, 17.0 + (1.2 * (dbh - 20)))
+        # Introduciamo un micro-rumore sul coefficiente d'andamento altezza/diametro (allometria stocastica)
+        rumore_allometrico = random.uniform(-0.03, 0.03)
+        if eta_anno <= 5:
+            h = (dbh * (0.6 + rumore_allometrico)) + 4.0
+        else:
+            h = min(27.5, (17.0 + rumore_allometrico * 10) + (1.2 * (dbh - 20)))
+        
+        # Calcolo Volume Singolo
         vol_singolo = (math.pi * ((dbh / 200) ** 2)) * h * param["coefficiente_forma"]
 
-        # Calcolo mortalità piante del lotto (con tasso più alto nei primi anni e in caso di malus colturali)
+        # --- INTRODUZIONE MORTALITÀ STOCASTICA ---
+        # La mortalità in natura non è una quota fissa, risente di eventi locali casuali
         if eta_anno == 1:
-            immissione_fatta = getattr(self, "immissione_effettuata", False)
-            tasso = 0.007 if immissione_fatta else 0.07
-            piante_vive = int((self.superficie_ettari * self.densita_iniziale) * (1.0 - tasso))
+            immissione_fatta = self.immissione_effettuata
+            tasso_base = 0.007 if immissione_fatta else 0.07
+            # Fluttuazione del tasso di mortalità iniziale
+            tasso_reale = max(0.002, tasso_base + random.uniform(-0.02, 0.02))
+            piante_vive = int((self.superficie_ettari * self.densita_iniziale) * (1.0 - tasso_reale))
         else:
-            tasso = 0.012 if eta_anno <= 5 else (0.018 if eta_anno <= 10 else 0.025)
-            piante_vive = int(self.numero_piante_vive * (1.0 - tasso))
+            tasso_base = 0.012 if eta_anno <= 5 else (0.018 if eta_anno <= 10 else 0.025)
+            # Aggiungiamo una variazione casuale basata anche sul malus accumulato
+            influenza_malus = self.malus_colturale_accumulato * 0.1
+            tasso_reale = max(0.005, tasso_base + random.uniform(-0.005, 0.01) + influenza_malus)
+            piante_vive = int(self.numero_piante_vive * (1.0 - tasso_reale))
         
         return {
             "dbh_reale_cm": round(dbh, 2), 
