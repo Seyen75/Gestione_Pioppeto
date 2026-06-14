@@ -1,12 +1,12 @@
 import os
 import sys
+# Aggiunta del percorso della cartella del progetto alla variabile d'ambiente PYTHONPATH per garantire che tutte le importazioni funzionino correttamente indipendentemente da dove viene eseguito lo script
 from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtCore import Qt
 
-# Trova il percorso assoluto della cartella che contiene QUESTO file main.py
-
+# Trova il percorso assoluto della cartella che contiene questo file main.py, che è la radice del progetto Gestione_Pioppeto
 cartella_progetto = os.path.dirname(os.path.abspath(__file__))
 
 # Sposta la cartella di lavoro corrente di Python dentro Gestione_Pioppeto
@@ -20,7 +20,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     
-    # Crea e applica una Dark Palette globale
+    # Crea e applica una Dark Palette globale per un tema scuro coerente in tutta l'applicazione, 
+    # con colori personalizzati per sfondi, testi, bottoni e selezioni, migliorando l'estetica e la leggibilità in ambienti a bassa luminosità
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(20, 25, 35))          # Sfondo principale finestre (#141923)
     palette.setColor(QPalette.WindowText, Qt.white)                # Testo principale
@@ -37,7 +38,9 @@ if __name__ == "__main__":
     
     app.setPalette(palette)
     
-    # Forza via CSS le aberrazioni specifiche di Windows sui menu a tendina
+    # Forza via CSS le aberrazioni specifiche di Windows sui menu a tendina (QComboBox), 
+    # garantendo che anche su piattaforme Windows i menu a tendina abbiano uno sfondo scuro coerente con il tema generale dell'applicazione, 
+    # con testo bianco e evidenziazione rossa per gli elementi selezionati
     app.setStyleSheet("""
         QComboBox QAbstractItemView {
             background-color: #232832;

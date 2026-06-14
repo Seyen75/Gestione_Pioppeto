@@ -8,6 +8,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+storia.json
 
 # Ignora i file di configurazione locale di Qt Creator o del Mac
 *.user
