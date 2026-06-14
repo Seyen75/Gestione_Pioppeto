@@ -13,3 +13,4 @@ __pycache__/
 *.user
 .DS_Store
 .QtCreator/
+ui_*.py
