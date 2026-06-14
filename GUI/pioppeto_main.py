@@ -265,8 +265,8 @@ class PioppetoMain(QMainWindow):
         self.simulazione_eseguita = True
         self.aggiorna_stato_interfaccia()
 
-    
     # Funzione che resetta i dati delle simulazioni effettuate sulla ditta standard
+    
     def ripristina_simulazione_globale(self):
         risposta = mostra_messaggio_stilizzato(
             parent=self, 

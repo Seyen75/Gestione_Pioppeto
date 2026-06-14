@@ -65,7 +65,6 @@ class form_monitoraggio(QWidget):
         stringa_it = stringa_base.replace(",", "X").replace(".", ",").replace("X", ".")
         return stringa_it
 
-
     # Inizializzazione dei grafici presenti nella form
     
     def _inizializza_grafici(self):
@@ -97,7 +96,6 @@ class form_monitoraggio(QWidget):
         layout_rese.addWidget(self.canvas_rese)
         layout_rese.setContentsMargins(0, 0, 0, 0)
 
-
     # Funzione che terminata la simulazione di una stagione avvia le funzioni per aggiornare le tabelle ed i grafici
     
     def _aggiorna_interfaccia_grafica(self, quadro_stato: Dict[str, Any] = None, iniziale: bool = False):
@@ -111,8 +109,8 @@ class form_monitoraggio(QWidget):
         self._rendiconta_e_disegna_previsione_risorse()
         self._ridisegna_grafico_rese_cumulate()
 
-
-    # Funzione che 
+    # Funzione che elabora i dati di consuntivo del trimestre appena concluso, aggiornando le label del cruscotto diagnostico con i dati di tagli saltati, 
+    # turni rinviati e lavorazioni fallite, e inizializza lo storico per i grafici a barre se è la prima visualizzazione
     
     def _elabora_e_mostra_consuntivi(self, quadro_stato: Dict[str, Any], iniziale: bool):
         # Legge il registro del motore e se non esiste 
@@ -147,8 +145,8 @@ class form_monitoraggio(QWidget):
             self.storico_cartiera.append(0.0)
             self.storico_truciolato.append(0.0)
 
-
     # Funzione che recupera i dati dei lotti della collezione ed inserisce i dati nella tabella tbl_monitoraggio
+    
     def _popola_tabella_particellare(self):
         # azzera le righe se preesistenti
         self.ui.tbl_monitoraggio.setRowCount(0)
@@ -239,8 +237,7 @@ class form_monitoraggio(QWidget):
             for c in range(self.ui.tbl_monitoraggio.columnCount()):
                 item = self.ui.tbl_monitoraggio.item(r, c)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                
-                
+                         
     # La funzione disegna il grafico delle uso delle risorse della ditta
     # La funzione per graficare le necessità delle risorse per la stagione in corso che deve ancora essere materialmente simulata
     # utilizza un dizionario "interventi_teorici" che lo riempie con i dati che il motore del simulatore avvia in maniera teorica
@@ -424,8 +421,6 @@ class form_monitoraggio(QWidget):
                 self._cumulato_truciolato_precedente = cumulato_truciolato_attuale
 
         self._aggiorna_interfaccia_grafica(quadro_stato=quadro_stato, iniziale=False)
-
-
 
     @Slot()
     def slot_termina_simulazione(self):
