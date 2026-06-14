@@ -30,6 +30,7 @@ class ParametriSimulazione:
             cambio_anno = True
         else:
             self.indice_stagione_corrente += 1
+            
         fine_simulazione = self.anno_corrente > self.anni_durata_target
         return {
             "stagione": self.stagione_corrente,

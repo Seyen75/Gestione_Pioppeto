@@ -2,17 +2,23 @@
 import os
 from typing import Dict, Any, List
 
+# Importazioni PySide6 per la gestione dell'interfaccia grafica
 from PySide6.QtCore import Slot, Qt, QLocale
 from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QComboBox, QLabel, QPushButton, QTabWidget, QVBoxLayout, QHeaderView, QProgressBar, QTextEdit
 from PySide6.QtGui import QScreen, QGuiApplication
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtUiTools import QUiLoader
 
+# Importazioni Matplotlib per la visualizzazione dei grafici
 import matplotlib
 matplotlib.use('QtAgg')
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+
+# Importazioni NumPy per eventuali calcoli numerici
 import numpy as np
+
+# Importazioni personalizzate per la gestione della struttura delle lavorazioni e dei dati del motore di simulazione
 from Core.struttura_lavorazioni import STRUTTURA_LAVORAZIONI
 
 class FormValutazioni(QWidget):
@@ -21,10 +27,10 @@ class FormValutazioni(QWidget):
         self.motore = motore_simulazione
         self.parametri = motore_simulazione.parametri
 
-        # --- Inizializza QLocale per la formattazione italiana ---
+        # Inizializza il modulo QLocale per la formattazione italiana dei dati numerici e delle date, garantendo la corretta visualizzazione dei valori con separatori decimali e migliaia secondo le convenzioni locali
         self.locale_it = QLocale(QLocale.Italian, QLocale.Italy)
 
-        # 1. Caricamento UI e mappatura componenti
+        # Caricamento UI e mappatura componenti
         self._carica_interfaccia()
         self._centra_finestra_su_schermo()
         self._mappa_componenti_ui()
@@ -32,7 +38,7 @@ class FormValutazioni(QWidget):
         self._tabelle_efficienza()
         self._connetti_segnali()
         
-        # 2. Configurazione e popolamento iniziale dei dati
+        # Configurazione e popolamento iniziale dei dati
         self._configura_stato_iniziale_selettori()
 
     # Funzione che carica l'interfaccia grafica da file .ui, mappa i componenti principali come attributi della classe e imposta il layout generale della form
@@ -111,47 +117,44 @@ class FormValutazioni(QWidget):
 
     def _tabelle_efficienza(self):
         # Setup Tabella Saturazione Interna Risorse
-        if hasattr(self.ui, 'tbl_saturazione'):
-            col_sat = ["Risorsa", "Stagione", "Ore\nDisponibili", "Ore\nLavorate", "%\nSaturaz."]
-            self.ui.tbl_saturazione.setColumnCount(len(col_sat))
-            self.ui.tbl_saturazione.setHorizontalHeaderLabels(col_sat)
-            header_sat = self.ui.tbl_saturazione.horizontalHeader()
-            header_sat.setMinimumHeight(45)
-            header_sat.setSectionResizeMode(QHeaderView.ResizeToContents)
-            header_sat.setSectionResizeMode(0, QHeaderView.Stretch)
-            header_sat.setStretchLastSection(False)
+        col_sat = ["Risorsa", "Stagione", "Ore\nDisponibili", "Ore\nLavorate", "%\nSaturaz."]
+        self.ui.tbl_saturazione.setColumnCount(len(col_sat))
+        self.ui.tbl_saturazione.setHorizontalHeaderLabels(col_sat)
+        header_sat = self.ui.tbl_saturazione.horizontalHeader()
+        header_sat.setMinimumHeight(45)
+        header_sat.setSectionResizeMode(QHeaderView.ResizeToContents)
+        header_sat.setSectionResizeMode(0, QHeaderView.Stretch)
+        header_sat.setStretchLastSection(False)
         
         # Setup Tabella Stress Test Noli
-        if hasattr(self.ui, 'tbl_stagionali_noli'):
-            col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim.", "Ore Sforate\n(Criticità)"]
-            self.ui.tbl_stagionali_noli.setColumnCount(len(col_stress))
-            self.ui.tbl_stagionali_noli.setHorizontalHeaderLabels(col_stress)
-            header_stress = self.ui.tbl_stagionali_noli.horizontalHeader()
-            header_stress.setMinimumHeight(45)
-            header_stress.setSectionResizeMode(QHeaderView.ResizeToContents)
-            header_stress.setSectionResizeMode(0, QHeaderView.Stretch)
-            header_stress.setStretchLastSection(False)
+        col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim.", "Ore Sforate\n(Criticità)"]
+        self.ui.tbl_stagionali_noli.setColumnCount(len(col_stress))
+        self.ui.tbl_stagionali_noli.setHorizontalHeaderLabels(col_stress)
+        header_stress = self.ui.tbl_stagionali_noli.horizontalHeader()
+        header_stress.setMinimumHeight(45)
+        header_stress.setSectionResizeMode(QHeaderView.ResizeToContents)
+        header_stress.setSectionResizeMode(0, QHeaderView.Stretch)
+        header_stress.setStretchLastSection(False)
             
         # Setup Tabelle Anomalie
-        if hasattr(self, 'tbl_log_anomalie') and self.tbl_log_anomalie:
-            col_anomalie = ["Anno", "Stagione", "Lotto ID", "Operazione", "Stato / Anomalia"]
-            self.tbl_log_anomalie.setColumnCount(len(col_anomalie))
-            self.tbl_log_anomalie.setHorizontalHeaderLabels(col_anomalie)
+        col_anomalie = ["Anno", "Stagione", "Lotto ID", "Operazione", "Stato / Anomalia"]
+        self.tbl_log_anomalie.setColumnCount(len(col_anomalie))
+        self.tbl_log_anomalie.setHorizontalHeaderLabels(col_anomalie)
+        
+        # Dimensionamento corretto delle colonne
+        header_anom = self.tbl_log_anomalie.horizontalHeader()
+        header_anom.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header_anom.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header_anom.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header_anom.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header_anom.setSectionResizeMode(4, QHeaderView.Stretch)
             
-            # Dimensionamento corretto delle colonne
-            header_anom = self.tbl_log_anomalie.horizontalHeader()
-            header_anom.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            header_anom.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-            header_anom.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-            header_anom.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-            header_anom.setSectionResizeMode(4, QHeaderView.Stretch)
-            
-        if hasattr(self, 'tbl_bilancio_risorse') and self.tbl_bilancio_risorse:
-            # Intestazioni colonne per il bilancio risorse, con testo su più righe per chiarezza
-            col_bil = ["Risorsa", "Fabbisogno Tot.", "Ore Lavorate", "Ore Mancanti"]
-            self.tbl_bilancio_risorse.setColumnCount(len(col_bil))
-            self.tbl_bilancio_risorse.setHorizontalHeaderLabels(col_bil)
-            self.tbl_bilancio_risorse.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        # Intestazioni colonne per il bilancio risorse, con testo su più righe per chiarezza
+        col_bil = ["Risorsa", "Fabbisogno Tot.", "Ore Lavorate", "Ore Mancanti"]
+        self.tbl_bilancio_risorse.setColumnCount(len(col_bil))
+        self.tbl_bilancio_risorse.setHorizontalHeaderLabels(col_bil)
+        self.tbl_bilancio_risorse.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     # Funzione che inizializza il canvas del grafico di ripartizione dei risultati, impostando dimensioni, 
     # colori e layout per integrarsi armoniosamente con il tema scuro dell'applicazione e garantire una visualizzazione chiara dei dati
@@ -202,11 +205,12 @@ class FormValutazioni(QWidget):
         dizionario_storia = getattr(self.parametri, "storico_stagionale", {}) 
         anni_presenti = set()
         
-        # Scansione sicura delle chiavi
+        # Scansione sicura delle chiavi per identificare gli anni presenti, evitando errori in caso di chiavi non conformi o dati mancanti
         for k in dizionario_storia.keys():
             if k.startswith("A") and "_" in k:
                 parte_anno = k.split("_")[0][1:]
-                if parte_anno.isdigit(): # Verifica che sia effettivamente un numero
+                # Verifica che sia effettivamente un numero prima di aggiungerlo al set degli anni presenti
+                if parte_anno.isdigit(): 
                     anni_presenti.add(int(parte_anno))
                     
         self.anno_max = max(anni_presenti) if anni_presenti else 1
@@ -246,8 +250,12 @@ class FormValutazioni(QWidget):
                         mappa[op["id_operazione"]] = op["descrizione"]
         return mappa
 
-    # Slot che si attiva al cambio di anno nella combobox, aggiornando la tabella dei tagli effettuati nell'anno selezionato,
-
+    # Slot che si attiva al cambio di anno nella combobox, aggiornando la tabella dei tagli effettuati nell'anno selezionato   
+    # L'uso del decoratore @Slot garantisce una connessione efficiente e tipizzata tra il segnale di cambio testo della combobox e la funzione di aggiornamento,
+    # migliorando le prestazioni e la reattività dell'interfaccia utente durante la selezione di anni diversi per l'analisi dei dati di raccolta e lavorazione
+    # E' un metodo usato da Qt ed il modulo PySide6 per ottimizzare la gestione dei segnali e degli slot, consentendo una comunicazione più efficiente tra i componenti dell'interfaccia grafica e le funzioni di elaborazione dei dati 
+    # soprattutto quando si lavora con grandi quantità di informazioni o operazioni complesse di aggiornamento della UI.
+    
     @Slot(str)
     def slot_cambio_anno_combobox(self, testo_anno: str):
         if not testo_anno: 
@@ -271,9 +279,9 @@ class FormValutazioni(QWidget):
             tagli = risultati_cantieri.get("tagli_effettuati", []) if risultati_cantieri else []
             
             for t in tagli:
-                id_lotto = t.get("lotto_id", "")
-                volume_totale_cantiere = float(t.get("volume_raccolto_m3", 0.0))
-                rese = t.get("rese", {})
+                id_lotto = t["lotto_id"]
+                rese = t["rese"]
+                volume_totale_cantiere = float(rese["volume_cantiere_m3"])
                 
                 lotto_reale = next((l for l in self.parametri.collezione_lotti if l.id_lotto == id_lotto), None)
                 if not lotto_reale: continue
@@ -506,13 +514,14 @@ class FormValutazioni(QWidget):
             ("Forwarder", "forwarder", "forwarder"),
             ("Trattori Alta", "trattori_alta", "trattori_alta"),
             ("Trattori Media", "trattori_media", "trattori_media"),
-            ("Piattaforme", "piattaforme", "piattaforme")
+            ("Piattaforme", "piattaforme", "piattaforme"),
+            ("Cippatrici", "cippatrice", "cippatrice")
         ]
         
         mappa_attributi_ditta = {
             "grado_A": "operai_grado_A", "grado_B": "operai_grado_B", "harvester": "harvester_abbattitori",
             "forwarder": "forwarder_caricatori", "trattori_alta": "trattori_alta_potenza",
-            "trattori_media": "trattori_media_potenza", "piattaforme": "piattaforme_aeree_semoventi"
+            "trattori_media": "trattori_media_potenza", "piattaforme": "piattaforme_aeree_semoventi", "cippatrice": "cippatrice"
         }
         
         giorni_utili = 55
@@ -649,7 +658,7 @@ class FormValutazioni(QWidget):
                 if stato_lower == "" or (stato_lower.startswith("eseguito") and "parziale" not in stato_lower):
                     continue
                 
-                id_op = op.get("id_operazione", "")
+                id_op = op["id_operazione"]
                 desc_operazione = mappa_op.get(id_op, id_op) 
                     
                 riga = self.tbl_log_anomalie.rowCount()
@@ -657,7 +666,7 @@ class FormValutazioni(QWidget):
                 
                 self.tbl_log_anomalie.setItem(riga, 0, QTableWidgetItem(f"Anno {anno_str}"))
                 self.tbl_log_anomalie.setItem(riga, 1, QTableWidgetItem(stagione))
-                self.tbl_log_anomalie.setItem(riga, 2, QTableWidgetItem(str(op.get("lotto_id", ""))))
+                self.tbl_log_anomalie.setItem(riga, 2, QTableWidgetItem(str(op["lotto_id"])))
                 self.tbl_log_anomalie.setItem(riga, 3, QTableWidgetItem(desc_operazione)) 
                 
                 item_stato = QTableWidgetItem(stato_originale)
@@ -677,13 +686,16 @@ class FormValutazioni(QWidget):
                     eta = info.get("eta", 0)
                     dbh = info.get("biometria", {}).get("dbh_reale_cm", 0.0)
                     eta_rot = 5 if lotto_reale.destinazione_uso == "INDUSTRIA" else 10
-                    target_dbh = 15.0 if lotto_reale.destinazione_uso == "INDUSTRIA" else 30.0
+                    target_dbh = 15.0 if lotto_reale.destinazione_uso == "INDUSTRIA" else 35.0
+                    
+                    TOLLERANZA = 0.03
+                    soglia_elastica = target_dbh * (1.0 - TOLLERANZA)
                     
                     if eta >= eta_rot and lotto_id not in lotti_tagliati_ids:
                         motivo = ""
                         desc_operazione = "Taglio Raso (Fine Turno)" 
                         
-                        if dbh < target_dbh:
+                        if dbh < soglia_elastica:
                             motivo = "Ritardo Biologico (Immaturo)"
                         else:
                             gia_loggato = any(op.get("lotto_id") == lotto_id and op.get("id_operazione", "").startswith("OP_RAC") for op in operazioni)
@@ -719,15 +731,15 @@ class FormValutazioni(QWidget):
             dbh = stato_pre.get("biometria", {}).get("dbh_reale_cm", 0.0)
             eta = stato_pre.get("eta", 0)
             diagnosi.append(f"• Età Raggiunta: Il lotto ha {eta} anni (fine turno), ma non ha la maturità commerciale.")
-            diagnosi.append(f"• Dettaglio Biometrico: Il diametro (DBH) rilevato è di {dbh:.2f} cm. Almeno un clone in questo lotto sta subendo stress pedoclimatici o competizione da sovradensità.")
-            diagnosi.append("• Azione: Il cantiere non è stato pianificato per evitare perdite finanziarie.")
+            diagnosi.append(f"• Dettaglio Biometrico: Il diametro (DBH) rilevato è di {dbh:.2f} cm. Il lotto ha subito stress pedoclimatici o competizione da sovradensità.")
+            diagnosi.append("• Azione: Il cantiere non è stato pianificato per evitare rese insufficienti.")
             return "\n\n".join(diagnosi)
             
         if "Omesso" in stato or "Zero Risorse" in stato:
             eta = stato_pre.get("eta", 0)
             diagnosi.append(f"• Analisi Logistica: Il lotto ha {eta} anni ed è pronto per la vendita.")
             diagnosi.append("• Problema: La capacità aziendale (ore interne + noli massimi concessi sul mercato) è collassata a causa di altri cantieri prioritari.")
-            diagnosi.append("• Azione: Taglio rinviato all'Inverno successivo. Il capitale rimane bloccato in bosco.")
+            diagnosi.append("• Azione: Taglio rinviato all'Inverno successivo. La resa dell'anno non sarà ottimale.")
             return "\n\n".join(diagnosi)
 
         if op_data:

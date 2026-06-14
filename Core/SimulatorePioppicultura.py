@@ -9,35 +9,38 @@ class SimulatorePioppicoltura:
         self.ditta = ditta
         self.parametri = parametri  
         self.dati_cloni: Dict[str, Any] = {}
-        
-        self.stats_globali = {
-            "tagli_strutturali_saltati": 0,
-            "tagli_biologici_saltati": 0,
-            "lavorazioni_generiche_saltate": 0
-        }
                 
         self._carica_configurazione_cloni()
 
+    @property
+    def stats_globali(self):
+        """Metodo ponte per mantenere compatibilità con form_monitoraggio.py"""
+        totale_lavorazioni_fallite = 0
+        totale_tagli_biologici = 0
+        
+        for lotto in self.parametri.collezione_lotti:
+            # Conta quante lavorazioni sono state fallite dal lotto
+            if hasattr(lotto, "cronistoria_lavorazioni_saltate"):
+                totale_lavorazioni_fallite += len(lotto.cronistoria_lavorazioni_saltate)
+            
+            # Recupera i tagli biologici saltati (se il lotto li traccia)
+            totale_tagli_biologici += getattr(lotto, "anni_ritardo_taglio", 0)
+            
+        return {
+            "tagli_strutturali_saltati": 0, # Se non ti servono più, puoi lasciarli a 0
+            "tagli_biologici_saltati": totale_tagli_biologici,
+            "lavorazioni_generiche_saltate": totale_lavorazioni_fallite
+        }
     
     # Carica dal file cloni.json la configurazione con i dati del cloni standard
+    
     def _carica_configurazione_cloni(self):
         percorso_json = os.path.join(os.path.dirname(__file__), "cloni.json")
         with open(percorso_json, "r", encoding="utf-8") as f:
             self.dati_cloni = json.load(f)
 
-    # Funzione che data l'età del lotto in anni restituisce la chiave della fase di crescita corrispondente per caricare le operazioni specifiche per quella fase 
-    # altrimenti restituisce None per caricare quelle generiche per la stagione
-    def _get_chiave_fase(self, eta_anno: int) -> str:
-        if eta_anno == 0:
-            return 0
-        elif eta_anno == 1:
-            return 1
-        elif 2 <= eta_anno <= 4:  # La fase giovane si ferma a 4 anni per liberare la cartiera a 5
-            return "Fase_Crescita_Giovane"
-        else:
-            return "Fase_Mantenimento_Tardo"
-
     # Funzione che crea la lista degli interventi che sono previsti per la stagione che è in corso di simulazione
+    
     def prevedi_domanda_stagionale(self, is_esecuzione: bool = False) -> List[Dict[str, Any]]:
         
         # Prende i dati della stagione corrente dai parametri globali
@@ -84,13 +87,14 @@ class SimulatorePioppicoltura:
             
             # Controllo che verifica lo stato del lotto. Se è maturo e non è stato tagliato allora mette fra le operazioni
             # da fare presenti nella lista. Se è inverno non deve fare alcuna operazione perchè ci sarà raccolta
-            if is_maturo or lotto.tagliato:  # Usiamo la sintassi pulita senza getattr!
+            if is_maturo or lotto.tagliato:  
                 if stagione == "Inverno":
                     # Verifichiamo la presenza della "flotta pesante" (Proprietà + Mercato Noli)
                     harvesters = self.ditta.harvester_abbattitori + self.ditta.limiti_noli_stagionali["harvester"]
                     forwarders = self.ditta.forwarder_caricatori + self.ditta.limiti_noli_stagionali["forwarder"]
-                    
-                    if harvesters > 0 or forwarders > 0:
+                    cippatrici = self.ditta.cippatrice + self.ditta.limiti_noli_stagionali["cippatrice"]
+
+                    if harvesters > 0 or forwarders > 0 or cippatrici > 0:
                         # Tutto ok, si procede con la raccolta avanzata da filiera (OP_RAC_01 o OP_RAC_02)
                         ops = filiera["Raccolta"]["Inverno"]
                     else:
@@ -104,7 +108,7 @@ class SimulatorePioppicoltura:
 
             # se non è maturo o tagliato allora carica fra le operazioni quelle di mantenimento
             else:
-                chiave_fase = self._get_chiave_fase(lotto.eta)
+                chiave_fase = lotto.get_fase_colturale()
                 ops = filiera.get(chiave_fase, {}).get(stagione, []) if chiave_fase is not None else []
                 is_raccolta = False
             
@@ -112,20 +116,9 @@ class SimulatorePioppicoltura:
             # Trasforma la lista di operazioni teoriche ops in un preventivo tecnico dettagliato (interventi), calcolando quanto lavoro serve, con quali macchine e per quale superficie.
             for op in ops:
                 id_univoco = op["id_operazione"]
-                # carica nella variabile la descrizione della operazione id_operazione e della macrocategoria utile per i passi successivi
-                """ if "descrizione" not in op or not op.get("macrocategoria"):
-                    id_op = op.get("id_operazione", "ID_SCONOSCIUTO")
-                    raise ValueError(f"Configurazione errata per l'operazione '{id_op}': 'descrizione' e 'macrocategoria' sono obbligatorie.") """
                 
                 descrizione_ui = op["descrizione"]
                 macrocategoria = op["macrocategoria"]
-                
-                # Valutazione disponibilità totale (Proprietà + Nolo) per la lavorazione di raccolta sugli harvester.
-                # Nel caso non ci fossero harvester la raccolta passerebbe da quella meccanica a quella tradizionale con motosega
-                """ if is_raccolta: 
-                    harvester_noleggiabili = getattr(self.ditta, "limiti_noli_stagionali", {}).get("harvester", 0)
-                    harvester_totali_disponibili = self.ditta.harvester_abbattitori + harvester_noleggiabili
-                    macrocategoria = "raccolta_avanzata" if harvester_totali_disponibili > 0 else "raccolta_tradizionale" """
                 
                 # Calcolo proporzionale superficie per raccolta nel caso si stia per fare una raccolto o altra operazione
                 # Nel caso della raccolta rapporta il lavoro rispetto al numero di piante realmente presenti e non alla mera estensione del lotto
@@ -173,207 +166,90 @@ class SimulatorePioppicoltura:
     # Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
     # che sarà utilizzato per la reportistica di fine simulazione
     
-    # Funzione che esegue le lavorazioni necessarie per la stagione da simulare.
-    # Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
-    # che sarà utilizzato per la reportistica di fine simulazione
-    
     def esegui_fase_lavorazioni_stagionali(self) -> Dict[str, Any]:
-        
-        # Inizializzazione serbatoi
         stagione_attiva = self.parametri.stagione_corrente
-        giorni_utili_stagione = 55 
-        self.ditta.inizializza_serbatoi_stagionali(giorni_utili_stagione)
+        self.ditta.inizializza_serbatoi_stagionali(55)
         
-        # Snapshot di inizio stagione per calcolo consumi a fine ciclo
         serbatoi_iniziali = self.ditta.serbatoi_ore.copy()
         extra_iniziali = self.ditta.registro_extra_anno.copy()
         
-        # Inizializza il report finale che sarà restituito alla fine della funzione con il dettaglio di tutte le operazioni e i tagli effettuati durante la stagione
-        report_stagionale = {
-            "dettaglio_operazioni": [], 
-            "tagli_effettuati": []
-        }
+        report_stagionale = {"dettaglio_operazioni": [], "tagli_effettuati": []}
+        lista_interventi = self.prevedi_domanda_stagionale(is_esecuzione=True)
     
-        # Previsione domanda stagionale (Creazione lista interventi da eseguire)
-        lista_interventi_richiesti = self.prevedi_domanda_stagionale(is_esecuzione=True)
-    
-        # Esecuzione interventi stagionali (Aggiornamento stato dei lotti e consumo risorse)
-        for intervento in lista_interventi_richiesti:
-            lotto_target = intervento["lotto"]
+        for intervento in lista_interventi:
+            lotto = intervento["lotto"]
             spec = intervento["specifiche_richiesta"]
+            perc = self.ditta.verifica_e_consuma_risorse(spec)
     
-            # Consumo delle risorse
-            percentuale_completamento = self.ditta.verifica_e_consuma_risorse(spec)
-    
-            # Smistamento logico (Raccolta vs Altre operazioni)
-            if not intervento["is_raccolta"]:
-                self._gestisci_lavorazione_non_raccolta(
-                    intervento, lotto_target, spec, percentuale_completamento, report_stagionale, stagione_attiva
-                )
+            # Gestione Raccolta
+            if intervento["is_raccolta"] and intervento["tipo_cantiere_chiave"] == "raccolta":
+                p_abbattute = int(lotto.dati_correnti["piante_attive"] * perc)
+                rese, stato = lotto.esegui_raccolta(p_abbattute, self.dati_cloni[lotto.clone_assegnato])
+                
+                # LOGICA DI RESET O AGGIORNAMENTO
+                if "Reset Ciclo" in stato:
+                    # Lotto tagliato totalmente: reset biometria
+                    lotto.eta = 0
+                    lotto.tagliato = False
+                    lotto.dati_correnti = {
+                        "dbh_reale_cm": 0.0, "altezza_m": 0.0, 
+                        "volume_singolo_m3": 0.0, "piante_attive": lotto.numero_piante_vive, 
+                        "volume_totale_m3": 0.0
+                    }
+                else:
+                    # Lotto tagliato parzialmente: ricalcolo accrescimento
+                    profilo = self.dati_cloni[lotto.clone_assegnato]
+                    lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
+                
+                if p_abbattute > 0:
+                    self.parametri.totale_prodotto_opera_m3 += rese.get("opera_m3", 0.0)
+                    self.parametri.totale_prodotto_cartiera_t += rese.get("cartiera_t", 0.0)
+                    self.parametri.totale_prodotto_truciolato_t += rese.get("truciolato_t", 0.0)
+                    
+                    report_stagionale["tagli_effettuati"].append({
+                        "lotto_id": lotto.id_lotto, 
+                        "rese": rese
+                    })
+            
+            # Gestione Lavorazioni (Non Raccolta)
             else:
-                self._gestisci_raccolta(
-                    intervento, lotto_target, spec, percentuale_completamento, report_stagionale
+                stato = lotto.applica_lavorazione(
+                    intervento["operazione"], intervento["tipo_cantiere_chiave"], perc, 
+                    stagione_attiva, self.parametri.anno_corrente, 
+                    self.dati_cloni[lotto.clone_assegnato], intervento["priorita"]
                 )
-    
-        # Finalizzazione report dei consumi aziendali
-        return self._finalizza_report_risorse(report_stagionale, serbatoi_iniziali, extra_iniziali)
+                
+                # AGGIORNAMENTO STATO DENDROMETRICO
+                profilo = self.dati_cloni[lotto.clone_assegnato]
+                lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
 
-
-    # Funzione che gestisce le lavorazioni che non sono raccolta, valutando se sono state eseguite completamente, parzialmente o bloccate
-    # aggiornando di conseguenza lo stato del lotto e il report stagionale
-
-    def _gestisci_lavorazione_non_raccolta(self, intervento, lotto_target, spec, percentuale_completamento, report_stagionale, stagione_attiva):
-        tipo_cantiere_chiave = intervento["tipo_cantiere_chiave"]
-        
-        # Lavoro eseguito al 100%
-        if percentuale_completamento >= 0.99:
-            stato_esecuzione = "Eseguito"
-            if "impianto" in tipo_cantiere_chiave or "astoni" in intervento["operazione"].lower():
-                lotto_target.immissione_effettuata = True
-            
-            if tipo_cantiere_chiave == "impianto" and lotto_target.numero_piante_vive == 0:
-                lotto_target.numero_piante_vive = int(lotto_target.superficie_ettari * lotto_target.densita_iniziale)
-                lotto_target.dati_correnti["piante_attive"] = lotto_target.numero_piante_vive
-        
-        # Eseguito Parzialmente
-        elif percentuale_completamento > 0.001:
-            self.stats_globali["lavorazioni_generiche_saltate"] += 1
-            stato_esecuzione = f"Eseguito Parziale ({int(percentuale_completamento * 100)}%)"
-            lotto_target.registra_fallimento_intervento(intervento["operazione"], stagione_attiva, self.parametri.anno_corrente)
-        
-        # Completamente Bloccato
-        else:
-            self.stats_globali["lavorazioni_generiche_saltate"] += 1
-            # Legge il motivo salvato dall'orologio, o di default usa le Risorse Insufficienti
-            motivo = intervento.get("motivo_blocco", "Risorse Insufficienti") 
-            stato_esecuzione = f"Bloccato ({motivo})"
-            lotto_target.registra_fallimento_intervento(intervento["operazione"], stagione_attiva, self.parametri.anno_corrente)
-            
-            sensibilita = self.dati_cloni[lotto_target.clone_assegnato]["esigenze_trattamenti"]["sensibilita_marsonina"]
-            if intervento["priorita"] == 2:
-                mult_danno = 1.3 if sensibilita == "Alta" else (0.5 if "bassa" in sensibilita.lower() else 1.0)
-                lotto_target.malus_colturale_accumulato += (0.08 * mult_danno)
-            elif intervento["priorita"] == 3: 
-                lotto_target.malus_colturale_accumulato += 0.05
-            elif intervento["priorita"] == 4: 
-                lotto_target.malus_colturale_accumulato += 0.03
-
-        # ---> LA CORREZIONE È QUI <---
-        ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
-        ore_effettive = ore_teoriche * percentuale_completamento
-
-        report_stagionale["dettaglio_operazioni"].append({
-            "lotto_id": lotto_target.id_lotto, 
-            "id_operazione": intervento["id_operazione"],
-            "priorita": intervento["priorita"], 
-            "durata_cantiere_h": round(spec["ore_richieste"], 2),
-            "ore_lavoro_totali": round(ore_effettive, 2),
-            "percentuale_completamento": round(percentuale_completamento * 100, 2),
-            "squadre_attive": spec.get("meta_linee_attive", 1),
-            "stato": stato_esecuzione
-        })
-    
-    # Funzione che gestisce le lavorazioni di raccolta, valutando se sono state eseguite completamente, parzialmente o bloccate
-
-    def _gestisci_raccolta(self, intervento, lotto_target, spec, percentuale_completamento, report_stagionale):
-        piante_totali = lotto_target.dati_correnti["piante_attive"]
-        p_abbattute = int(piante_totali * percentuale_completamento) if percentuale_completamento < 0.98 else piante_totali
-        
-        # Calcolo delle rese sulle piante effettivamente abbattute
-        if p_abbattute > 0:
-            rese = lotto_target.calcola_ripartizione_assortimenti(self.dati_cloni[lotto_target.clone_assegnato], p_abbattute)
-            self.parametri.totale_prodotto_opera_m3 += rese["opera_m3"]
-            self.parametri.totale_prodotto_cartiera_t += rese["cartiera_t"]
-            self.parametri.totale_prodotto_truciolato_t += rese["truciolato_t"]
-    
-            lotto_target.numero_piante_vive = max(0, lotto_target.numero_piante_vive - p_abbattute)
-            lotto_target.dati_correnti["piante_attive"] = lotto_target.numero_piante_vive
-            
-            report_stagionale["tagli_effettuati"].append({
-                "lotto_id": lotto_target.id_lotto, 
-                "volume_raccolto_m3": round(lotto_target.dati_correnti.get("volume_singolo_m3", 0.0) * p_abbattute, 2), 
-                "rese": rese
+            # Popolamento report comune
+            ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
+            report_stagionale["dettaglio_operazioni"].append({
+                "lotto_id": lotto.id_lotto, 
+                "id_operazione": intervento["id_operazione"], 
+                "durata_cantiere_h": round(spec.get("ore_richieste", 0.0), 2),
+                "ore_lavoro_totali": round(ore_teoriche * perc, 2),
+                "percentuale_completamento": round(perc * 100, 2),
+                "squadre_attive": spec.get("meta_linee_attive", 1),
+                "stato": stato
             })
-
-        # Valutazione stato finale del lotto post-taglio
-        if lotto_target.numero_piante_vive <= 5 or p_abbattute >= piante_totali:
-            lotto_target.inizializza_nuovo_ciclo()
-            lotto_target.numero_piante_vive = 0 
-            lotto_target.tagliato = False
-            lotto_target.eta = 0 
-            
-            lotto_target.anni_ritardo_taglio = 0
-            lotto_target.malus_colturale_accumulato = 0.0
-            if hasattr(lotto_target, "cronistoria_lavorazioni_saltate"):
-                lotto_target.cronistoria_lavorazioni_saltate.clear()
-            if hasattr(lotto_target, "archivio_storico_lavorazioni_saltate"):
-                lotto_target.archivio_storico_lavorazioni_saltate.clear()
-            
-            lotto_target.dati_correnti = {
-                "dbh_reale_cm": 0.0, "altezza_m": 0.0, 
-                "volume_singolo_m3": 0.0, "piante_attive": 0, "volume_totale_m3": 0.0
-            }
-            stato_esecuzione = "Eseguito (Taglio Completato - Reset Ciclo)"
-        else:
-            self.stats_globali["tagli_strutturali_saltati"] += 1
-            if p_abbattute > 0: lotto_target.tagliato = True
-            lotto_target.anni_ritardo_taglio += 1
-            
-            if p_abbattute == 0:
-                stato_esecuzione = "Bloccato (Risorse Insufficienti)"
-            else:
-                stato_esecuzione = f"Eseguito Parziale (In piedi {lotto_target.numero_piante_vive} piante)"
-
-
-        # Calcoliamo le ore teoriche E le moltiplichiamo per quanto lavoro è stato effettivamente svolto
-        ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
-        ore_effettive = ore_teoriche * percentuale_completamento
-
-        report_stagionale["dettaglio_operazioni"].append({
-            "lotto_id": lotto_target.id_lotto, 
-            "id_operazione": intervento["id_operazione"], 
-            "durata_cantiere_h": round(spec.get("ore_richieste", 0.0), 2), # FABBISOGNO TEORICO
-            "ore_lavoro_totali": round(ore_effettive, 2),                  # ORE LAVORATE REALI
-            "percentuale_completamento": round(percentuale_completamento * 100, 2),
-            "squadre_attive": spec.get("meta_linee_attive", 1),
-            "stato": stato_esecuzione
-        })
-
-    # Funzione che calcola la differenza tra ore iniziali e finali per stilare il report dei consumi.
-
-    def _finalizza_report_risorse(self, report_stagionale, serbatoi_iniziali, extra_iniziali):
-        """Calcola la differenza tra ore iniziali e finali per stilare il report dei consumi."""
-        report_stagionale["risorse_umane_interne"] = {
-            "disponibili_iniziali_A": round(serbatoi_iniziali.get("grado_A", 0.0), 2),
-            "disponibili_iniziali_B": round(serbatoi_iniziali.get("grado_B", 0.0), 2),
-            "consumate_A": round(serbatoi_iniziali.get("grado_A", 0.0) - self.ditta.serbatoi_ore.get("grado_A", 0.0), 2),
-            "consumate_B": round(serbatoi_iniziali.get("grado_B", 0.0) - self.ditta.serbatoi_ore.get("grado_B", 0.0), 2)
-        }
-
-        report_stagionale["macchinari_interni_consumati"] = {
-            "harvester": round(serbatoi_iniziali.get("harvester", 0.0) - self.ditta.serbatoi_ore.get("harvester", 0.0), 2),
-            "forwarder": round(serbatoi_iniziali.get("forwarder", 0.0) - self.ditta.serbatoi_ore.get("forwarder", 0.0), 2),
-            "trattori_alta": round(serbatoi_iniziali.get("trattori_alta", 0.0) - self.ditta.serbatoi_ore.get("trattori_alta", 0.0), 2),
-            "trattori_media": round(serbatoi_iniziali.get("trattori_media", 0.0) - self.ditta.serbatoi_ore.get("trattori_media", 0.0), 2),
-            "piattaforme": round(serbatoi_iniziali.get("piattaforme", 0.0) - self.ditta.serbatoi_ore.get("piattaforme", 0.0), 2)
-        }
-
-        report_stagionale["ricorso_terzi_e_noli"] = {
-            chiave: round(self.ditta.registro_extra_anno.get(chiave, 0.0) - extra_iniziali.get(chiave, 0.0), 2)
-            for chiave in ["grado_A", "grado_B", "trattori_alta", "trattori_media", "harvester", "forwarder", "piattaforme"]
-        }
-
-        return report_stagionale
     
-    # Funzione che avanza di una stagione la simulazione, aggiornando lo stato dei lotti, eseguendo le lavorazioni 
-    # restituendo un quadro completo dello stato attuale del pioppeto e dei risultati della stagione appena conclusa
+        # Finalizzazione report stagionale e ritorno dati
+        report_finale = self.ditta.genera_report_consumi(serbatoi_iniziali, extra_iniziali)
+        return {**report_finale, **report_stagionale}
+    
+    # Funzione che avanza di un passo la simulazione, eseguendo tutte le operazioni necessarie per la stagione corrente e aggiornando lo stato dei lotti e della ditta.
+    # Ritorna un dizionario con lo stato aggiornato della simulazione, utile per la reportistica e per l'aggiornamento dell'interfaccia utente.
     
     def avanza_passo_simulazione(self) -> Dict[str, Any]:
             
+        # 1. AVANZAMENTO BIOLOGICO (Solo in Inverno)
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
                 profilo = self.dati_cloni[lotto.clone_assegnato]
                 
+                # Invecchiamento e calcolo accrescimento
                 if lotto.eta == 0 and lotto.numero_piante_vive > 0:
                     lotto.eta = 1
                     lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
@@ -381,58 +257,64 @@ class SimulatorePioppicoltura:
                     lotto.eta += 1
                     lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
                 
+                # Sincronizzazione attributi del Lotto
                 lotto.diametro_medio_fusto = lotto.dati_correnti["dbh_reale_cm"]
                 lotto.altezza_media_piante = lotto.dati_correnti["altezza_m"]   
                 lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
                 lotto.malus_colturale_accumulato = 0.0
 
-        # FOTOGRAFIA PRE-LAVORAZIONI (Punto di partenza per valutare l'impatto delle lavorazioni)
+        # 2. FOTOGRAFIA PRE-LAVORAZIONI
         stato_lotti_pre = {}
         for lotto in self.parametri.collezione_lotti:
             stato_lotti_pre[lotto.id_lotto] = {
                 "eta": lotto.eta, 
                 "tagliato": lotto.tagliato,
-                "biometria": lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") and lotto.dati_correnti else {
-                    "dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, 
-                    "piante_attive": lotto.numero_piante_vive, "volume_totale_m3": 0.0
-                }
+                "biometria": lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") else {}
             }
 
-        # ESECUZIONE CANTIERI STAGIONALI E CALCOLO RISULTATI
+        # 3. ESECUZIONE CANTIERI (Il metodo che abbiamo rifattorizzato)
         risultati_cantieri = self.esegui_fase_lavorazioni_stagionali()
 
-        # --- FOTOGRAFIA POST-LAVORAZIONI (Il nuovo punto di partenza) ---
+        # 4. FOTOGRAFIA POST-LAVORAZIONI (Sincronizzata)
         stato_lotti_istantaneo = {}
         for lotto in self.parametri.collezione_lotti:
+            # Recupero dati correnti
+            biometria = lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") else {
+                "dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, 
+                "piante_attive": lotto.numero_piante_vive, "volume_totale_m3": 0.0
+            }
+            
+            # Se il lotto è vivo ma la biometria è a zero (causa reset), la ricostruiamo
+            if lotto.numero_piante_vive > 0 and biometria.get("dbh_reale_cm", 0.0) == 0.0:
+                 profilo = self.dati_cloni[lotto.clone_assegnato]
+                 biometria = lotto.simula_accrescimento(profilo, lotto.eta)
+            
             stato_lotti_istantaneo[lotto.id_lotto] = {
                 "eta": lotto.eta, 
                 "tagliato": lotto.tagliato,
-                "biometria": lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") and lotto.dati_correnti else {
-                    "dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, 
-                    "piante_attive": lotto.numero_piante_vive, "volume_totale_m3": 0.0
-                }
+                "biometria": biometria
             }
 
+        # 5. GESTIONE LOGICA INVERNALE E STATISTICHE
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
                 if lotto.eta > 0:
-                    profilo = self.dati_cloni[lotto.clone_assegnato]
                     eta_rot = 5 if lotto.destinazione_uso == "INDUSTRIA" else 10
-                    
                     if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta():
-                        self.stats_globali["tagli_biologici_saltati"] += 1
                         lotto.anni_ritardo_taglio = getattr(lotto, "anni_ritardo_taglio", 0) + 1
 
+            # Salvataggio storico extra-noli
             chiave_anno_storico = f"Anno_{self.parametri.anno_corrente}_RisorseExtra"
             if hasattr(self.parametri, "storico_stagionale"):
                 self.parametri.storico_stagionale[chiave_anno_storico] = self.ditta.registro_extra_anno.copy()
             for risorsa in self.ditta.registro_extra_anno:
                 self.ditta.registro_extra_anno[risorsa] = 0.0
 
+        # 6. COMPOSIZIONE QUADRO STATO
         quadro_stato = {
             "risultati_cantieri": risultati_cantieri,
-            "stato_lotti_pre": stato_lotti_pre,       # La nuova chiave per lo storico
-            "stato_lotti": stato_lotti_istantaneo,    # La vecchia chiave per la retrocompatibilità
+            "stato_lotti_pre": stato_lotti_pre,
+            "stato_lotti": stato_lotti_istantaneo,
             "produzione_cumulata": {
                 "opera_m3": getattr(self.parametri, "totale_prodotto_opera_m3", 0.0),
                 "cartiera_t": getattr(self.parametri, "totale_prodotto_cartiera_t", 0.0),

@@ -49,6 +49,7 @@ class FormDitta(QWidget):
         self.spin_piattaforme = self.ui_interfaccia.findChild(object, "spin_piattaforme")
         self.spin_harvester = self.ui_interfaccia.findChild(object, "spin_harvester")
         self.spin_forwarder = self.ui_interfaccia.findChild(object, "spin_forwarder")
+        self.spin_cippatrici = self.ui_interfaccia.findChild(object, "spin_cippatrici")
         self.spin_durata_piano = self.ui_interfaccia.findChild(object, "spin_durata_piano")
 
         # Comparto Noli e Stagionali
@@ -59,6 +60,7 @@ class FormDitta(QWidget):
         self.spin_piattaforme_noleggio = self.ui_interfaccia.findChild(object, "spin_piattaforme_noleggio")
         self.spin_harvester_noleggio = self.ui_interfaccia.findChild(object, "spin_harvester_noleggio")
         self.spin_forwarder_noleggio = self.ui_interfaccia.findChild(object, "spin_forwarder_noleggio")
+        self.spin_cippatrici_noleggio = self.ui_interfaccia.findChild(object, "spin_cippatrici_noleggio")
         
         # Pulsanti di Comando
         self.btn_salva = self.ui_interfaccia.findChild(object, "btn_salva")
@@ -92,6 +94,7 @@ class FormDitta(QWidget):
         if self.spin_piattaforme: self.spin_piattaforme.setValue(self.ditta.piattaforme_aeree_semoventi)
         if self.spin_harvester: self.spin_harvester.setValue(self.ditta.harvester_abbattitori)
         if self.spin_forwarder: self.spin_forwarder.setValue(self.ditta.forwarder_caricatori)
+        if self.spin_cippatrici: self.spin_cippatrici.setValue(self.ditta.cippatrice)
         if self.spin_durata_piano: self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
 
         # Allineamento dei valori correnti dei moltiplicatori di elasticità disaccoppiati
@@ -103,7 +106,8 @@ class FormDitta(QWidget):
         if self.spin_piattaforme_noleggio and "piattaforme" in limiti: self.spin_piattaforme_noleggio.setValue(limiti["piattaforme"])
         if self.spin_harvester_noleggio and "harvester" in limiti: self.spin_harvester_noleggio.setValue(limiti["harvester"])
         if self.spin_forwarder_noleggio and "forwarder" in limiti: self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
-
+        if self.spin_cippatrici_noleggio and "cippatrice" in limiti: self.spin_cippatrici_noleggio.setValue(limiti["cippatrice"])
+    
     # Funzione che legge i valori inseriti dall'utente nei widget grafici, esegue i controlli di consistenza e aggiorna l'istanza della ditta con i nuovi dati, 
     # chiudendo la form al termine
 
@@ -128,8 +132,10 @@ class FormDitta(QWidget):
         piattaforme_noleggio = self.spin_piattaforme_noleggio.value()
         trattori_alta = self.spin_trattori_alta.value()
         trattori_alta_noleggio = self.spin_trattori_alta_noleggio.value()
+        cippatrice = self.spin_cippatrici.value()
+        cippatrice_noleggio = self.spin_cippatrici_noleggio.value()
         
-        if ((piattaforme + piattaforme_noleggio) == 0) or ((trattori_alta + trattori_alta_noleggio) == 0):
+        if ((piattaforme + piattaforme_noleggio) == 0) or ((trattori_alta + trattori_alta_noleggio) == 0) or ((cippatrice + cippatrice_noleggio) == 0):
             mostra_messaggio_stilizzato(
                             self, 
                             "Inconsistenza Flotta", 
@@ -146,6 +152,7 @@ class FormDitta(QWidget):
         self.ditta.piattaforme_aeree_semoventi = self.spin_piattaforme.value()
         self.ditta.harvester_abbattitori = self.spin_harvester.value()
         self.ditta.forwarder_caricatori = self.spin_forwarder.value()
+        self.ditta.cippatrice = self.spin_cippatrici.value()    
         
         # Salvataggio delle nuove impostazioni di elasticità disaccoppiata inserite dall'utente
 
@@ -156,7 +163,7 @@ class FormDitta(QWidget):
         self.ditta.limiti_noli_stagionali["piattaforme"] = int(self.spin_piattaforme_noleggio.value())
         self.ditta.limiti_noli_stagionali["harvester"] = int(self.spin_harvester_noleggio.value())
         self.ditta.limiti_noli_stagionali["forwarder"] = int(self.spin_forwarder_noleggio.value())
-
+        self.ditta.limiti_noli_stagionali["cippatrice"] = int(self.spin_cippatrici_noleggio.value())
         # Salva la durata target degli anni all'interno della configurazione globale parametri
         self.parametri.anni_durata_target = self.spin_durata_piano.value()
 

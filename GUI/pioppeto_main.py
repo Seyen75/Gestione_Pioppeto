@@ -68,10 +68,12 @@ class PioppetoMain(QMainWindow):
         self.ditta_attiva.trattori_alta_potenza = 1
         self.ditta_attiva.trattori_media_potenza = 3 
         self.ditta_attiva.piattaforme_aeree_semoventi = 1
+        self.ditta_attiva.cippatrice = 1
         
         # Strumentazioni avanzate della ditta
         self.ditta_attiva.harvester_abbattitori = 1
         self.ditta_attiva.forwarder_caricatori = 1
+
         
         # Dichiarazione della variabile IUFRO (International Union of Forest Research Organizations)
         # Variabile che indica l'operatività media di un cantiere, pari all'80% delle ore disponibili totali
@@ -86,7 +88,8 @@ class PioppetoMain(QMainWindow):
             "forwarder": 3,
             "trattori_alta": 3,
             "trattori_media": 5,
-            "piattaforme": 3
+            "piattaforme": 3,
+            "cippatrice": 3
         }
         
         # Iniziali i serbatoi stagionali con il parametro di 55 giorni lavorativi per stagione
@@ -111,13 +114,13 @@ class PioppetoMain(QMainWindow):
         self.btn_reset = widget_centrale.findChild(QPushButton, "btn_reset")
 
         # Connettte le funzioni ai relativi pulsanti della form
-        if self.btn_esci: self.btn_esci.clicked.connect(QApplication.instance().quit)
-        if self.btn_ditta: self.btn_ditta.clicked.connect(self.ditta)
-        if self.btn_lotti: self.btn_lotti.clicked.connect(self.lotti)
-        if self.btn_simulazione: self.btn_simulazione.clicked.connect(self.simulazione)
-        if self.btn_monitoraggio: self.btn_monitoraggio.clicked.connect(self.monitoraggio)
-        if self.btn_valutazioni: self.btn_valutazioni.clicked.connect(self.valutazione)
-        if self.btn_reset: self.btn_reset.clicked.connect(self.ripristina_simulazione_globale)
+        self.btn_esci.clicked.connect(QApplication.instance().quit)
+        self.btn_ditta.clicked.connect(self.ditta)
+        self.btn_lotti.clicked.connect(self.lotti)
+        self.btn_simulazione.clicked.connect(self.simulazione)
+        self.btn_monitoraggio.clicked.connect(self.monitoraggio)
+        self.btn_valutazioni.clicked.connect(self.valutazione)
+        self.btn_reset.clicked.connect(self.ripristina_simulazione_globale)
 
         # Aggiustamenti grafici della MainWindow, sfondo e grafica per il titolo
         self.setStyleSheet("QMainWindow { border-image: url(:/sfondo_main.jpg) 0 0 0 0 stretch stretch; }")

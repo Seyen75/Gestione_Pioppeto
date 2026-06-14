@@ -1,7 +1,5 @@
 {
   "I-214": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Italiano (Euroamericano - Linea Opera)",
     "attitudini": "OPERA",
     "attitudine_suolo": "Terreni di pianura, fertili, ben drenati, freschi",
     "parametri_crescita": {
@@ -19,8 +17,6 @@
     }
   },
   "I-45/51": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Italiano (Euroamericano)",
     "attitudini": "OPERA",
     "attitudine_suolo": "Terreni sciolti, tollera discretamente la siccità estiva",
     "parametri_crescita": {
@@ -38,8 +34,6 @@
     }
   },
   "Neva": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Selezione recente",
     "attitudini": "DUAL",
     "attitudine_suolo": "Ottima adattabilità ad areali della pianura padana, resistente",
     "parametri_crescita": {
@@ -57,8 +51,6 @@
     }
   },
   "Velasco": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Italiano (Selezione ISP Casale Monferrato)",
     "attitudini": "DUAL",
     "attitudine_suolo": "Grande adattabilità ai terreni padani, tollera variazioni del livello di falda",
     "parametri_crescita": {
@@ -76,8 +68,6 @@
     }
   },
   "AF2": {
-    "nome_scientifico": "Populus x canadensis",
-    "origine": "Italiano (Selezione Alasia - Linea Biomassa/Industria)",
     "attitudini": "INDUSTRIA",
     "attitudine_suolo": "Ottima rusticità, ideale per ciclo breve (SRF), tollera terreni pesanti",
     "parametri_crescita": {

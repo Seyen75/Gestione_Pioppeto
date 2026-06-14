@@ -15,7 +15,7 @@ class GestoreCloni:
         self.percorso_master = os.path.join(self.cartella_radice, "Core", "cloni_default.json")
 
         # Il file di lavoro letto attivamente dal simulatore e dalle form
-        self.percorso_utente = os.path.join(self.cartella_radice, "cloni.json")
+        self.percorso_utente = os.path.join(self.cartella_radice, "Core", "cloni.json")
 
     def inizializza_database(self):
         # Verifica la presenza e la validità del file cloni.json. Se manca o è corrotto, lo rigenera. Anche qui per futura features
@@ -45,22 +45,3 @@ class GestoreCloni:
         self.inizializza_database() # Controllo preventivo di sicurezza ad ogni chiamata
         with open(self.percorso_utente, "r", encoding="utf-8") as f:
             return json.load(f)
-
-    def salva_nuovo_clone(self, sigla: str, dati_clone: dict) -> bool:
-        # Aggiunge o modifica un clone nel file utente - Predisposto per futura eventuale aggiunta
-        
-        try:
-            cloni_attuali = self.carica_cloni()
-            cloni_attuali[sigla] = dati_clone
-
-            # Scrittura su un file temporaneo di transito per evitare corruzioni se si interrompe il processo
-            percorso_tmp = self.percorso_utente + ".tmp"
-            with open(percorso_tmp, "w", encoding="utf-8") as f:
-                json.dump(cloni_attuali, f, indent=4, ensure_ascii=False)
-
-            # Sostituzione sul disco
-            os.replace(percorso_tmp, self.percorso_utente)
-            return True
-        except Exception as e:
-            print(f"Errore durante il salvataggio o la modifica del clone: {e}")
-            return False

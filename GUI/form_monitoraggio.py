@@ -211,8 +211,8 @@ class form_monitoraggio(QWidget):
                 else:
                     stato_stringa = "In attesa dell'Inverno per Taglio"
             else:
-                f_k = self.motore._get_chiave_fase(lotto.eta)
-                ops_attive = filiera_lotto[f_k][self.parametri.stagione_corrente]
+                f_k = lotto.get_fase_colturale()
+                ops_attive = filiera_lotto.get(f_k, {}).get(self.parametri.stagione_corrente, [])
                 stato_stringa = " + ".join([o["descrizione"] for o in ops_attive]) if ops_attive else "Riposo vegetativo"
 
             # Setta i valori delle varie colonne della riga appena creata
@@ -258,6 +258,7 @@ class form_monitoraggio(QWidget):
         quota_tratt_media_nominale = self.motore.ditta.trattori_media_potenza * ore_base_stagione
         
         quota_piatt_nominale = self.motore.ditta.piattaforme_aeree_semoventi * ore_base_stagione
+        quota_cipp_nominale = self.motore.ditta.cippatrice * ore_base_stagione
 
         ore_a_richieste = 0.0
         ore_b_richieste = 0.0
@@ -266,6 +267,7 @@ class form_monitoraggio(QWidget):
         ore_tratt_alta_richieste = 0.0
         ore_tratt_media_richieste = 0.0
         ore_piattaforma_richieste = 0.0
+        ore_cippatrice_richieste = 0.0
 
         # Avvia la simulazione in versione previsionale (non modifica i dati reali)
         interventi_teorici = self.motore.prevedi_domanda_stagionale()
@@ -280,13 +282,13 @@ class form_monitoraggio(QWidget):
             ore_tratt_alta_richieste += combi_squadra.get("trattori_alta", 0.0)
             ore_tratt_media_richieste += combi_squadra.get("trattori_media", 0.0)
             ore_piattaforma_richieste += combi_squadra.get("piattaforme", 0.0)
-
+            ore_cippatrice_richieste += combi_squadra.get("cippatrice", 0.0)
         self.ax_risorse.clear()
         
         # Aggiunta la colonna separata nell'asse X
-        categorie = ['Grado A\n(Spec.)', 'Grado B\n(Manov.)', 'Harvester', 'Forwarder', 'Trattori\nAlta', 'Trattori\nMedia', 'Piattaf.']
-        ore_totali_nominali = [quota_a_nominale, quota_b_nominale, quota_harv_nominale, quota_forw_nominale, quota_tratt_alta_nominale, quota_tratt_media_nominale, quota_piatt_nominale]
-        ore_domanda_effettiva = [ore_a_richieste, ore_b_richieste, ore_harv_richieste, ore_forw_richieste, ore_tratt_alta_richieste, ore_tratt_media_richieste, ore_piattaforma_richieste]
+        categorie = ['Grado A\n(Spec.)', 'Grado B\n(Manov.)', 'Harvester', 'Forwarder', 'Trattori\nAlta', 'Trattori\nMedia', 'Piattaf.', 'Cippatrice']
+        ore_totali_nominali = [quota_a_nominale, quota_b_nominale, quota_harv_nominale, quota_forw_nominale, quota_tratt_alta_nominale, quota_tratt_media_nominale, quota_piatt_nominale, quota_cipp_nominale]
+        ore_domanda_effettiva = [ore_a_richieste, ore_b_richieste, ore_harv_richieste, ore_forw_richieste, ore_tratt_alta_richieste, ore_tratt_media_richieste, ore_piattaforma_richieste, ore_cippatrice_richieste]
 
         larghezza_barre = 0.45 
 
@@ -296,7 +298,7 @@ class form_monitoraggio(QWidget):
         ore_extra = []
         colori_extra = []
         
-        chiave_risorsa_lista = ["grado_A", "grado_B", "harvester", "forwarder", "trattori_alta", "trattori_media", "piattaforme"]
+        chiave_risorsa_lista = ["grado_A", "grado_B", "harvester", "forwarder", "trattori_alta", "trattori_media", "piattaforme", "cippatrice"]
         
         for richiesta, limite, chiave in zip(ore_domanda_effettiva, ore_totali_nominali, chiave_risorsa_lista):
             cat_mercato = self.motore.ditta._ottieni_chiave_elasticita(chiave)
