@@ -3,6 +3,25 @@
 # Sincronizzata per macOS per evitare lag e warning sui font.
 
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtCore import QSize
+
+def centra_finestra(finestra, larghezza, altezza):
+    """
+    Centra una finestra rispetto al suo parent.
+    Se non ha un parent, la centra rispetto allo schermo.
+    """
+    parent = finestra.parentWidget()
+    finestra.setFixedSize(larghezza, altezza)
+    
+    if parent:
+        geometria_parent = parent.geometry()
+        x = geometria_parent.x() + (geometria_parent.width() - larghezza) // 2
+        y = geometria_parent.y() + (geometria_parent.height() - altezza) // 2
+        finestra.move(x, y)
+    else:
+        # Fallback: centra rispetto allo schermo principale
+        schermo = finestra.screen().availableGeometry()
+        finestra.move(schermo.center() - finestra.rect().center())
 
 def mostra_messaggio_stilizzato(parent, titolo, testo, tipo="info"):
     #Genera un QMessageBox personalizzato, compatto (400x160) e stilizzato

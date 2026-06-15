@@ -4,16 +4,20 @@ from typing import Dict, Any, List
 
 # Importazioni PySide6 per la gestione dell'interfaccia grafica
 from PySide6.QtCore import Slot, Qt, QLocale
-from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QComboBox, QLabel, QPushButton, QTabWidget, QVBoxLayout, QHeaderView, QProgressBar, QTextEdit
+from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QComboBox, QLabel, QPushButton, QTabWidget, QVBoxLayout, QHeaderView, QProgressBar, QTextEdit, QScrollArea
 from PySide6.QtGui import QScreen, QGuiApplication
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtUiTools import QUiLoader
+
+from GUI.utils import centra_finestra
 
 # Importazioni Matplotlib per la visualizzazione dei grafici
 import matplotlib
 matplotlib.use('QtAgg')
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.ticker import MultipleLocator
 from matplotlib.figure import Figure
+import mplcursors
 
 # Importazioni NumPy per eventuali calcoli numerici
 import numpy as np
@@ -30,9 +34,11 @@ class FormValutazioni(QWidget):
         # Inizializza il modulo QLocale per la formattazione italiana dei dati numerici e delle date, garantendo la corretta visualizzazione dei valori con separatori decimali e migliaia secondo le convenzioni locali
         self.locale_it = QLocale(QLocale.Italian, QLocale.Italy)
 
+        self.DIM_W = 1150
+        self.DIM_H = 790
+        
         # Caricamento UI e mappatura componenti
         self._carica_interfaccia()
-        self._centra_finestra_su_schermo()
         self._mappa_componenti_ui()
         self._inizializza_canvas_grafico()
         self._tabelle_efficienza()
@@ -41,7 +47,11 @@ class FormValutazioni(QWidget):
         # Configurazione e popolamento iniziale dei dati
         self._configura_stato_iniziale_selettori()
 
-    # Funzione che carica l'interfaccia grafica da file .ui, mappa i componenti principali come attributi della classe e imposta il layout generale della form
+    
+    def showEvent(self, event):
+        super().showEvent(event)
+        centra_finestra(self, self.DIM_W, self.DIM_H)
+    
     
     def _carica_interfaccia(self):
         loader = QUiLoader()
@@ -56,19 +66,6 @@ class FormValutazioni(QWidget):
     
     # Funzione che centra la finestra sullo schermo, tenendo conto di eventuali finestre genitore e delle dimensioni dinamiche della form
     
-    def _centra_finestra_su_schermo(self):
-        self.adjustSize()
-        schermo: QScreen = QGuiApplication.primaryScreen()
-        if self.parent() and self.parent().window():
-            schermo = self.parent().window().screen()
-            
-        if schermo:
-            geometria_schermo = schermo.geometry()
-            larghezza_form = self.width() if self.width() > 100 else 1100
-            altezza_form = self.height() if self.height() > 100 else 780
-            x = (geometria_schermo.width() - larghezza_form) // 2
-            y = (geometria_schermo.height() - altezza_form) // 2
-            self.move(geometria_schermo.x() + x, geometria_schermo.y() + y)
 
     # Funzione che mappa i componenti principali dell'interfaccia grafica come attributi della classe, 
     # facilitando l'accesso e la manipolazione dei dati nei vari slot e funzioni di aggiornamento
@@ -149,13 +146,27 @@ class FormValutazioni(QWidget):
         header_anom.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         header_anom.setSectionResizeMode(4, QHeaderView.Stretch)
             
+        # --- MODIFICA PER TABELLA TAGLI ANNO (Leggibilità Headers) ---
+        if self.tbl_tagli_anno:
+            colonne_labels = [
+                "ID Lotto", "Destinazione", "Superficie", "Vol.\nRaccolto", 
+                "Resa\nOpera", "Massa\nCartiera", "Massa\nTruciolato", 
+                "Resa/Ha\nOpera", "Resa/Ha\nCartiera", "Resa/Ha\nTruciolato"
+            ]
+            self.tbl_tagli_anno.setColumnCount(len(colonne_labels))
+            self.tbl_tagli_anno.setHorizontalHeaderLabels(colonne_labels)
+            
+            # Impostazione altezza header per accomodare il testo su due righe
+            header_tagli = self.tbl_tagli_anno.horizontalHeader()
+            header_tagli.setMinimumHeight(50) 
+            header_tagli.setSectionResizeMode(QHeaderView.ResizeToContents)
 
         # Intestazioni colonne per il bilancio risorse, con testo su più righe per chiarezza
         col_bil = ["Risorsa", "Fabbisogno Tot.", "Ore Lavorate", "Ore Mancanti"]
         self.tbl_bilancio_risorse.setColumnCount(len(col_bil))
         self.tbl_bilancio_risorse.setHorizontalHeaderLabels(col_bil)
         self.tbl_bilancio_risorse.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
+        
     # Funzione che inizializza il canvas del grafico di ripartizione dei risultati, impostando dimensioni, 
     # colori e layout per integrarsi armoniosamente con il tema scuro dell'applicazione e garantire una visualizzazione chiara dei dati
 
@@ -171,6 +182,29 @@ class FormValutazioni(QWidget):
             layout_grafico.addWidget(self.canvas_ripartizione)
             layout_grafico.setContentsMargins(0, 0, 0, 0)
 
+    #   1. Recupera i placeholder dal Designer
+        placeholder_1 = self.ui.findChild(QWidget, "widget_canvas_crescita")
+        placeholder_2 = self.ui.findChild(QWidget, "widget_canvas_piante")
+        
+        # Creazione Figure e Canvas
+        self.fig_crescita = Figure(figsize=(5, 3), facecolor='#141923')
+        self.canvas_crescita = FigureCanvas(self.fig_crescita)
+        
+        self.fig_piante = Figure(figsize=(5, 3), facecolor='#141923')
+        self.canvas_piante = FigureCanvas(self.fig_piante)
+        
+        # Setup ScrollArea per entrambi
+        for p, c in [(placeholder_1, self.canvas_crescita), (placeholder_2, self.canvas_piante)]:
+            layout = QVBoxLayout(p)
+            layout.setContentsMargins(0, 0, 0, 0)
+            
+            scroll = QScrollArea()
+            scroll.setWidget(c)
+            scroll.setWidgetResizable(True)
+            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            scroll.setStyleSheet("QScrollArea { border: none; background: #141923; }")
+            layout.addWidget(scroll)
+            
     # Funzione che connette i segnali dei componenti interattivi della form (come combobox, tabelle e bottoni) ai rispettivi slot, 
     # garantendo che le azioni dell'utente attivino le funzioni di aggiornamento e visualizzazione dei dati in modo coerente e reattivo
 
@@ -260,6 +294,8 @@ class FormValutazioni(QWidget):
     def slot_cambio_anno_combobox(self, testo_anno: str):
         if not testo_anno: 
             return
+        
+        
         anno_selezionato = int(testo_anno)
         
         if self.tbl_tagli_anno is None:
@@ -450,6 +486,82 @@ class FormValutazioni(QWidget):
                 item = self.tbl_storico_lotto.item(riga, c)
                 if item: item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
     
+        self._aggiorna_grafici_storico_lotto(storia_lotto)
+    
+    
+    def _aggiorna_grafici_storico_lotto(self, storia_lotto: dict):
+        # 1. Pulizia totale delle figure (reset completo per ogni cambio lotto)
+        self.fig_crescita.clf()
+        self.fig_piante.clf()
+        
+        # 2. Ricreazione assi
+        self.ax_crescita = self.fig_crescita.add_subplot(111)
+        self.ax_piante = self.fig_piante.add_subplot(111)
+        
+        # Impostazione colori tema scuro
+        self.ax_crescita.set_facecolor('#141923')
+        self.ax_piante.set_facecolor('#141923')
+        
+        anni = sorted(storia_lotto.keys())
+        num_anni = len(anni)
+        
+        # Logica per asse X: step 1 se pochi anni, step 2 se tanti (evita sovrapposizioni)
+        passo_asse_x = 1 if num_anni <= 20 else 2
+        
+        # Larghezza dinamica del canvas (minimo 500px, 60px per anno)
+        larghezza_totale = max(500, num_anni * 60)
+        self.canvas_crescita.setMinimumWidth(larghezza_totale)
+        self.canvas_piante.setMinimumWidth(larghezza_totale)
+        
+        # Estrazione dati
+        diametri_cm = [storia_lotto[a]["dbh"] for a in anni]
+        altezze_m = [storia_lotto[a]["h"] for a in anni]
+        piante = [storia_lotto[a]["piante"] for a in anni]
+
+        # --- Grafico 1: Crescita Dimensionale (Doppio Asse Y) ---
+        color_dbh = '#ffca28' # Giallo
+        color_h = '#00e676'   # Verde
+        
+        # Asse SX: Altezza
+        linea_h, = self.ax_crescita.plot(anni, altezze_m, marker='s', linestyle='-', color=color_h, label='Altezza (m)')
+        self.ax_crescita.set_ylabel('Altezza (m)', color=color_h)
+        self.ax_crescita.tick_params(axis='y', colors=color_h)
+        
+        # Asse DX: Diametro
+        ax2 = self.ax_crescita.twinx()
+        linea_dbh, = ax2.plot(anni, diametri_cm, marker='o', linestyle='-', color=color_dbh, label='Diametro (cm)')
+        ax2.set_ylabel('Diametro (cm)', color=color_dbh)
+        ax2.tick_params(axis='y', colors=color_dbh)
+        
+        # Configurazione Asse X (Interi)
+        for ax in [self.ax_crescita, self.ax_piante]:
+            ax.xaxis.set_major_locator(MultipleLocator(passo_asse_x))
+            ax.xaxis.set_major_formatter(lambda x, pos: f'{int(x)}')
+            ax.tick_params(axis='x', colors='#e0e0e0')
+        
+        self.ax_crescita.grid(True, linestyle='--', alpha=0.3, color='#444')
+        self.ax_crescita.set_title("Evoluzione Dimensionale", color='#e0e0e0', fontsize=10)
+        
+        # Inizializzazione Cursore Interattivo
+        self.cursor_crescita = mplcursors.cursor([linea_h, linea_dbh], hover=True)
+
+        # --- Grafico 2: Evoluzione Densità ---
+        linea_p, = self.ax_piante.plot(anni, piante, marker='D', linestyle='-', color='#2196f3', label='Piante Vive')
+        self.ax_piante.set_ylabel('N° Fusti', color='#e0e0e0')
+        self.ax_piante.set_xlabel('Anno', color='#e0e0e0')
+        self.ax_piante.tick_params(colors='#e0e0e0')
+        self.ax_piante.grid(True, linestyle='--', alpha=0.3, color='#444')
+        self.ax_piante.set_title("Evoluzione Densità", color='#e0e0e0', fontsize=10)
+        
+        # Inizializzazione Cursore Interattivo
+        self.cursor_piante = mplcursors.cursor([linea_p], hover=True)
+
+        # Finalizzazione
+        self.fig_crescita.tight_layout()
+        self.fig_piante.tight_layout()
+        self.canvas_crescita.draw()
+        self.canvas_piante.draw()
+   
     # Funzione che aggiorna il grafico di ripartizione dei risultati dei tagli effettuati nell'anno selezionato, 
     # visualizzando la distribuzione in termini di volume raccolto per opera, cartiera e truciolato
     # per ogni lotto tagliato, con una formattazione chiara e coerente con il tema scuro dell'applicazione 

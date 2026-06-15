@@ -9,7 +9,8 @@ OP_CEP_01 = {"id_operazione": "OP_CEP_01", "descrizione": "Triturazione ceppaie 
              "macrocategoria": "preparazione_terreno", "priorita": 1, "ore_ha": 10.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
 OP_SCA_01 = {"id_operazione": "OP_SCA_01", "descrizione": "Preparazione terreno e Scasso localizzato", 
              "macrocategoria": "preparazione_terreno", "priorita": 2, "ore_ha": 8.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
-OP_ERP_01 = {"id_operazione": "OP_ERP_01", "descrizione": "Erpicatura profonda pre-impianto", "macrocategoria": "preparazione_terreno", "priorita": 3, "ore_ha": 4.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
+OP_ERP_01 = {"id_operazione": "OP_ERP_01", "descrizione": "Erpicatura profonda pre-impianto", "macrocategoria": "preparazione_terreno", 
+             "priorita": 3, "ore_ha": 4.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
 
 OP_IMP_01 = {"id_operazione": "OP_IMP_01", "descrizione": "Messa a dimora astoni/pioppelle", 
              "macrocategoria": "impianto", "priorita": 4, "ore_ha": 18.0, "risorse": {"trattori_media": 1.0, "grado_A": 1.0, "grado_B": 2.0}}
@@ -73,13 +74,13 @@ OP_CIP_01 = {"id_operazione": "OP_CIP_01", "descrizione": "Cippatura legname di 
 
 STRUTTURA_LAVORAZIONI = {
     "OPERA": {
-        0: {
+        "0": {
             "Inverno": [OP_CEP_01],
             "Primavera": [OP_SCA_01, OP_ERP_01, OP_IMP_01],
             "Estate": [OP_IRR_01],
             "Autunno": [OP_INF_01]
         },
-        1: {
+        "1": {
             "Inverno": [OP_POT_01, OP_IMP_02],
             "Primavera": [OP_TRA_01, OP_INF_02],
             "Estate": [OP_IRR_02],
@@ -107,13 +108,13 @@ STRUTTURA_LAVORAZIONI = {
         }
     },
     "INDUSTRIA": {
-        0: {
+        "0": {
             "Inverno": [OP_CEP_01],
             "Primavera": [OP_SCA_01, OP_ERP_01, OP_IMP_01],
             "Estate": [OP_IRR_01],
             "Autunno": [OP_INF_01]
         },
-        1: {
+        "1": {
             "Inverno": [OP_IMP_02],
             "Primavera": [OP_TRA_01, OP_INF_02],
             "Estate": [OP_IRR_02],

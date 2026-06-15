@@ -1,32 +1,36 @@
 # Modulo per il pannello di controllo e pianificazione del pioppeto.
-import os
-import json
+
 import random
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QTableWidgetItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt
-from GUI.utils import mostra_messaggio_stilizzato
+from GUI.utils import centra_finestra, mostra_messaggio_stilizzato
 from Core.lotto import Lotto
+from Core.servizi import ServizioSelvicolturale
 
 class FormLotti(QWidget):
-    def __init__(self, parametri_condivisi, parent=None):
+    def __init__(self, parametri_condivisi, dizionario_cloni, parent=None):
         super().__init__(parent)
 
         if parent:
             self.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
 
+        # Caricamento UI
         loader = QUiLoader()
-        percorso_ui = os.path.join(os.path.dirname(__file__), "form_lotti.ui")
-        self.ui_interfaccia = loader.load(percorso_ui, None)
-
+        self.ui_interfaccia = loader.load("GUI/form_lotti.ui", None)
+        
         layout = QVBoxLayout(self)
         layout.addWidget(self.ui_interfaccia)
         layout.setContentsMargins(10, 10, 10, 10)
+        self.DIM_W = 647
+        self.DIM_H = 721
 
         self.setWindowTitle("Gestione Lotti Colturali")
         self.parametri = parametri_condivisi
+        self.dizionario_cloni = dizionario_cloni
 
-        # AGGANCIO WIDGET DA INTERFACCIA
+        # AGGANCIO WIDGET
         self.txt_id_lotto = self.ui_interfaccia.findChild(object, "txt_id_lotto")
         self.spin_ettari = self.ui_interfaccia.findChild(object, "spin_ettari")
         self.combo_clone = self.ui_interfaccia.findChild(object, "combo_clone")
@@ -38,364 +42,121 @@ class FormLotti(QWidget):
         self.lbl_avviso_clone = self.ui_interfaccia.findChild(object, "lbl_avviso_clone")
         self.spin_eta_iniziale = self.ui_interfaccia.findChild(object, "spin_eta_iniziale")
 
-        # Configurazione tabella lotti
-        self.table_lotti.setShowGrid(True)
+        # Configurazione Tabella
         self.table_lotti.setColumnCount(6)
-        
-        # Imposta le intestazioni delle colonne
-        orizzontale_header = self.table_lotti.horizontalHeader()
-        orizzontale_header.setSectionResizeMode(orizzontale_header.ResizeMode.Interactive)
-        
-        # Configura le modalità di ridimensionamento per ogni colonna in modo da adattarsi al contenuto o espandersi per riempire lo spazio disponibile
-        orizzontale_header.setSectionResizeMode(0, orizzontale_header.ResizeMode.ResizeToContents)
-        orizzontale_header.setSectionResizeMode(1, orizzontale_header.ResizeMode.ResizeToContents)
-        orizzontale_header.setSectionResizeMode(2, orizzontale_header.ResizeMode.Stretch)
-        orizzontale_header.setSectionResizeMode(3, orizzontale_header.ResizeMode.ResizeToContents)
-        orizzontale_header.setSectionResizeMode(4, orizzontale_header.ResizeMode.ResizeToContents)
-        orizzontale_header.setSectionResizeMode(5, orizzontale_header.ResizeMode.Stretch)
+        self.table_lotti.setSelectionBehavior(self.table_lotti.SelectionBehavior.SelectRows)
+        self.table_lotti.setSelectionMode(self.table_lotti.SelectionMode.SingleSelection)
+        self.table_lotti.verticalHeader().setVisible(False)
 
-        # Configura l'intestazione verticale per nascondere i numeri di riga e impostare un'altezza fissa per ogni riga, migliorando l'estetica della tabella e rendendo più chiara la distinzione tra le righe dei lotti
-        verticale_header = self.table_lotti.verticalHeader()
-        verticale_header.setDefaultSectionSize(32)
-        verticale_header.setVisible(False)
-        self.table_lotti.setAlternatingRowColors(True)
-
-        # AGGANCIO PULSANTI E AZIONI
+        # Pulsanti
         self.btn_azione = self.ui_interfaccia.findChild(object, "btn_azione_lotto")
         self.btn_secondario = self.ui_interfaccia.findChild(object, "btn_elimina_lotto")
         self.btn_randomizza = self.ui_interfaccia.findChild(object, "btn_randomizza")
         self.btn_esci = self.ui_interfaccia.findChild(object, "btn_esci")
 
-        self.txt_id_lotto.setReadOnly(True)
-
+        # Connessioni
         self.btn_azione.clicked.connect(self.gestisci_azione_pulsante_principale)
         self.btn_secondario.clicked.connect(self.gestisci_azione_pulsante_secondario)
         self.btn_randomizza.clicked.connect(self.genera_lotto_casuale)
-        self.btn_esci.clicked.connect(self.esci)
-        
-        # Configura la tabella dei lotti per consentire la selezione di una singola riga alla volta e collega l'evento di cambio selezione alla funzione 
-        # che carica i dati del lotto selezionato nei widget grafici per la visualizzazione e modifica   
+        self.btn_esci.clicked.connect(self.close)
         
         self.table_lotti.itemSelectionChanged.connect(self.carica_lotto_selezionato)
-        self.table_lotti.setSelectionBehavior(self.table_lotti.SelectionBehavior.SelectRows)
-        self.table_lotti.setSelectionMode(self.table_lotti.SelectionMode.SingleSelection)
-
-        # Collega gli eventi di cambio testo delle combo box dei cloni e delle destinazioni d'uso alla funzione che verifica la coerenza selvicolturale
-        # aggiorna l'etichetta di avviso per guidare l'utente nella scelta del clone più adatto alla destinazione d'uso del lotto   
         self.combo_clone.currentTextChanged.connect(self.verifica_coerenza_selvicolturale)
         self.combo_destinazione.currentTextChanged.connect(self.verifica_coerenza_selvicolturale)
 
-        # Popolamento iniziale delle combo box e tabella, e reset dell'interfaccia per prepararla all'inserimento di un nuovo lotto
-        self.popola_cloni_disponibili()
-        self.popola_sesti_disponibili()
-        self.popola_destinazioni_disponibili()
+        # Inizializzazione
+        self.popola_combo_iniziali()
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
-
-    # Funzione per centrare la finestra del form rispetto alla finestra padre quando viene mostrata, calcolando la posizione ideale basata sulle dimensioni della finestra padre e della finestra del form, e spostando il form in quella posizione per garantire un'esperienza utente più fluida e professionale
 
     def showEvent(self, event):
         super().showEvent(event)
-        parent = self.parentWidget()
-        if parent:
-            geometria_parent = parent.geometry()
-            larghezza_self, altezza_self = 647, 720
-            x = geometria_parent.x() + (geometria_parent.width() - larghezza_self) // 2
-            y = geometria_parent.y() + (geometria_parent.height() - altezza_self) // 2
-            self.move(x, y)
-
-    # Funzione che si attiva quando la form viene chiusa, notificando alla finestra padre di aggiornare lo stato dell'interfaccia principale 
-    # per riflettere eventuali modifiche ai lotti
-        
-    def closeEvent(self, event):
-        parent = self.parentWidget()
-        if parent and hasattr(parent, "aggiorna_stato_interfaccia"):
-            parent.aggiorna_stato_interfaccia()
-        super().closeEvent(event)
-
-    # --- FUNZIONI CARICAMENTO E GESTIONE INTERFACCIA ---
-
-    # Funzione che popola la combo box dei cloni disponibili leggendo da un file JSON esterno, con fallback a dati hardcoded se il file non esiste o è malformato
-
-    def popola_cloni_disponibili(self):
-        self.combo_clone.clear()
-        percorso_base = os.path.dirname(os.path.dirname(__file__))
-        percorso_json = os.path.join(percorso_base, "Core", "cloni.json")
-        self.dizionario_cloni = {}
-
-        try:
-            if os.path.exists(percorso_json):
-                with open(percorso_json, "r", encoding="utf-8") as f:
-                    self.dizionario_cloni = json.load(f)
-                if self.dizionario_cloni:
-                    self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
-                    return
-            raise FileNotFoundError
-        except Exception:
-            # Se il file non esiste o è malformato, utilizza un dizionario hardcoded di cloni come fallback
-            self.dizionario_cloni = {
-                "I-214": {"attitudini": "OPERA", "proprieta_tecnologiche": {"densita_verde_t_m3": 0.85}},
-                "I-45/51": {"attitudini": "INDUSTRIA", "proprieta_tecnologiche": {"densita_verde_t_m3": 0.90}},
-                "Neva": {"attitudini": "OPERA", "proprieta_tecnologiche": {"densita_verde_t_m3": 0.88}},
-                "Velasco": {"attitudini": "INDUSTRIA", "proprieta_tecnologiche": {"densita_verde_t_m3": 0.92}},
-                "AF2": {"attitudini": "DUAL", "proprieta_tecnologiche": {"densita_verde_t_m3": 0.89}}
-            }
-            self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
-
-    # Funzione che popola la combo box dei sesti d'impianto disponibili con opzioni predefinite, permettendo all'utente di scegliere tra configurazioni standard di piantagione
-
-    def popola_sesti_disponibili(self):
-        self.combo_sesto_impianto.clear()
+        centra_finestra(self, self.DIM_W, self.DIM_H)
+          
+    def popola_combo_iniziali(self):
+        ''' Carica i dati all'interno dei controlli combobox presenti sulla form '''
+        self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
         self.combo_sesto_impianto.addItems(["6x6", "6x5", "7x6", "7x7"])
-
-    # Funzione che popola la combo box delle destinazioni d'uso disponibili con opzioni predefinite, permettendo all'utente di specificare se il lotto è destinato a biomassa/cartiera o a compensati di pregio
-
-    def popola_destinazioni_disponibili(self):
-        self.combo_destinazione.clear()
         self.combo_destinazione.addItems(["OPERA", "INDUSTRIA"])
 
-    # Funzione che svuota e resetta i widget grafici dell'interfaccia, riportandoli ai valori di default o al prossimo ID progressivo disponibile, e aggiornando il testo dei pulsanti per preparare l'interfaccia all'inserimento di un nuovo lotto o alla visualizzazione dello stato iniziale
-    
-    def svuota_e_resetta_interfaccia(self):
-        self.table_lotti.clearSelection()
-        self.txt_id_lotto.setText(self.calcola_prossimo_id_progressivo())
-        self.spin_ettari.setValue(0.0)
-        self.spin_attrito.setValue(0)
-        self.spin_test_idrico.setValue(0.0)
-        self.spin_eta_iniziale.setValue(0)
-
-        if self.combo_clone and self.combo_clone.count() > 0: self.combo_clone.setCurrentIndex(0)
-        if self.combo_sesto_impianto and self.combo_sesto_impianto.count() > 0: self.combo_sesto_impianto.setCurrentIndex(0)
-        if self.combo_destinazione and self.combo_destinazione.count() > 0: self.combo_destinazione.setCurrentIndex(0)
-
-        self.btn_azione.setText("Aggiungi Lotto")
-        self.btn_secondario.setText("Svuota")
-        self.verifica_coerenza_selvicolturale()
-
-    # Funzione che verifica la coerenza selvicolturale tra il clone selezionato e la destinazione d'uso scelta, mostrando un messaggio di avviso se l'abbinamento non è ottimale e spiegando i potenziali rischi o inefficienze derivanti da una scelta non coerente
-
-    def verifica_coerenza_selvicolturale(self):
-        clone_scelto = self.combo_clone.currentText()
-        destinazione_scelta = self.combo_destinazione.currentText().upper().strip()
-
-        dizionario_cloni = {}
-        
-        import json
-        try:
-            with open("Core/cloni.json", "r", encoding="utf-8") as f:
-                dizionario_cloni = json.load(f)
-        except Exception as e:
-            print(f"Errore nel caricamento del file cloni.json: {e}")
-
-        dati_clone = dizionario_cloni.get(clone_scelto, {})
-        attitudine_reale = dati_clone.get("attitudini", "OPERA").upper()
-
-        # Raggruppiamo le filiere industriali
-        filiere_industriali = ["OPERA", "INDUSTRIA", "DUAL"]
-
-        # 1. Calcolo compatibilità
-        is_ottimale = False
-        if attitudine_reale == "DUAL":
-            is_ottimale = True
-        elif attitudine_reale == destinazione_scelta:
-            is_ottimale = True
-        elif attitudine_reale in filiere_industriali and destinazione_scelta in filiere_industriali:
-            is_ottimale = True
-
-        # 2. Aggiornamento UI
-        if is_ottimale:
-            if attitudine_reale == "DUAL":
-                testo_avviso = f"✅ Abbinamento Ottimale: Il clone {clone_scelto} è 'DUAL', flessibilità garantita per la filiera {destinazione_scelta}."
-            else:
-                testo_avviso = f"✅ Abbinamento Ottimale: Il clone {clone_scelto} esprime il massimo potenziale per la filiera {destinazione_scelta}."
-            
-            self.lbl_avviso_clone.setText(testo_avviso)
-            self.lbl_avviso_clone.setStyleSheet("color: #4CAF50; font-weight: bold; font-style: italic;")
-        
-        else:
-            if destinazione_scelta == "OPERA":
-                self.lbl_avviso_clone.setText(f"⚠️ Rischio Colturale: Il clone {clone_scelto} è da {attitudine_reale}. Produrrà nodi diffusi inficiando la resa in sfoglia.")
-            else:
-                self.lbl_avviso_clone.setText(f"⚠️ Eccesso Qualitativo: Il clone {clone_scelto} è per compensati di pregio (OPERA). Destinarlo a triturazione abbatte i margini.")
-            
-            self.lbl_avviso_clone.setStyleSheet("color: #FF9800; font-weight: bold; font-style: italic;")
-    # Funzione che calcola il prossimo ID progressivo per un nuovo lotto basandosi sul numero di lotti già presenti nella collezione, restituendo una stringa formattata con prefisso e numerazione a tre cifre
-
-    def calcola_prossimo_id_progressivo(self) -> str:
-        return f"LTI-{len(self.parametri.collezione_lotti) + 1:03d}"
-
-    # Funzione che aggiorna la tabella dei lotti visualizzata nell'interfaccia grafica, leggendo i dati attuali dalla collezione di lotti nei parametri condivisi e popolando ogni riga con le informazioni chiave di ciascun lotto, formattando i valori in modo leggibile e allineando il testo al centro per una migliore estetica
-
-    def aggiorna_tabella_da_modello(self):
-
-        lotti = self.parametri.collezione_lotti
-        self.table_lotti.setRowCount(len(lotti))
-        
-        for riga, lotto in enumerate(lotti):
-            dati = [
-                str(lotto.id_lotto),
-                f"{lotto.superficie_ettari:.2f} ha",
-                str(lotto.clone_assegnato),
-                str(lotto.sesto_impianto),
-                f"{lotto.eta} anni",
-                str(lotto.destinazione_uso)
-            ]
-            
-            for colonna, valore in enumerate(dati):
-                item = QTableWidgetItem(valore)
-                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                # Opzionale: rendiamo le celle non modificabili dall'utente
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                self.table_lotti.setItem(riga, colonna, item)
-
-    # Funzione che valida i dati di input inseriti dall'utente nei widget grafici prima di aggiungere o modificare un lotto, controllando che la superficie sia non eccessivamente grande, restituendo True se i dati sono validi o mostrando un messaggio di errore e restituendo False se i dati non sono accettabili
-
-    def valida_dati_input(self) -> bool:
-        ettari = self.spin_ettari.value()
-        if ettari > 100.0:
-            mostra_messaggio_stilizzato(self, "Errore Critico", "Superficie fuori scala per singolo lotto (>100 ha).", "critico")
-            return False
-        return True
-
-    # Funzione che gestisce l'azione del pulsante principale, decidendo se aggiungere un nuovo lotto o salvare le modifiche a un lotto esistente in base al testo attuale del pulsante, e chiamando la funzione appropriata per eseguire l'operazione desiderata
-
-    def gestisci_azione_pulsante_principale(self):
-        if self.btn_azione.text() == "Aggiungi Lotto":
-            self.aggiungi_nuovo_lotto()
-        else:
-            self.salva_modifica_lotto()
-
-    # Funzione che gestisce l'azione del pulsante secondario, decidendo se svuotare e resettare l'interfaccia per prepararla all'inserimento di un nuovo lotto o eliminare il lotto attualmente selezionato in base al testo attuale del pulsante, e chiamando la funzione appropriata per eseguire l'operazione desiderata
-
-    def gestisci_azione_pulsante_secondario(self):
-        if self.btn_secondario.text() == "Svuota":
-            self.svuota_e_resetta_interfaccia()
-        else:
-            self.elimina_lotto_selezionato()
-
-    # Funzione che aggiunge un nuovo lotto alla collezione basandosi sui dati inseriti dall'utente nei widget grafici, creando un'istanza di Lotto con i parametri strutturali e dinamici specificati, calcolando la densità iniziale in base al sesto d'impianto scelto, valutando la coerenza selvicolturale per assegnare un moltiplicatore di efficienza clone, inizializzando il ciclo biologico del lotto e aggiornando l'interfaccia grafica per riflettere la nuova aggiunta
-
     def aggiungi_nuovo_lotto(self):
-        id_confermato = self.txt_id_lotto.text()
-        nuovo_lotto = Lotto(id_lotto=id_confermato, superficie=self.spin_ettari.value())
+        '''Aggiunge il nuovo lotto con i dati inseriti nei controlli della form dopo averne validato i valori '''
+        if not self.valida_dati_input(): return
 
+        # Istanzia il nuovo oggetto Lotto fornendo i dati base al costruttore e successivamente inserisce i valori presenti nella form
+        nuovo_lotto = Lotto(id_lotto = self.txt_id_lotto.text(), superficie = self.spin_ettari.value())
         nuovo_lotto.sesto_impianto = self.combo_sesto_impianto.currentText()
-        lati = [float(x) for x in nuovo_lotto.sesto_impianto.split("x")]
-        nuovo_lotto.densita_iniziale = int((10000 / (lati[0] * lati[1])))
-
-        nuovo_lotto.indice_attrito_spaziale = int(self.spin_attrito.value()) if self.spin_attrito else 0
-        nuovo_lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value()) if self.spin_test_idrico else 0.0
-        
-        nuovo_lotto.eta = self.spin_eta_iniziale.value()
-            
-        nuovo_lotto.clone_assegnato = self.combo_clone.currentText()
         nuovo_lotto.destinazione_uso = self.combo_destinazione.currentText()
+        nuovo_lotto.clone_assegnato = self.combo_clone.currentText()
+        nuovo_lotto.eta = self.spin_eta_iniziale.value()
+        nuovo_lotto.indice_attrito_spaziale = int(self.spin_attrito.value())
+        nuovo_lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value())
 
-        dati_clone = self.dizionario_cloni.get(nuovo_lotto.clone_assegnato, {})
-
-        attitudine = dati_clone["attitudini"]
-        if attitudine != "DUAL" and attitudine != nuovo_lotto.destinazione_uso:
-            nuovo_lotto.moltiplicatore_efficienza_clone = 0.85
-        else:
-            nuovo_lotto.moltiplicatore_efficienza_clone = 1.0
-
+        # Calcola la densità di piante iniziali attraverso la tipologia del sesto d'impianto
+        nuovo_lotto.densita_iniziale = ServizioSelvicolturale.calcola_densita_iniziale(nuovo_lotto.sesto_impianto)
+        
         nuovo_lotto.inizializza_nuovo_ciclo()
+        # Aggiunge il nuovo lotto alla collezione di lotti della simulazione
         self.parametri.collezione_lotti.append(nuovo_lotto)
+        
+        # Resetta i controlli dell'interfaccia per avviare un nuovo inserimento ed aggiorna la tabella con il nuovo lotto creato
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
 
-    # Funzione che carica i dati del lotto attualmente selezionato nella tabella dei lotti e li visualizza nei widget grafici per permettere all'utente di visualizzare e modificare le informazioni del lotto, aggiornando anche il testo dei pulsanti per riflettere lo stato di modifica
-
-    def carica_lotto_selezionato(self):
-        righe = self.table_lotti.selectionModel().selectedRows()
-        if not righe: return
-
-        riga = righe[0].row()
-        lotto = self.parametri.collezione_lotti[riga]
-
-        self.txt_id_lotto.setText(lotto.id_lotto)
-        self.spin_ettari.setValue(lotto.superficie_ettari)
-
-        self.spin_attrito.setValue(lotto.indice_attrito_spaziale)
-        self.spin_test_idrico.setValue(lotto.indice_tendenza_idrica)
-
-        self.spin_eta_iniziale.setValue(lotto.eta)
-
-        index_clone = self.combo_clone.findText(lotto.clone_assegnato)
-        if index_clone >= 0: self.combo_clone.setCurrentIndex(index_clone)
-
-        index_sesto = self.combo_sesto_impianto.findText(lotto.sesto_impianto)
-        if index_sesto >= 0: self.combo_sesto_impianto.setCurrentIndex(index_sesto)
-
-        index_dest = self.combo_destinazione.findText(lotto.destinazione_uso)
-        if index_dest >= 0: self.combo_destinazione.setCurrentIndex(index_dest)
-
-        self.btn_azione.setText("Aggiorna")
-        self.btn_secondario.setText("Elimina")
-
-    # Funzione che salva le modifiche apportate a un lotto esistente basandosi sui dati inseriti dall'utente nei widget grafici, aggiornando i parametri strutturali e dinamici del lotto selezionato, ricalcolando la densità iniziale se il sesto d'impianto è stato modificato, valutando nuovamente la coerenza selvicolturale per aggiornare il moltiplicatore di efficienza clone, e aggiornando l'interfaccia grafica per riflettere le modifiche salvate
-
     def salva_modifica_lotto(self):
+        '''Registra le modifiche effettuate al lotto selezionato dalla tabella'''
+        
+        # Verifica se la riga selezionata ha dati coerenti
         righe = self.table_lotti.selectionModel().selectedRows()
         if not righe or not self.valida_dati_input(): return
 
-        riga = righe[0].row()
-        lotto = self.parametri.collezione_lotti[riga]
+        # recupera dalla collezione dei lotti il lotto con codice della riga selezionata
+        lotto = self.parametri.collezione_lotti[righe[0].row()]
 
-        # Memorizza le vecchie dimensioni per calcolare la proporzione
-        vecchie_piante_teoriche = lotto.superficie_ettari * lotto.densita_iniziale
-
-        # Aggiorna i parametri strutturali
-        lotto.superficie_ettari = self.spin_ettari.value()
-        lotto.sesto_impianto = self.combo_sesto_impianto.currentText()
-        lati = [float(x) for x in lotto.sesto_impianto.split("x")]
+        # delega la funzione della classe lotto l'aggiornamento dei parametri strutturali, come il numero di piante
+        lotto.aggiorna_parametri_strutturali(self.spin_ettari.value(), self.combo_sesto_impianto.currentText())
         
-        lotto.densita_iniziale = int(10000 / (lati[0] * lati[1]))
-
-        # RICALCOLO DINAMICO DELLE PIANTE E DEI VOLUMI
-        nuove_piante_teoriche = lotto.superficie_ettari * lotto.densita_iniziale
-        
-        if vecchie_piante_teoriche > 0:
-            # Calcola di quanto è aumentata/diminuita l'area o la densità
-            fattore_scala = nuove_piante_teoriche / vecchie_piante_teoriche
-            
-            # Scala gli alberi vivi mantenendo la percentuale di mortalità già subita
-            lotto.numero_piante_vive = int(lotto.numero_piante_vive * fattore_scala)
-            
-            # Se si modifica a simulazione già avviata, aggiorna la cache in tempo reale
-            if hasattr(lotto, "dati_correnti") and "volume_singolo_m3" in lotto.dati_correnti:
-                lotto.dati_correnti["piante_attive"] = lotto.numero_piante_vive
-                lotto.dati_correnti["volume_totale_m3"] = round(lotto.dati_correnti["volume_singolo_m3"] * lotto.numero_piante_vive, 2)
-        else:
-            # Fallback di sicurezza se il lotto è a 0
-            lotto.numero_piante_vive = int(nuove_piante_teoriche)
-
-        # Aggiorna gli altri attributi
+        # aggiorna i dati del lotto con i nuovi valori inseriti nella form
         lotto.indice_attrito_spaziale = int(self.spin_attrito.value())
         lotto.indice_tendenza_idrica = float(self.spin_test_idrico.value())
-        
-
         lotto.eta = self.spin_eta_iniziale.value()
-
         lotto.clone_assegnato = self.combo_clone.currentText()
         lotto.destinazione_uso = self.combo_destinazione.currentText()
 
-        dati_clone = self.dizionario_cloni.get(lotto.clone_assegnato, {})
-        attitudine = dati_clone.get("attitudini", "OPERA")
-        if attitudine != "DUAL" and attitudine != lotto.destinazione_uso:
-            lotto.moltiplicatore_efficienza_clone = 0.85
-        else:
-            lotto.moltiplicatore_efficienza_clone = 1.0
-
+        # se siamo al primo anno e nella stagione invernale allora inizializza il lotto come primo ciclo
         if self.parametri.anno_corrente == 1 and self.parametri.stagione_corrente == "Inverno":
             lotto.inizializza_nuovo_ciclo()
 
+        # Resetta i controlli dell'interfaccia ed aggiorna la tabella con i valori modificati
         self.svuota_e_resetta_interfaccia()
         self.aggiorna_tabella_da_modello()
 
-    # Funzione che elimina il lotto attualmente selezionato nella tabella dei lotti, chiedendo conferma all'utente prima di procedere con l'eliminazione permanente, e aggiornando l'interfaccia grafica per riflettere la rimozione del lotto
+    def genera_lotto_casuale(self):
+        '''Funzione per generale un lotto totalmente in maniera casuale.
+           Creare un lotto random potrebbe portare a importanti inefficienze della simulazione e fallimento operativi'''
+        
+        # istanzia il nuovo lotto ed impone un valore random di estensione fra i valori 1 e 30. Tale valore massimo per evitare la creazione di lotti eccessivamente grandi  
+        lotto_random = Lotto(self.calcola_prossimo_id_progressivo(), round(random.uniform(1, 30.0), 1))
+        # selezione random fra i vari sesti di impianto presenti
+        lotto_random.sesto_impianto = random.choice(["6x6", "6x5", "7x6", "7x7"])
+        lotto_random.clone_assegnato = random.choice(list(self.dizionario_cloni.keys()))
+        lotto_random.destinazione_uso = random.choice(["OPERA", "INDUSTRIA"])
+        
+        lotto_random.densita_iniziale = ServizioSelvicolturale.calcola_densita_iniziale(lotto_random.sesto_impianto)
+        lotto_random.aggiorna_efficienza_clone(self.dizionario_cloni.get(lotto_random.clone_assegnato, {}))
+        
+        # Aggiunta dei restanti parametri del lotto tramite la funzione random e limiti
+        lotto_random.indice_attrito_spaziale = random.randint(0, 10)
+        lotto_random.indice_tendenza_idrica = round(random.uniform(-1.0, 1.0), 2)
+        lotto_random.eta = random.randint(0, 10)
+        
+        lotto_random.inizializza_nuovo_ciclo()
+        self.parametri.collezione_lotti.append(lotto_random)
+        self.aggiorna_tabella_da_modello()
 
     def elimina_lotto_selezionato(self):
+        '''Elimina il lotto selezionato sulla riga tabella'''
+        # verifica se ci sono righe nella tabella
         righe = self.table_lotti.selectionModel().selectedRows()
         if not righe: return
 
@@ -403,46 +164,85 @@ class FormLotti(QWidget):
             self, "Conferma Eliminazione", "Sei sicuro di voler eliminare permanentemente il lotto selezionato?", "domanda"
         )
         if risposta == QMessageBox.StandardButton.Yes:
-            riga = righe[0].row()
-            self.parametri.collezione_lotti.pop(riga)
+            # eliminazione del lotto dalla collezione e resetta i controlli sulla form
+            self.parametri.collezione_lotti.pop(righe[0].row())
             self.svuota_e_resetta_interfaccia()
             self.aggiorna_tabella_da_modello()
 
-    # Funzione che genera un lotto casuale con parametri randomizzati all'interno di range accettabili, permettendo di popolare rapidamente la collezione di lotti per test o simulazioni, e aggiornando l'interfaccia grafica per riflettere la nuova aggiunta
+    def carica_lotto_selezionato(self):
+        '''Carica i valori della riga selezionata sui controlli della form per consentire le modifiche'''
+        righe = self.table_lotti.selectionModel().selectedRows()
+        if not righe: return
 
-    def genera_lotto_casuale(self):
-        id_progressivo_casuale = self.calcola_prossimo_id_progressivo()
-        superficie_casuale = round(random.uniform(1, 20.0), 1)
-
-        cloni_disponibili = list(self.dizionario_cloni.keys()) if self.dizionario_cloni else ["I-214", "I-45/51", "Neva", "Velasco", "AF2"]
-        clone_casuale = random.choice(cloni_disponibili)
-        destinazione_casuale = random.choice(["OPERA", "INDUSTRIA"])
-        sesto_casuale = random.choice(["6x6", "6x5", "7x6", "7x7"])
-
-        lotto_random = Lotto(id_lotto = id_progressivo_casuale, superficie = superficie_casuale)
-        lotto_random.sesto_impianto = sesto_casuale
-        lati = [float(x) for x in sesto_casuale.split("x")]
-        lotto_random.densita_iniziale = int(10000 / (lati[0] * lati[1]))
+        lotto = self.parametri.collezione_lotti[righe[0].row()]
+        self.txt_id_lotto.setText(lotto.id_lotto)
+        self.spin_ettari.setValue(lotto.superficie_ettari)
+        self.spin_attrito.setValue(lotto.indice_attrito_spaziale)
+        self.spin_test_idrico.setValue(lotto.indice_tendenza_idrica)
+        self.spin_eta_iniziale.setValue(lotto.eta)
         
-        lotto_random.indice_attrito_spaziale = random.randint(0, 10)
-        lotto_random.indice_tendenza_idrica = round(random.uniform(-1.0, 1.0), 2)
-        lotto_random.clone_assegnato = clone_casuale
-        lotto_random.destinazione_uso = destinazione_casuale
+        # Imposta i valori dei vari combobox
+        self.combo_clone.setCurrentIndex(self.combo_clone.findText(lotto.clone_assegnato))
+        self.combo_sesto_impianto.setCurrentIndex(self.combo_sesto_impianto.findText(lotto.sesto_impianto))
+        self.combo_destinazione.setCurrentIndex(self.combo_destinazione.findText(lotto.destinazione_uso))
 
-        dati_clone = self.dizionario_cloni.get(clone_casuale, {})
-        attitudine = dati_clone.get("attitudini", "OPERA")
-        if attitudine != "DUAL" and attitudine != destinazione_casuale:
-            lotto_random.moltiplicatore_efficienza_clone = 0.85
-        else:
-            lotto_random.moltiplicatore_efficienza_clone = 1.0
+        self.btn_azione.setText("Aggiorna")
+        self.btn_secondario.setText("Elimina")
 
-        lotto_random.eta = random.randint(0, 10)
-        lotto_random.inizializza_nuovo_ciclo()
+    def svuota_e_resetta_interfaccia(self):
+        '''Azzera i valori dei controlli dell'interfaccia'''
+        self.table_lotti.clearSelection()
+        self.txt_id_lotto.setText(self.calcola_prossimo_id_progressivo())
+        self.spin_ettari.setValue(0.0)
+        self.spin_attrito.setValue(0)
+        self.spin_test_idrico.setValue(0.0)
+        self.spin_eta_iniziale.setValue(0)
+        self.btn_azione.setText("Aggiungi Lotto")
+        self.btn_secondario.setText("Svuota")
+        self.verifica_coerenza_selvicolturale()
 
-        self.parametri.collezione_lotti.append(lotto_random)
-        self.svuota_e_resetta_interfaccia()
-        self.aggiorna_tabella_da_modello()
-      
-    
-    def esci(self):
-        self.close()
+    def verifica_coerenza_selvicolturale(self):
+        '''Ottiene dal servizio il testo da inserire nella label che avverte se il clone selezionato è idoneo alla destinazione d'uso scelto'''
+        risultato = ServizioSelvicolturale.ottieni_messaggio_coerenza(
+            self.combo_clone.currentText(), self.combo_destinazione.currentText(), 
+            self.dizionario_cloni.get(self.combo_clone.currentText(), {})
+        )
+        self.lbl_avviso_clone.setText(risultato["testo"])
+        self.lbl_avviso_clone.setStyleSheet(risultato["stile"])
+
+    def aggiorna_tabella_da_modello(self):
+        '''Imposta la struttura della tabella popolando le celle delle righe'''
+        # Carica la collezione dei lotti in una variabile locale
+        lotti = self.parametri.collezione_lotti
+        self.table_lotti.setRowCount(len(lotti))
+        # Cicla per ogni riga con ogni lotto
+        for riga, lotto in enumerate(lotti):
+            # Crea una lista dove inserire i dati necessari per l'inserimento dei valori nelle celle della riga
+            dati = [str(lotto.id_lotto), f"{lotto.superficie_ettari:.2f} ha", str(lotto.clone_assegnato), 
+                    str(lotto.sesto_impianto), f"{lotto.eta} anni", str(lotto.destinazione_uso)]
+            for col, val in enumerate(dati):
+                item = QTableWidgetItem(val)
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                # Evita che le celle possano essere direttamente modificabili su tabella
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.table_lotti.setItem(riga, col, item)
+
+    def valida_dati_input(self) -> bool:
+        '''funzione per aggiungere gli eventuali paramentri di verifica sui dati inseriti'''
+        # Lotti sopra i 100 ettari sono considerati eccessivi per la simulazione
+        if self.spin_ettari.value() > 100.0:
+            mostra_messaggio_stilizzato(self, "Errore", "Superficie fuori scala (>100 ha).", "critico")
+            return False
+        return True
+
+    def calcola_prossimo_id_progressivo(self) -> str:
+        '''Crea automaticamente il valore dell'id del lotto in maniera automatica e progressiva'''
+        return f"LTI-{len(self.parametri.collezione_lotti) + 1:03d}"
+
+    def gestisci_azione_pulsante_principale(self):
+        '''Modifica il testo del tasto principale a seconda se si aggiunge o aggiorna un dato'''
+        self.aggiungi_nuovo_lotto() if self.btn_azione.text() == "Aggiungi Lotto" else self.salva_modifica_lotto()
+
+    def gestisci_azione_pulsante_secondario(self):
+        '''modifica il testo del pulsante a seconda se si sta aggiornando un valore selezionato oppure si resettano i dati inseriti del nuovo lotto'''
+        self.svuota_e_resetta_interfaccia() if self.btn_secondario.text() == "Svuota" else self.elimina_lotto_selezionato()

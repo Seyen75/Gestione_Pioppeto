@@ -42,7 +42,7 @@ class SimulatorePioppicoltura:
     # Funzione che crea la lista degli interventi che sono previsti per la stagione che è in corso di simulazione
     
     def prevedi_domanda_stagionale(self, is_esecuzione: bool = False) -> List[Dict[str, Any]]:
-        
+    
         # Prende i dati della stagione corrente dai parametri globali
         stagione = self.parametri.stagione_corrente
         # Inizializza la lista degli interventi che sarà restituita
@@ -108,8 +108,8 @@ class SimulatorePioppicoltura:
 
             # se non è maturo o tagliato allora carica fra le operazioni quelle di mantenimento
             else:
-                chiave_fase = lotto.get_fase_colturale()
-                ops = filiera.get(chiave_fase, {}).get(stagione, []) if chiave_fase is not None else []
+                f_k = lotto.get_fase_colturale()
+                ops = filiera.get(str(f_k), {}).get(stagione, []) if f_k is not None else []
                 is_raccolta = False
             
             

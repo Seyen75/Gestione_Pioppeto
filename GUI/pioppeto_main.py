@@ -308,7 +308,8 @@ class PioppetoMain(QMainWindow):
         self.finestra_ditta.show()
 
     def lotti(self):
-        self.finestra_lotti = FormLotti(self.parametri_condivisi, self)
+        # Passiamo self.dizionario_cloni come secondo argomento
+        self.finestra_lotti = FormLotti(self.parametri_condivisi, self.dizionario_cloni, self)
         self.finestra_lotti.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.finestra_lotti.destroyed.connect(self.aggiorna_stato_interfaccia)
         self.finestra_lotti.show()

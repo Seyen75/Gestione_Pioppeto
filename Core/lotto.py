@@ -21,7 +21,6 @@ class Lotto:
         self.indice_tendenza_idrica: float = 0.0 
         self.clone_assegnato: str = "I-214"
         self.destinazione_uso: str = "OPERA"
-        self.moltiplicatore_efficienza_clone: float = 1.0
 
         # VARIABILI DI STATO BIOLOGICHE DINAMICHE
         self.eta: int = 0
@@ -314,7 +313,38 @@ class Lotto:
             "piante_attive": max(0, piante_vive),
             "volume_totale_m3": round(vol_singolo * max(0, piante_vive), 2)
         }
+
         
+    def aggiorna_parametri_strutturali(self, nuova_superficie, nuovo_sesto):
+        """
+        Gestisce il ricalcolo delle piante e dei volumi al variare di superficie o sesto.
+        """
+        # Calcolo vecchia densità per il fattore scala
+        vecchie_piante_teoriche = self.superficie_ettari * self.densita_iniziale
+        
+        # Aggiorna parametri fisici
+        self.superficie_ettari = nuova_superficie
+        self.sesto_impianto = nuovo_sesto
+        
+        # Ricalcola la densità basandosi sul nuovo sesto
+        lati = [float(x) for x in nuovo_sesto.split("x")]
+        self.densita_iniziale = int(10000 / (lati[0] * lati[1]))
+        
+        # Ricalcolo piante in base alla nuova densità
+        nuove_piante_teoriche = self.superficie_ettari * self.densita_iniziale
+        
+        if vecchie_piante_teoriche > 0:
+            fattore_scala = nuove_piante_teoriche / vecchie_piante_teoriche
+            self.numero_piante_vive = int(self.numero_piante_vive * fattore_scala)
+            
+            # Aggiorna cache simulazione se esiste (gestione dati dinamici)
+            if hasattr(self, "dati_correnti") and "volume_singolo_m3" in self.dati_correnti:
+                self.dati_correnti["piante_attive"] = self.numero_piante_vive
+                self.dati_correnti["volume_totale_m3"] = round(self.dati_correnti["volume_singolo_m3"] * self.numero_piante_vive, 2)
+        else:
+            # Fallback se il lotto era vuoto o appena creato
+            self.numero_piante_vive = int(nuove_piante_teoriche)
+    
     
     def get_fase_colturale(self) -> str:
         """Determina la fase di crescita in base all'età del lotto."""

@@ -7,7 +7,7 @@ import os
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt
-from GUI.utils import mostra_messaggio_stilizzato
+from GUI.utils import mostra_messaggio_stilizzato, centra_finestra
 
 from Core.ditta import Ditta
 
@@ -30,6 +30,8 @@ class FormDitta(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.ui_interfaccia)
         layout.setContentsMargins(10, 10, 10, 10)
+        self.DIM_W = 686
+        self.DIM_H = 450
 
         # Salva il riferimento all'oggetto Ditta globale passato alla chiamata e necessario per la gestione dei dati
         self.ditta = ditta_condivisa
@@ -77,46 +79,44 @@ class FormDitta(QWidget):
         if self.btn_esci:
             self.btn_esci.clicked.connect(self.esci_form)
 
-        # Centratura geometrica automatica rispetto alla form principale
-        if parent:
-            self.centra_rispetto_al_parent(parent)
 
-    # Funzione che aggiorna i valori dei widget grafici in base ai dati attuali salvati nell'istanza della ditta, 
-    # in modo da riflettere sempre lo stato reale del modello quando la form viene aperta
+    def showEvent(self, event):
+        super().showEvent(event)
+        centra_finestra(self, self.DIM_W, self.DIM_H)
+
     
     def aggiorna_interfaccia_da_modello(self):
-        # Estrae i valori reali dall'oggetto ditta e popola gli SpinBox grafici
-        if self.spin_operaio_A: self.spin_operaio_A.setValue(self.ditta.operai_grado_A)
-        if self.spin_operaio_B: self.spin_operaio_B.setValue(self.ditta.operai_grado_B)
+        '''Estrae i dati dell'oggetto Ditta e popola i controlli dell'interfaccia'''
+        self.spin_operaio_A.setValue(self.ditta.operai_grado_A)
+        self.spin_operaio_B.setValue(self.ditta.operai_grado_B)
         
-        if self.spin_trattori_alta: self.spin_trattori_alta.setValue(self.ditta.trattori_alta_potenza)
-        if self.spin_trattori_media: self.spin_trattori_media.setValue(self.ditta.trattori_media_potenza)
-        if self.spin_piattaforme: self.spin_piattaforme.setValue(self.ditta.piattaforme_aeree_semoventi)
-        if self.spin_harvester: self.spin_harvester.setValue(self.ditta.harvester_abbattitori)
-        if self.spin_forwarder: self.spin_forwarder.setValue(self.ditta.forwarder_caricatori)
-        if self.spin_cippatrici: self.spin_cippatrici.setValue(self.ditta.cippatrice)
-        if self.spin_durata_piano: self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
+        self.spin_trattori_alta.setValue(self.ditta.trattori_alta_potenza)
+        self.spin_trattori_media.setValue(self.ditta.trattori_media_potenza)
+        self.spin_piattaforme.setValue(self.ditta.piattaforme_aeree_semoventi)
+        self.spin_harvester.setValue(self.ditta.harvester_abbattitori)
+        self.spin_forwarder.setValue(self.ditta.forwarder_caricatori)
+        self.spin_cippatrici.setValue(self.ditta.cippatrice)
+        self.spin_durata_piano.setValue(self.parametri.anni_durata_target)
 
-        # Allineamento dei valori correnti dei moltiplicatori di elasticità disaccoppiati
-        limiti = getattr(self.ditta, "limiti_noli_stagionali", {})
-        if self.spin_operaio_A_noleggio and "personale_spec" in limiti: self.spin_operaio_A_noleggio.setValue(limiti["personale_spec"])
-        if self.spin_operaio_B_noleggio and "personale_comune" in limiti: self.spin_operaio_B_noleggio.setValue(limiti["personale_comune"])
-        if self.spin_trattori_alta_noleggio and "trattori_alta" in limiti: self.spin_trattori_alta_noleggio.setValue(limiti["trattori_alta"])
-        if self.spin_trattori_media_noleggio and "trattori_media" in limiti: self.spin_trattori_media_noleggio.setValue(limiti["trattori_media"])
-        if self.spin_piattaforme_noleggio and "piattaforme" in limiti: self.spin_piattaforme_noleggio.setValue(limiti["piattaforme"])
-        if self.spin_harvester_noleggio and "harvester" in limiti: self.spin_harvester_noleggio.setValue(limiti["harvester"])
-        if self.spin_forwarder_noleggio and "forwarder" in limiti: self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
-        if self.spin_cippatrici_noleggio and "cippatrice" in limiti: self.spin_cippatrici_noleggio.setValue(limiti["cippatrice"])
+        # Recupera i datti dall'oggetto Ditta dal dizionario dei limiti dei noli stagionali ed aggiorna i controlli sull form 
+        limiti = self.ditta.limiti_noli_stagionali
+        self.spin_operaio_A_noleggio.setValue(limiti["personale_spec"])
+        self.spin_operaio_B_noleggio.setValue(limiti["personale_comune"])
+        self.spin_trattori_alta_noleggio.setValue(limiti["trattori_alta"])
+        self.spin_trattori_media_noleggio.setValue(limiti["trattori_media"])
+        self.spin_piattaforme_noleggio.setValue(limiti["piattaforme"])
+        self.spin_harvester_noleggio.setValue(limiti["harvester"])
+        self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
+        self.spin_cippatrici_noleggio.setValue(limiti["cippatrice"])
     
-    # Funzione che legge i valori inseriti dall'utente nei widget grafici, esegue i controlli di consistenza e aggiorna l'istanza della ditta con i nuovi dati, 
-    # chiudendo la form al termine
 
     def salva_dati_in_modello(self):
-        # Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati
+        '''Legge i valori impostati dall'utente e aggiorna l'istanza della ditta se i controlli di consistenza sono passati'''    
+       
+        # Effettua prima le verifiche di consistenza delle modifiche effettuate rispetto alla stabilità minima della ditta
         op_A = self.spin_operaio_A.value() 
         op_B = self.spin_operaio_B.value()
         trattori_media = self.spin_trattori_media.value()
-
 
         if ((op_A + op_B) == 0) or (trattori_media == 0):
             mostra_messaggio_stilizzato(
@@ -126,7 +126,6 @@ class FormDitta(QWidget):
                             "avviso"
                         )
             return
-
 
         piattaforme = self.spin_piattaforme.value()
         piattaforme_noleggio = self.spin_piattaforme_noleggio.value()
@@ -144,6 +143,8 @@ class FormDitta(QWidget):
                         )
             return
 
+        
+        # Una volta che i controlli sono passati positivamente vengono aggiornati i valori dell'oggetto Ditta con i valori dei controlli della form
         self.ditta.operai_grado_A = op_A
         self.ditta.operai_grado_B = op_B
         
@@ -154,7 +155,6 @@ class FormDitta(QWidget):
         self.ditta.forwarder_caricatori = self.spin_forwarder.value()
         self.ditta.cippatrice = self.spin_cippatrici.value()    
         
-        # Salvataggio delle nuove impostazioni di elasticità disaccoppiata inserite dall'utente
 
         self.ditta.limiti_noli_stagionali["personale_spec"] = int(self.spin_operaio_A_noleggio.value())
         self.ditta.limiti_noli_stagionali["personale_comune"] = int(self.spin_operaio_B_noleggio.value())
@@ -164,7 +164,8 @@ class FormDitta(QWidget):
         self.ditta.limiti_noli_stagionali["harvester"] = int(self.spin_harvester_noleggio.value())
         self.ditta.limiti_noli_stagionali["forwarder"] = int(self.spin_forwarder_noleggio.value())
         self.ditta.limiti_noli_stagionali["cippatrice"] = int(self.spin_cippatrici_noleggio.value())
-        # Salva la durata target degli anni all'interno della configurazione globale parametri
+        
+        # Salva la durata default per la simulazione batch all'interno della configurazione globale parametri
         self.parametri.anni_durata_target = self.spin_durata_piano.value()
 
         # Sincronizzazione immediata del monte ore stagionale nominale con il nuovo organico salvato
@@ -178,23 +179,6 @@ class FormDitta(QWidget):
 
         self.close()
 
-    # Funzione che posiziona la form al centro esatto della form padre, calcolando le geometrie di entrambe le finestre 
-    # spostando di conseguenza la posizione della form figlia
-
-    def centra_rispetto_al_parent(self, parent):
-        # Posiziona la form al centro esatto della form padre
-        geometria_parent = parent.geometry()
-        
-        # dimensioni della finestra per il calcolo e il rendering (altezza modificata a 350 per contenere i nuovi controlli)
-        larghezza_self = 686
-        altezza_self = 450
-
-        # Calcolo geometrico della mezzeria rispetto alla form principale
-        x = geometria_parent.x() + (geometria_parent.width() - larghezza_self) // 2
-        y = geometria_parent.y() + (geometria_parent.height() - altezza_self) // 2
-        
-        self.setFixedSize(larghezza_self, altezza_self)
-        self.move(x, y)
 
     def esci_form(self):
         self.close()

@@ -117,6 +117,24 @@ QLabel#lbl_tipo_filiera_lotto {
     background: transparent;
 }
 
+QGroupBox#groupBox_6 {
+    border: 1px solid #4a282d;
+    border-radius: 6px;
+    margin-top: 15px;
+    background-color: #1c1415;
+    /* Assicuriamo che il colore del titolo sia coerente */
+    color: #ff8a80; 
+}
+
+/* Se vuoi che il titolo del groupBox6 segua lo stile di altri groupBox specifici */
+QGroupBox#groupBox_6::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    left: 10px;
+    color: #ff8a80; /* Rosso Corallo come definito per le label */
+}
+
 /* TABELLE (QTableWidget) - Sintonizzate sui toni caldi */
 QTableWidget {
     background-color: #151011; 
@@ -555,6 +573,45 @@ QSlider::groove:horizontal {
            <string>Resa Truciolato</string>
           </property>
          </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>250</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Grafici dati biologici dinamici</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_13">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QWidget" name="widget_canvas_crescita" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_canvas_piante" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
