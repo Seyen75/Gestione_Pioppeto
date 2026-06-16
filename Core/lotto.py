@@ -108,7 +108,7 @@ class Lotto:
         Aggiorna lo stato interno del lotto basandosi sull'esito di una lavorazione.
         Restituisce lo stato dell'esecuzione come stringa.
         """
-        # 1. Caso successo
+        # Caso successo
         if percentuale >= 0.99:
             if "impianto" in tipo_cantiere.lower() or "astoni" in operazione.lower():
                 self.immissione_effettuata = True
@@ -119,11 +119,11 @@ class Lotto:
             
             return "Eseguito"
 
-        # 2. Caso fallimento/parziale
+        # Caso fallimento/parziale
         stato = f"Eseguito Parziale ({int(percentuale * 100)}%)" if percentuale > 0.001 else "Bloccato"
         self.registra_fallimento_intervento(operazione, stagione, anno)
         
-        # Gestione Malus (spostata qui dal motore)
+        # Gestione Malus
         if percentuale <= 0.001:
             sensibilita = profilo_clone["esigenze_trattamenti"].get("sensibilita_marsonina", "Media")
             self.applica_malus_da_fallimento(operazione, tipo_cantiere, sensibilita, priorita)

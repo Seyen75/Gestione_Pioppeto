@@ -18,7 +18,7 @@ class GestoreCloni:
         self.percorso_utente = os.path.join(self.cartella_radice, "Core", "cloni.json")
 
     def inizializza_database(self):
-        # Verifica la presenza e la validità del file cloni.json. Se manca o è corrotto, lo rigenera. Anche qui per futura features
+        '''Verifica la presenza e la validità del file cloni.json. Se manca o è corrotto, lo rigenera. Anche qui per futura features'''
         if not os.path.exists(self.percorso_utente):
             print("Log Sistema: 'cloni.json' non trovato. Generazione database di lavoro dal Master...")
             self.ripristina_valori_fabbrica()
@@ -33,7 +33,7 @@ class GestoreCloni:
             self.ripristina_valori_fabbrica()
 
     def ripristina_valori_fabbrica(self):
-        # Copia il file originale protetto (con i 4 cloni default) sopra quello di lavoro.
+        '''Copia il file originale protetto (con i 4 cloni default) sopra quello di lavoro.'''
         try:
             shutil.copy2(self.percorso_master, self.percorso_utente)
             print("Log Sistema: Database cloni allineato ai valori scientifici di fabbrica.")
@@ -41,7 +41,7 @@ class GestoreCloni:
             print(f"ERRORE CRITICO: Impossibile accedere al file Master delle risorse cloni! {e}")
 
     def carica_cloni(self) -> dict:
-        # Carica i cloni correnti dal file di lavoro per popolare la form
+        '''Carica i cloni correnti dal file di lavoro per popolare la form'''
         self.inizializza_database() # Controllo preventivo di sicurezza ad ogni chiamata
         with open(self.percorso_utente, "r", encoding="utf-8") as f:
             return json.load(f)

@@ -2,6 +2,9 @@
 # Modulo Finestra principale (Dashboard) del simulatore di pioppicoltura.
 
 import os
+import time
+import json
+
 # Importazione di tutti i moduli di QT e PySide per la gestione grafica delle finestre e dei controlli
 from PySide6.QtWidgets import QMainWindow, QPushButton, QWidget, QGraphicsDropShadowEffect, QMessageBox, QApplication, QProgressDialog
 from PySide6.QtGui import QColor, QGuiApplication
@@ -156,24 +159,21 @@ class PioppetoMain(QMainWindow):
         # Muove fisicamente la finestra verso le nuove coordinate calcolate (in alto a sinistra)
         self.move(geometria_finestra.topLeft())
 
-    # Aggiorna l'interfaccia della form alla variazione dei dati della ditta e dei lotti
-    # ed aggiorna la status bar con i messaggi della situazione dell'applicazione
     
     def aggiorna_stato_interfaccia(self):
-        ditta_pronta = (self.ditta_attiva.operai_grado_A + self.ditta_attiva.operai_grado_B) > 0
+        ''' Aggiorna l'interfaccia della form alla variazione dei dati della ditta e dei lotti
+            aggiorna la status bar con i messaggi della situazione dell'applicazione'''
+        
+        # Verifica la presenza di lotti in collezione per permettere l'avvio della simulazione
         lotti_pronti = len(self.parametri_condivisi.collezione_lotti) > 0
     
-        if not ditta_pronta or not lotti_pronti:
+        if not lotti_pronti:
             if self.btn_simulazione: self.btn_simulazione.setEnabled(False)
             if self.btn_monitoraggio: self.btn_monitoraggio.setEnabled(False)
             if self.btn_valutazioni: self.btn_valutazioni.setEnabled(False)
-            if not ditta_pronta and not lotti_pronti:
-                self.statusBar().showMessage("⚠️ Configurazione richiesta: inserire i dati della ditta e creare almeno un lotto.")
-            elif not ditta_pronta:
-                self.statusBar().showMessage("⚠️ Configurazione incompleta: configurare il personale ditta forestale.")
-            else:
+            if not lotti_pronti:
                 self.statusBar().showMessage("⚠️ Configurazione incompleta: creare almeno un lotto colturale nel pioppeto.")
-        elif ditta_pronta and lotti_pronti and not self.simulazione_eseguita:
+        elif not self.simulazione_eseguita:
             if self.btn_simulazione: self.btn_simulazione.setEnabled(True)
             if self.btn_monitoraggio: self.btn_monitoraggio.setEnabled(True)
             if self.btn_valutazioni: self.btn_valutazioni.setEnabled(False)
@@ -184,7 +184,6 @@ class PioppetoMain(QMainWindow):
             if self.btn_valutazioni: self.btn_valutazioni.setEnabled(True)
             self.statusBar().showMessage("📊 Simulazione conclusa! Analisi diagnostica disponibili in 'Report Finale'.")
        
-    # Carica i lotti della ditta standard "Azienda Pioppicola Padana" e li inizializza allo stato dinamico per l'avvio della simulazione
     
     def _carica_lotti_iniziali(self):
         """Inizializza i 30 lotti di default (20 Opera, 10 Industria) allo stato zero."""
@@ -256,18 +255,17 @@ class PioppetoMain(QMainWindow):
                     "volume_totale_m3": 0.0
                 }
             
-            lotto.moltiplicatore_efficienza_clone = 1.0
             self.parametri_condivisi.collezione_lotti.append(lotto)
 
-    # Abilita i pulsanti per la reportistica a simulazione effettuata
     
     def abilita_report_finale(self):
+        '''Se la simulazione è stata effettuata abilita il bottone per accedere al report finale'''
         self.simulazione_eseguita = True
         self.aggiorna_stato_interfaccia()
-
-    # Funzione che resetta i dati delle simulazioni effettuate sulla ditta standard
-    
+  
+  
     def ripristina_simulazione_globale(self):
+        '''Resetta i dati della simulazione già effettuata per permettere una nuova simulazione'''
         risposta = mostra_messaggio_stilizzato(
             parent=self, 
             titolo="Conferma Ripristino", 
@@ -278,7 +276,7 @@ class PioppetoMain(QMainWindow):
             self.statusBar().showMessage("🔄 Operazione di ripristino annullata.")
             return
     
-        # 1. Reset del tempo e della cronologia stagionale
+        # Reset del tempo e della cronologia stagionale
         self.parametri_condivisi.reset_simulazione_globale()
         self.parametri_condivisi.storico_stagionale = {}
         
@@ -286,37 +284,42 @@ class PioppetoMain(QMainWindow):
         if hasattr(self.parametri_condivisi, "storico_stati"):
             self.parametri_condivisi.storico_stati = {}
         
-        # 2. Ricrea un motore completamente pulito collegato alla ditta
+        # Ricrea un motore completamente pulito collegato alla ditta
         self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
         
-        # 3. Ripristina i lotti allo stato di default iniziale
+        # Ripristina i lotti allo stato di default iniziale
         self._carica_lotti_iniziali()
 
-        # 4. Reset dei serbatoi ditta stagionali
+        # Reset dei serbatoi ditta stagionali
         if hasattr(self.ditta_attiva, "inizializza_serbatoi_stagionali"):
             self.ditta_attiva.inizializza_serbatoi_stagionali(55)
 
-        # 5. Sblocca l'interfaccia (riattiva i due pulsanti di simulazione)
+        # Sblocca l'interfaccia (riattiva i due pulsanti di simulazione)
         self.simulazione_eseguita = False
         self.aggiorna_stato_interfaccia()
         self.statusBar().showMessage("🔄 Sistema resettato. Orologio forestale impostato su Primavera Anno 1.")
 
+
     def ditta(self):
+        '''avvia la form per la configurazione e modifica dei parametri della ditta'''
         self.finestra_ditta = FormDitta(self.ditta_attiva, self.parametri_condivisi, self)
         self.finestra_ditta.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.finestra_ditta.destroyed.connect(self.aggiorna_stato_interfaccia)
         self.finestra_ditta.show()
 
+
     def lotti(self):
-        # Passiamo self.dizionario_cloni come secondo argomento
+        '''avvia la form per la configurazione e modifica dei parametri della collezione dei lotti della ditta'''
         self.finestra_lotti = FormLotti(self.parametri_condivisi, self.dizionario_cloni, self)
         self.finestra_lotti.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.finestra_lotti.destroyed.connect(self.aggiorna_stato_interfaccia)
         self.finestra_lotti.show()
         
-    # Funzione che avvia la simulazione veloce che automatizza l'avanzamento delle stagioni e degli anni per il numero di anni impostato
     
     def simulazione(self):
+        '''Avvia la simulazione batch che cicla in automatico per un numero di anni presente nell'impostazione base
+           Per dare una sensazione visiva viene usata una Dialog Progress con un leggero ritardo sulla velocità della simulazione'''
+        
         self.statusBar().showMessage("Inizializzazione del calcolo forestale in corso...")
         self.parametri_condivisi.reset_simulazione_globale()
         self.parametri_condivisi.storico_stagionale = {} 
@@ -326,6 +329,7 @@ class PioppetoMain(QMainWindow):
         progress.setWindowTitle("Elaborazione Scenario"); progress.setMinimumDuration(0); progress.setAutoClose(True)
 
         try:
+            # Avvia l'oggetto simulatore fornendo i dati della ditta e dei parametri globali e la collezione dei lotti
             self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
             fine_simulazione = False
             
@@ -335,18 +339,22 @@ class PioppetoMain(QMainWindow):
                     self.motore_condiviso = None
                     return
 
+                # La simulazione avanza di stagione in stagione fino a quando la risposta non diventa simulazione_terminata
                 stato_simulazione = self.motore_condiviso.avanza_passo_simulazione()
                 fine_simulazione = stato_simulazione["simulazione_terminata"]
                 
                 anno = self.parametri_condivisi.anno_corrente
                 stagione = self.parametri_condivisi.stagione_corrente
                 
+                # Aggiornamento della labe della Progress Dialog con i dati dell'anno e e della stagione simulata
                 progress.setLabelText(f"Elaborazione Anno {anno} - {stagione} | Assestamento continuo...")
+                time.sleep(0.05)
                 progress.setValue(min(anno, self.parametri_condivisi.anni_durata_target))
                 QApplication.processEvents()
 
             self.simulazione_eseguita = True
-            mostra_messaggio_stilizzato(parent=self, titolo="Simulazione Conclusa", testo=f"Il piano di assestamento su {self.parametri_condivisi.anni_durata_target} anni è stato completato.\nI tre output sono pronti.", tipo="info")
+            mostra_messaggio_stilizzato(parent = self, titolo = "Simulazione Conclusa", 
+                                        testo = f"Il piano di assestamento su {self.parametri_condivisi.anni_durata_target} anni è stato completato.\nI tre output sono pronti.", tipo="info")
         except Exception as e:
             progress.close()
             QMessageBox.critical(self, "Errore di Calcolo", f"Crash nel motore:\n{str(e)}")
@@ -355,9 +363,9 @@ class PioppetoMain(QMainWindow):
 
         self.aggiorna_stato_interfaccia()
         
-    # Avvio form monitoraggio Real-Time con la quale effettuare la simulazione passo passo e visualizzare le attività stagionali
     
     def monitoraggio(self):
+        '''Avvia la form del Monitoraggio Real Time inizializzando l'oggetto del simulatore'''
         self.statusBar().showMessage("Inizializzazione della plancia di monitoraggio real-time...")
         self.parametri_condivisi.reset_simulazione_globale()
         self.parametri_condivisi.storico_stagionale = {} 
@@ -376,10 +384,9 @@ class PioppetoMain(QMainWindow):
             self.statusBar().showMessage("❌ Errore durante l'apertura del monitoraggio.")
             self.motore_condiviso = None
 
-    # Avvio form di Reportistica finale dopo che è stata effettuata la simulazione batch o quella Real-Time
             
     def valutazione(self):
-        import json  # Importiamo il modulo JSON nativo per l'esportazione su file
+        '''Avvio form di Reportistica finale dopo che è stata effettuata la simulazione batch o quella Real-Time'''
         
         # Verifica che i risultati della simulazione è stata inizializzato o che non sia vuoto
         if not hasattr(self, "motore_condiviso") or self.motore_condiviso is None:
@@ -388,6 +395,7 @@ class PioppetoMain(QMainWindow):
             self.statusBar().showMessage("⚠️ Nessuna simulazione attiva in memoria.")
             return
 
+        # instanzia l'oggetto per i parametri della simulazione
         parametri = self.motore_condiviso.parametri
         dizionario_storia = getattr(parametri, "storico_stagionale", {})
 

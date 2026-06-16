@@ -44,7 +44,7 @@ class form_monitoraggio(QWidget):
         self.ui.btn_termina_sessione.clicked.connect(self.slot_termina_simulazione)
 
         # Aggiornamento della form e dei controlli
-        self._aggiorna_interfaccia_grafica(quadro_stato = None, iniziale = True)
+        self._aggiorna_interfaccia_grafica()
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -128,29 +128,27 @@ class form_monitoraggio(QWidget):
         if stagione_appena_conclusa == "Inverno":
             chiave_anno = f"Anno {anno_appena_concluso}"
             # viene estratto il dizionario (con chiave "produzione_cumulata") presente nel dizionario stagionale che ha i valori delle rese complessive
-            produzione_cumulata = quadro_stato["produzione_cumulata"]
             
-            cumulato_opera_attuale = produzione_cumulata["opera_m3"]
-            cumulato_cartiera_attuale = produzione_cumulata["cartiera_t"]
-            cumulato_truciolato_attuale = produzione_cumulata["truciolato_t"]
+            tagli_effettuati = quadro_stato["risultati_cantieri"]["tagli_effettuati"]
+    
+            # 2. Somma i valori netti reali di ciascuna resa (senza basarti sui cumulati)
+            lordo_opera = sum(taglio["rese"]["opera_m3"] for taglio in tagli_effettuati)
+            lordo_cartiera = sum(taglio["rese"]["cartiera_t"] for taglio in tagli_effettuati)
+            lordo_truciolato = sum(taglio["rese"]["truciolato_t"] for taglio in tagli_effettuati)
+            
+            # 3. Arrotonda alla fine per il grafico
+            netto_opera_anno = round(lordo_opera, 2)
+            netto_cartiera_anno = round(lordo_cartiera, 2)
+            netto_truciolato_anno = round(lordo_truciolato, 2)
 
-            netto_opera_anno = round(cumulato_opera_attuale - self._cumulato_opera_precedente, 2)
-            netto_cartiera_anno = round(cumulato_cartiera_attuale - self._cumulato_cartiera_precedente, 2)
-            netto_truciolato_anno = round(cumulato_truciolato_attuale - self._cumulato_truciolato_precedente, 2)
-
-            # I dati estratti vengono inseriti in un dizionario tampone utilizzato poi come base per il grafico delle rese
-            #if chiave_anno not in self.storico_trimestri:
+            # 4. Inserisci i dati nello storico per i grafici
             self.storico_trimestri.append(chiave_anno)
             self.storico_opera.append(max(0.0, netto_opera_anno))
             self.storico_cartiera.append(max(0.0, netto_cartiera_anno))
             self.storico_truciolato.append(max(0.0, netto_truciolato_anno))
 
-            self._cumulato_opera_precedente = cumulato_opera_attuale
-            self._cumulato_cartiera_precedente = cumulato_cartiera_attuale
-            self._cumulato_truciolato_precedente = cumulato_truciolato_attuale
-
         # Terminata la simulazione della stagione si avvia la funzione che si occupa di gestire gli aggiornamenti dei controlli e dei grafici
-        self._aggiorna_interfaccia_grafica(quadro_stato = quadro_stato, iniziale = False)
+        self._aggiorna_interfaccia_grafica()
 
     @Slot()
     def slot_termina_simulazione(self):
@@ -159,7 +157,7 @@ class form_monitoraggio(QWidget):
         self.close()
 
     
-    def _aggiorna_interfaccia_grafica(self, quadro_stato: Dict[str, Any] = None, iniziale: bool = False):
+    def _aggiorna_interfaccia_grafica(self):
         ''' Funzione richiamata al termine della simulazione della stagione
             Va a richiamare le varie funzioni di aggiornamento dei controlli, dei grafici e delle tabelle'''
         # Aggiorna le label con i dati dell'anno e della stagione corrente
@@ -167,15 +165,13 @@ class form_monitoraggio(QWidget):
         self.ui.lbl_stagione.setText(self.parametri.stagione_corrente.upper())
 
         # Avvia le funzioni di aggiornamento dei vari controlli e popola tabelle e grafici
-        self._elabora_e_mostra_fallanze(quadro_stato, iniziale)
+        self._elabora_e_mostra_fallanze()
         self._popola_tabella_particellare()
         self._rendiconta_e_disegna_previsione_risorse()
         self._ridisegna_grafico_rese_cumulate()
 
-    # Funzione che elabora i dati di consuntivo del trimestre appena concluso, aggiornando le label del cruscotto diagnostico con i dati di tagli saltati, 
-    # turni rinviati e lavorazioni fallite, e inizializza lo storico per i grafici a barre se è la prima visualizzazione
     
-    def _elabora_e_mostra_fallanze(self, quadro_stato: Dict[str, Any], iniziale: bool):
+    def _elabora_e_mostra_fallanze(self):
         '''Recupera i dati simulati nella stagione e ricerca i dizionari contenenti tutte le fallanze operative e biologiche occorse e le graficizza nei controlli di riferimento'''
         stats = self.motore.stats_globali
         
@@ -206,7 +202,6 @@ class form_monitoraggio(QWidget):
             self.storico_cartiera.append(0.0)
             self.storico_truciolato.append(0.0)
 
-    # Funzione che recupera i dati dei lotti della collezione ed inserisce i dati nella tabella tbl_monitoraggio
     
     def _popola_tabella_particellare(self):
         '''Funzione che aggiorna la tabella tbl_monitoraggio con i dati di tutti i lotti
@@ -422,6 +417,7 @@ class form_monitoraggio(QWidget):
         
         self.ax_risorse.grid(axis='y', color='#2b364a', linestyle='--', alpha=0.4)
         self.canvas_risorse.draw()
+
 
     def _ridisegna_grafico_rese_cumulate(self):
         '''aggiornare visivamente i grafici delle rese produttive ogni volta che il simulatore avanza di un trimestre

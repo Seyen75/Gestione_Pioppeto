@@ -3,14 +3,14 @@ import json
 
 from typing import Dict, List, Any
 from Core.struttura_lavorazioni import STRUTTURA_LAVORAZIONI
+from Core.gestori_clone import GestoreCloni
 
 class SimulatorePioppicoltura:
     def __init__(self, ditta: Any, parametri: Any):
         self.ditta = ditta
         self.parametri = parametri  
-        self.dati_cloni: Dict[str, Any] = {}
-                
-        self._carica_configurazione_cloni()
+        self.gestore_cloni = GestoreCloni()
+        self.dati_cloni = self.gestore_cloni.carica_cloni()
 
     @property
     def stats_globali(self):
@@ -31,18 +31,10 @@ class SimulatorePioppicoltura:
             "tagli_biologici_saltati": totale_tagli_biologici,
             "lavorazioni_generiche_saltate": totale_lavorazioni_fallite
         }
-    
-    # Carica dal file cloni.json la configurazione con i dati del cloni standard
-    
-    def _carica_configurazione_cloni(self):
-        percorso_json = os.path.join(os.path.dirname(__file__), "cloni.json")
-        with open(percorso_json, "r", encoding="utf-8") as f:
-            self.dati_cloni = json.load(f)
 
-    # Funzione che crea la lista degli interventi che sono previsti per la stagione che è in corso di simulazione
     
     def prevedi_domanda_stagionale(self, is_esecuzione: bool = False) -> List[Dict[str, Any]]:
-    
+        '''Funzione che crea la lista degli interventi che sono previsti per la stagione che è in corso di simulazione'''
         # Prende i dati della stagione corrente dai parametri globali
         stagione = self.parametri.stagione_corrente
         # Inizializza la lista degli interventi che sarà restituita
@@ -162,68 +154,72 @@ class SimulatorePioppicoltura:
         # in base alla chiave priorità, poichè dopo saranno lavorati preventivamente i lotto a priorità più alta
         return sorted(interventi, key=lambda x: x["priorita"])
 
-    # Funzione che esegue le lavorazioni necessarie per la stagione da simulare.
-    # Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
-    # che sarà utilizzato per la reportistica di fine simulazione
     
     def esegui_fase_lavorazioni_stagionali(self) -> Dict[str, Any]:
+        '''Funzione che esegue le lavorazioni necessarie per la stagione da simulare.
+           Ottiene le lista delle lavorazioni e crea un dizionario di risposta con il report stagionale delle attività svolte
+           che sarà utilizzato per la reportistica di fine simulazione'''
+         
+        # Inizia la variabile locale con i dati dei parametri della stagione corrente ed inizializza i serbatoi stagionali della ditta
         stagione_attiva = self.parametri.stagione_corrente
-        self.ditta.inizializza_serbatoi_stagionali(55)
+        giornate_lavorative = 55
+        self.ditta.inizializza_serbatoi_stagionali(giornate_lavorative)
         
+        # Crea una copia dei serbatoi della ditta per calcolare i consumi effettivi a fine stagione per differenza
         serbatoi_iniziali = self.ditta.serbatoi_ore.copy()
         extra_iniziali = self.ditta.registro_extra_anno.copy()
         
+        # Inizializza all'interno del dizionario del report stagionale le due liste
         report_stagionale = {"dettaglio_operazioni": [], "tagli_effettuati": []}
+        
+        # Genera la lista pianificata degli interventi per la stagione corrente
         lista_interventi = self.prevedi_domanda_stagionale(is_esecuzione=True)
     
+        # Ciclo completo di esecuzione per tutte le lavorazioni in lista
         for intervento in lista_interventi:
             lotto = intervento["lotto"]
             spec = intervento["specifiche_richiesta"]
+            
+            # Verifica e consuma le ore/risorse della ditta, ottenendo la percentuale di completamento dell'opera
             perc = self.ditta.verifica_e_consuma_risorse(spec)
     
-            # Gestione Raccolta
+            # --- 1. GESTIONE RACCOLTA (Avviene SOLO in Inverno) ---
             if intervento["is_raccolta"] and intervento["tipo_cantiere_chiave"] == "raccolta":
+                # Conteggia il numero di piante abbattute in base alla percentuale di completamento del cantiere
                 p_abbattute = int(lotto.dati_correnti["piante_attive"] * perc)
+                
+                # Calcola le rese e aggiorna lo stato interno delle piante nel lotto
                 rese, stato = lotto.esegui_raccolta(p_abbattute, self.dati_cloni[lotto.clone_assegnato])
                 
-                # LOGICA DI RESET O AGGIORNAMENTO
                 if "Reset Ciclo" in stato:
-                    # Lotto tagliato totalmente: reset biometria
-                    lotto.eta = 0
-                    lotto.tagliato = False
-                    lotto.dati_correnti = {
-                        "dbh_reale_cm": 0.0, "altezza_m": 0.0, 
-                        "volume_singolo_m3": 0.0, "piante_attive": lotto.numero_piante_vive, 
-                        "volume_totale_m3": 0.0
-                    }
+                    # Viene azzerata l'età del lotto tagliato
+                    lotto.eta = 0 
                 else:
-                    # Lotto tagliato parzialmente: ricalcolo accrescimento
-                    profilo = self.dati_cloni[lotto.clone_assegnato]
-                    lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
+                    # TAGLIO PARZIALE INVERNALE: 
+                    # Aggiorna solo il volume totale in base alle piante rimaste in piedi.
+                    lotto.dati_correnti["piante_attive"] = lotto.numero_piante_vive
+                    lotto.dati_correnti["volume_totale_m3"] = round(
+                        lotto.dati_correnti.get("volume_singolo_m3", 0.0) * lotto.numero_piante_vive, 2
+                    )
                 
+                # Aggiorna i contatori comprensoriali globali se sono state abbattute piante
                 if p_abbattute > 0:
-                    self.parametri.totale_prodotto_opera_m3 += rese.get("opera_m3", 0.0)
-                    self.parametri.totale_prodotto_cartiera_t += rese.get("cartiera_t", 0.0)
-                    self.parametri.totale_prodotto_truciolato_t += rese.get("truciolato_t", 0.0)
-                    
+                    # Registra i dati specifici della resa del lotto nel report
                     report_stagionale["tagli_effettuati"].append({
                         "lotto_id": lotto.id_lotto, 
                         "rese": rese
                     })
             
-            # Gestione Lavorazioni (Non Raccolta)
+            # --- 2. GESTIONE LAVORAZIONI DI MANUTENZIONE (Primavera, Estate, Autunno) ---
             else:
+                # Applica la lavorazione al lotto e accumula l'eventuale malus se fallisce
                 stato = lotto.applica_lavorazione(
                     intervento["operazione"], intervento["tipo_cantiere_chiave"], perc, 
                     stagione_attiva, self.parametri.anno_corrente, 
                     self.dati_cloni[lotto.clone_assegnato], intervento["priorita"]
                 )
-                
-                # AGGIORNAMENTO STATO DENDROMETRICO
-                profilo = self.dati_cloni[lotto.clone_assegnato]
-                lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)
 
-            # Popolamento report comune
+            # Popolamento dei dati consuntivi sulle ore e sull'efficienza per il report comune
             ore_teoriche = spec.get("meta_lavoro_puro", 0.0) / self.ditta.coefficiente_rendimento_cantiere
             report_stagionale["dettaglio_operazioni"].append({
                 "lotto_id": lotto.id_lotto, 
@@ -235,16 +231,19 @@ class SimulatorePioppicoltura:
                 "stato": stato
             })
     
-        # Finalizzazione report stagionale e ritorno dati
+        # Genera il bilancio finale confrontando lo stato finale dei serbatoi con quello iniziale
         report_finale = self.ditta.genera_report_consumi(serbatoi_iniziali, extra_iniziali)
+        
+        # Unisce i dati dei consumi ditta con i registri delle operazioni dei lotti e restituisce il dizionario fuso
         return {**report_finale, **report_stagionale}
     
-    # Funzione che avanza di un passo la simulazione, eseguendo tutte le operazioni necessarie per la stagione corrente e aggiornando lo stato dei lotti e della ditta.
-    # Ritorna un dizionario con lo stato aggiornato della simulazione, utile per la reportistica e per l'aggiornamento dell'interfaccia utente.
     
     def avanza_passo_simulazione(self) -> Dict[str, Any]:
-            
-        # 1. AVANZAMENTO BIOLOGICO (Solo in Inverno)
+        ''' Funzione regista della simulazione.
+            Questa avanza di una stagione la simulazione, eseguendo tutte le operazioni necessarie per la stagione corrente e aggiornando lo stato dei lotti e della ditta.
+            Ritorna un dizionario con lo stato aggiornato della simulazione, utilizzato per la reportistica finale e per l'aggiornamento dell'interfaccia utente.'''
+        
+        # Se la stagione è l'inverno, ultima stagione dell'anno biologico, viene effettuato l'avanzamento biologico dei lotti
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
                 profilo = self.dati_cloni[lotto.clone_assegnato]
@@ -263,7 +262,7 @@ class SimulatorePioppicoltura:
                 lotto.numero_piante_vive = lotto.dati_correnti["piante_attive"]
                 lotto.malus_colturale_accumulato = 0.0
 
-        # 2. FOTOGRAFIA PRE-LAVORAZIONI
+        # Salva i dati dello stato dei lotti prima delle operazioni nel dizionario da aggiungere poi nel report stagionale
         stato_lotti_pre = {}
         for lotto in self.parametri.collezione_lotti:
             stato_lotti_pre[lotto.id_lotto] = {
@@ -272,30 +271,11 @@ class SimulatorePioppicoltura:
                 "biometria": lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") else {}
             }
 
-        # 3. ESECUZIONE CANTIERI (Il metodo che abbiamo rifattorizzato)
+        # Si manda in esecuzione la stagione con le varie funzioni collegate
         risultati_cantieri = self.esegui_fase_lavorazioni_stagionali()
 
-        # 4. FOTOGRAFIA POST-LAVORAZIONI (Sincronizzata)
-        stato_lotti_istantaneo = {}
-        for lotto in self.parametri.collezione_lotti:
-            # Recupero dati correnti
-            biometria = lotto.dati_correnti.copy() if hasattr(lotto, "dati_correnti") else {
-                "dbh_reale_cm": 0.0, "altezza_m": 0.0, "volume_singolo_m3": 0.0, 
-                "piante_attive": lotto.numero_piante_vive, "volume_totale_m3": 0.0
-            }
-            
-            # Se il lotto è vivo ma la biometria è a zero (causa reset), la ricostruiamo
-            if lotto.numero_piante_vive > 0 and biometria.get("dbh_reale_cm", 0.0) == 0.0:
-                 profilo = self.dati_cloni[lotto.clone_assegnato]
-                 biometria = lotto.simula_accrescimento(profilo, lotto.eta)
-            
-            stato_lotti_istantaneo[lotto.id_lotto] = {
-                "eta": lotto.eta, 
-                "tagliato": lotto.tagliato,
-                "biometria": biometria
-            }
-
-        # 5. GESTIONE LOGICA INVERNALE E STATISTICHE
+        # Gestisce se siamo in inverno (stagione finale dell'anno selvicolturale) l'aumento della variabile degli anni di ritardo
+        # taglio di un lotto che ha raggiunto l'età del taglio ma non ha il diametro adeguato
         if self.parametri.stagione_corrente == "Inverno":
             for lotto in self.parametri.collezione_lotti:
                 if lotto.eta > 0:
@@ -303,27 +283,23 @@ class SimulatorePioppicoltura:
                     if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta():
                         lotto.anni_ritardo_taglio = getattr(lotto, "anni_ritardo_taglio", 0) + 1
 
-            # Salvataggio storico extra-noli
+            # Salva i totali dell'anno di tutti i valori delle ore di operai stagionali e noli strumentazioni, utilizzati poi nella reportistica
             chiave_anno_storico = f"Anno_{self.parametri.anno_corrente}_RisorseExtra"
-            if hasattr(self.parametri, "storico_stagionale"):
-                self.parametri.storico_stagionale[chiave_anno_storico] = self.ditta.registro_extra_anno.copy()
+            self.parametri.storico_stagionale[chiave_anno_storico] = self.ditta.registro_extra_anno.copy()
+            
+            
             for risorsa in self.ditta.registro_extra_anno:
                 self.ditta.registro_extra_anno[risorsa] = 0.0
 
-        # 6. COMPOSIZIONE QUADRO STATO
+        # Aggiunge i dizionari dei risultati cantieri e dello stato dei lotti creati precedentemente
         quadro_stato = {
             "risultati_cantieri": risultati_cantieri,
-            "stato_lotti_pre": stato_lotti_pre,
-            "stato_lotti": stato_lotti_istantaneo,
-            "produzione_cumulata": {
-                "opera_m3": getattr(self.parametri, "totale_prodotto_opera_m3", 0.0),
-                "cartiera_t": getattr(self.parametri, "totale_prodotto_cartiera_t", 0.0),
-                "truciolato_t": getattr(self.parametri, "totale_prodotto_truciolato_t", 0.0)
-            }
+            "stato_lotti_pre": stato_lotti_pre
         }
         
-        if hasattr(self.parametri, "registra_instantanea_stato_corrente"):
-            self.parametri.registra_instantanea_stato_corrente(quadro_stato)
-        
-        dati_orologio = self.parametri.avanza_stagione()
-        return {**dati_orologio, **quadro_stato}
+        # Registra lo stato corrente
+        self.parametri.registra_instantanea_stato_corrente(quadro_stato)
+
+        # Avanza la stagione e restituisce i dati 
+        dati_stagione = self.parametri.avanza_stagione()
+        return {**dati_stagione, **quadro_stato}
