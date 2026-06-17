@@ -12,27 +12,7 @@ class SimulatorePioppicoltura:
         self.gestore_cloni = GestoreCloni()
         self.dati_cloni = self.gestore_cloni.carica_cloni()
 
-    @property
-    def stats_globali(self):
-        """Metodo ponte per mantenere compatibilità con form_monitoraggio.py"""
-        totale_lavorazioni_fallite = 0
-        totale_tagli_biologici = 0
-        
-        for lotto in self.parametri.collezione_lotti:
-            # Conta quante lavorazioni sono state fallite dal lotto
-            if hasattr(lotto, "cronistoria_lavorazioni_saltate"):
-                totale_lavorazioni_fallite += len(lotto.cronistoria_lavorazioni_saltate)
-            
-            # Recupera i tagli biologici saltati (se il lotto li traccia)
-            totale_tagli_biologici += getattr(lotto, "anni_ritardo_taglio", 0)
-            
-        return {
-            "tagli_strutturali_saltati": 0, # Se non ti servono più, puoi lasciarli a 0
-            "tagli_biologici_saltati": totale_tagli_biologici,
-            "lavorazioni_generiche_saltate": totale_lavorazioni_fallite
-        }
 
-    
     def prevedi_domanda_stagionale(self, is_esecuzione: bool = False) -> List[Dict[str, Any]]:
         '''Funzione che crea la lista degli interventi che sono previsti per la stagione che è in corso di simulazione'''
         # Prende i dati della stagione corrente dai parametri globali
@@ -172,6 +152,12 @@ class SimulatorePioppicoltura:
         # Inizializza all'interno del dizionario del report stagionale le due liste
         report_stagionale = {"dettaglio_operazioni": [], "tagli_effettuati": []}
         
+        # Crea il dizionario dei fallimenti stagionali delle lavorazioni suddivise in fallimenti biologici (lotto non maturi) e di lavorazioni (manacanza risorse per i lavori)
+        fallimenti = {
+            "tagli": {"rinviati_maturita": 0, "saltati_risorse": 0},
+            "lavorazioni_generiche": {"saltate_risorse": 0}
+        }
+        
         # Genera la lista pianificata degli interventi per la stagione corrente
         lista_interventi = self.prevedi_domanda_stagionale(is_esecuzione=True)
     
@@ -185,6 +171,11 @@ class SimulatorePioppicoltura:
     
             # --- 1. GESTIONE RACCOLTA (Avviene SOLO in Inverno) ---
             if intervento["is_raccolta"] and intervento["tipo_cantiere_chiave"] == "raccolta":
+                
+                # Fallito il taglio per mancanza risorse, l'accumulatore viene incrementato
+                if perc <= 0.001:
+                    fallimenti["tagli"]["saltati_risorse"] += 1
+                
                 # Conteggia il numero di piante abbattute in base alla percentuale di completamento del cantiere
                 p_abbattute = int(lotto.dati_correnti["piante_attive"] * perc)
                 
@@ -212,6 +203,10 @@ class SimulatorePioppicoltura:
             
             # --- 2. GESTIONE LAVORAZIONI DI MANUTENZIONE (Primavera, Estate, Autunno) ---
             else:
+                # Fallita la lavorazione diversa dal taglio per mancanza risorse 
+                if perc <= 0.001:
+                    fallimenti["lavorazioni_generiche"]["saltate_risorse"] += 1
+                    
                 # Applica la lavorazione al lotto e accumula l'eventuale malus se fallisce
                 stato = lotto.applica_lavorazione(
                     intervento["operazione"], intervento["tipo_cantiere_chiave"], perc, 
@@ -231,6 +226,16 @@ class SimulatorePioppicoltura:
                 "stato": stato
             })
     
+        # Viene avviato un controllo per verificare se ci sono stati lotti in età da taglio che per motivi biologici non hanno raggiunto la giusta maturità
+        if stagione_attiva == "Inverno":
+            for lotto_bio in self.parametri.collezione_lotti:
+                eta_rot = 5 if lotto_bio.destinazione_uso == "INDUSTRIA" else 10
+                # Se il lotto ha l'età da taglio, non è ancora tagliato, ma non ha il diametro sufficiente
+                if lotto_bio.eta >= eta_rot and not lotto_bio.tagliato and not lotto_bio.verifica_maturita_raccolta():
+                    fallimenti["tagli"]["rinviati_maturita"] += 1
+
+        report_stagionale["fallimenti_lavorazioni"] = fallimenti
+        
         # Genera il bilancio finale confrontando lo stato finale dei serbatoi con quello iniziale
         report_finale = self.ditta.genera_report_consumi(serbatoi_iniziali, extra_iniziali)
         

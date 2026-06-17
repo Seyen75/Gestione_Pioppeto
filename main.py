@@ -1,6 +1,6 @@
 import os
 import sys
-# Aggiunta del percorso della cartella del progetto alla variabile d'ambiente PYTHONPATH per garantire che tutte le importazioni funzionino correttamente indipendentemente da dove viene eseguito lo script
+# Import dei moduli di PySide6 per la questione grafica delle finestre
 from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette, QColor

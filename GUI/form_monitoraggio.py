@@ -172,17 +172,29 @@ class form_monitoraggio(QWidget):
 
     
     def _elabora_e_mostra_fallanze(self):
-        '''Recupera i dati simulati nella stagione e ricerca i dizionari contenenti tutte le fallanze operative e biologiche occorse e le graficizza nei controlli di riferimento'''
-        stats = self.motore.stats_globali
+        '''Recupera i dati storici simulati fino ad oggi e calcola le fallanze operative e biologiche totali accumulate per aggiornare il cruscotto'''
         
-        # Estrae i valori relativi alle tre chiavi contenenti i dati delle fallanze
-        t_strut = stats["tagli_strutturali_saltati"]
-        t_bio = stats["tagli_biologici_saltati"]
-        l_gen = stats["lavorazioni_generiche_saltate"]
+        t_strut = 0
+        t_bio = 0
+        l_gen = 0
+        
+        # Scansiona tutto lo storico stagionale accumulato fino a questo momento
+        storico = self.parametri.storico_stagionale
+        # Cicla in ogni stagione per recuperare i dati dei fallimenti
+        for chiave_stagione, dati_stagione in storico.items():
+            # Ignora le chiavi di servizio (come i riepiloghi annuali delle risorse extra)
+            if "RisorseExtra" in chiave_stagione:
+                continue
+                
+            # recupera il dizionario dei fallimenti
+            fallimenti = dati_stagione["risultati_cantieri"]["fallimenti_lavorazioni"]
+            
+            # Aggiorna i contatori de fallimenti da mettere in visione sulla form
+            t_strut += fallimenti["tagli"]["saltati_risorse"]
+            t_bio += fallimenti["tagli"]["rinviati_maturita"]
+            l_gen += fallimenti["lavorazioni_generiche"]["saltate_risorse"]
 
-        # Aggiorna le Label del Cruscotto Diagnostico con i dati recuperati dal dizionario generale nella chiava stats_globali
-        # Le label vengono settate con colori differenti a qualora siano presenti o meno fallanze della categoria specifica
-
+        # Aggiorna le Label del Cruscotto Diagnostico
         self.ui.lbl_tagli_saltati.setText(f"⛔ Tagli Saltati (Carenza Mezzi): {t_strut}")
         self.ui.lbl_tagli_saltati.setVisible(True)
         self.ui.lbl_tagli_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if t_strut > 0 else "color: #00e676; font-weight: bold;")
@@ -195,7 +207,7 @@ class form_monitoraggio(QWidget):
         self.ui.lbl_lavori_saltati.setVisible(True)
         self.ui.lbl_lavori_saltati.setStyleSheet("color: #ff5252; font-weight: bold;" if l_gen > 0 else "color: #00e676; font-weight: bold;")
 
-        # Inizializzazione storico per i grafici a barre
+        # Inizializzazione storico per i grafici a barre (logica invariata)
         if not self.storico_trimestri:
             self.storico_trimestri.append("Avvio")
             self.storico_opera.append(0.0)

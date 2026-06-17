@@ -189,59 +189,58 @@ class PioppetoMain(QMainWindow):
         """Inizializza i 30 lotti di default (20 Opera, 10 Industria) allo stato zero."""
         configurazione_lotti_default = [
             # --- FILIERA OPERA (Ciclo 10 anni) - 20 Lotti ---
-            {"id": "LTI-001", "clone": "I-214",   "dest": "OPERA", "eta": 9, "superficie": 13.5, "idrico": 0.0},
-            {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "eta": 9, "superficie": 12.0, "idrico": 0.1},
-            {"id": "LTI-003", "clone": "Velasco", "dest": "OPERA", "eta": 8, "superficie": 14.0, "idrico": 0.2},
-            {"id": "LTI-004", "clone": "I-214",   "dest": "OPERA", "eta": 8, "superficie": 13.0, "idrico": -0.1},
-            {"id": "LTI-005", "clone": "Neva",    "dest": "OPERA", "eta": 7, "superficie": 12.5, "idrico": 0.0},
-            {"id": "LTI-006", "clone": "I-214",   "dest": "OPERA", "eta": 7, "superficie": 13.5, "idrico": -0.2},
-            {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "eta": 6, "superficie": 13.0, "idrico": 0.0},
-            {"id": "LTI-008", "clone": "I-214",   "dest": "OPERA", "eta": 6, "superficie": 12.5, "idrico": 0.1},
-            {"id": "LTI-009", "clone": "Neva",    "dest": "OPERA", "eta": 5, "superficie": 14.5, "idrico": 0.0},
-            {"id": "LTI-010", "clone": "I-214",   "dest": "OPERA", "eta": 5, "superficie": 12.0, "idrico": 0.0},
-            {"id": "LTI-011", "clone": "Velasco", "dest": "OPERA", "eta": 4, "superficie": 13.5, "idrico": 0.2},
-            {"id": "LTI-012", "clone": "Neva",    "dest": "OPERA", "eta": 4, "superficie": 13.0, "idrico": -0.1},
-            {"id": "LTI-013", "clone": "I-214",   "dest": "OPERA", "eta": 3, "superficie": 12.0, "idrico": 0.0},
-            {"id": "LTI-014", "clone": "Velasco", "dest": "OPERA", "eta": 3, "superficie": 14.0, "idrico": -0.1},
-            {"id": "LTI-015", "clone": "I-214",   "dest": "OPERA", "eta": 2, "superficie": 13.5, "idrico": 0.1},
-            {"id": "LTI-016", "clone": "Neva",    "dest": "OPERA", "eta": 2, "superficie": 12.5, "idrico": 0.0},
-            {"id": "LTI-017", "clone": "I-214",   "dest": "OPERA", "eta": 1, "superficie": 14.0, "idrico": -0.2},
-            {"id": "LTI-018", "clone": "Velasco", "dest": "OPERA", "eta": 1, "superficie": 13.0, "idrico": 0.0},
-            {"id": "LTI-019", "clone": "I-214",   "dest": "OPERA", "eta": 0, "superficie": 12.5, "idrico": 0.1},
-            {"id": "LTI-020", "clone": "Neva",    "dest": "OPERA", "eta": 0, "superficie": 13.5, "idrico": 0.0},
-    
+            {"id": "LTI-001", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 9, "superficie": 13.5, "idrico": 0.0},
+            {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 9, "superficie": 12.0, "idrico": 0.1},
+            {"id": "LTI-003", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 8, "superficie": 14.0, "idrico": 0.2},
+            {"id": "LTI-004", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 8, "superficie": 13.0, "idrico": -0.1},
+            {"id": "LTI-005", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 12.5, "idrico": 0.0},
+            {"id": "LTI-006", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 13.5, "idrico": -0.2},
+            {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 13.0, "idrico": 0.0},
+            {"id": "LTI-008", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 12.5, "idrico": 0.1},
+            {"id": "LTI-009", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 5, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-010", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 5, "superficie": 12.0, "idrico": 0.0},
+            {"id": "LTI-011", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 4, "superficie": 13.5, "idrico": 0.2},
+            {"id": "LTI-012", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 4, "superficie": 13.0, "idrico": -0.1},
+            {"id": "LTI-013", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 3, "superficie": 12.0, "idrico": 0.0},
+            {"id": "LTI-014", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 3, "superficie": 14.0, "idrico": -0.1},
+            {"id": "LTI-015", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 2, "superficie": 13.5, "idrico": 0.1},
+            {"id": "LTI-016", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 2, "superficie": 12.5, "idrico": 0.0},
+            {"id": "LTI-017", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 1, "superficie": 14.0, "idrico": -0.2},
+            {"id": "LTI-018", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 1, "superficie": 13.0, "idrico": 0.0},
+            {"id": "LTI-019", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 12.5, "idrico": 0.1},
+            {"id": "LTI-020", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 13.5, "idrico": 0.0},
+
             # --- FILIERA INDUSTRIA (Ciclo 5 anni) - 10 Lotti ---
-            {"id": "LTI-021", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 4, "superficie": 15.0, "idrico": 0.1},
-            {"id": "LTI-022", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 4, "superficie": 14.5, "idrico": 0.0},
-            {"id": "LTI-023", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 3, "superficie": 16.0, "idrico": -0.1},
-            {"id": "LTI-024", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 3, "superficie": 14.0, "idrico": 0.2},
-            {"id": "LTI-025", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 2, "superficie": 15.5, "idrico": 0.0},
-            {"id": "LTI-026", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 2, "superficie": 15.0, "idrico": -0.2},
-            {"id": "LTI-027", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 1, "superficie": 14.5, "idrico": 0.0},
-            {"id": "LTI-028", "clone": "I-45/51", "dest": "INDUSTRIA", "eta": 1, "superficie": 16.5, "idrico": 0.1},
-            {"id": "LTI-029", "clone": "Velasco", "dest": "INDUSTRIA", "eta": 0, "superficie": 15.0, "idrico": -0.1},
-            {"id": "LTI-030", "clone": "AF2",     "dest": "INDUSTRIA", "eta": 0, "superficie": 14.0, "idrico": 0.2}
+            {"id": "LTI-021", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 4, "superficie": 15.0, "idrico": 0.1},
+            {"id": "LTI-022", "clone": "I-45/51", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 4, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-023", "clone": "Velasco", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 3, "superficie": 16.0, "idrico": -0.1},
+            {"id": "LTI-024", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 3, "superficie": 14.0, "idrico": 0.2},
+            {"id": "LTI-025", "clone": "I-45/51", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 2, "superficie": 15.5, "idrico": 0.0},
+            {"id": "LTI-026", "clone": "Velasco", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 2, "superficie": 15.0, "idrico": -0.2},
+            {"id": "LTI-027", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 1, "superficie": 14.5, "idrico": 0.0},
+            {"id": "LTI-028", "clone": "I-45/51", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 1, "superficie": 16.5, "idrico": 0.1},
+            {"id": "LTI-029", "clone": "Velasco", "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 0, "superficie": 15.0, "idrico": -0.1},
+            {"id": "LTI-030", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x3", "eta": 0, "superficie": 14.0, "idrico": 0.2}
         ]
         
         
         # Caricamento dei lotti nei parametri generali della simulazione
         self.parametri_condivisi.collezione_lotti = []
         for conf in configurazione_lotti_default:
-            lotto = Lotto(id_lotto=conf["id"], superficie=conf["superficie"])
-            lotto.sesto_impianto = "6x6"
+            lotto = Lotto(id_lotto = conf["id"], superficie = conf["superficie"], sesto_impianto = conf["sesto_impianto"])
             lotto.clone_assegnato = conf["clone"]
             lotto.destinazione_uso = conf["dest"]
+
+            lotto.sesto_impianto = conf["sesto_impianto"]
             lotto.indice_attrito_spaziale = 2
             lotto.indice_tendenza_idrico = conf["idrico"]
             lotto.eta = conf["eta"]  
             
-            lato1, lato2 = [float(x) for x in lotto.sesto_impianto.split("x")]
-            lotto.densita_iniziale = int(10000 / (lato1 * lato2))
-            
+            # inizializza il lotto           
             lotto.inizializza_nuovo_ciclo() 
             
             
-            # Calcolo dei dati dinamici del lotto se ha un'età maggiore al primo impianto
+            # Calcolo dei dati dinamici del lotto se ha un'età maggiore al primo impianto  per fornigli già una storia pregressa
             if lotto.eta > 0:
                 profilo = self.motore_condiviso.dati_cloni[lotto.clone_assegnato]
                 lotto.dati_correnti = lotto.simula_accrescimento(profilo, lotto.eta)

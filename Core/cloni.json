@@ -5,7 +5,8 @@
     "parametri_crescita": {
       "incremento_medio_annuo_ottimale": 25.0,
       "eta_rotazione_standard": 10,
-      "coefficiente_forma": 0.41
+      "coefficiente_forma": 0.41,
+      "indice_tendenza_idrica_base": -0.4
     },
     "proprieta_tecnologiche": {
       "densita_verde_t_m3": 0.82
@@ -22,7 +23,8 @@
     "parametri_crescita": {
       "incremento_medio_annuo_ottimale": 22.0,
       "eta_rotazione_standard": 12,
-      "coefficiente_forma": 0.43
+      "coefficiente_forma": 0.43,
+      "indice_tendenza_idrica_base": 0.4
     },
     "proprieta_tecnologiche": {
       "densita_verde_t_m3": 0.85
@@ -39,7 +41,8 @@
     "parametri_crescita": {
       "incremento_medio_annuo_ottimale": 24.0,
       "eta_rotazione_standard": 10,
-      "coefficiente_forma": 0.44
+      "coefficiente_forma": 0.44,
+      "indice_tendenza_idrica_base": -0.2
     },
     "proprieta_tecnologiche": {
       "densita_verde_t_m3": 0.88
@@ -56,7 +59,8 @@
     "parametri_crescita": {
       "incremento_medio_annuo_ottimale": 26.0,
       "eta_rotazione_standard": 10,
-      "coefficiente_forma": 0.45
+      "coefficiente_forma": 0.45,
+      "indice_tendenza_idrica_base": 0.5
     },
     "proprieta_tecnologiche": {
       "densita_verde_t_m3": 0.86
@@ -73,7 +77,8 @@
     "parametri_crescita": {
       "incremento_medio_annuo_ottimale": 28.0,
       "eta_rotazione_standard": 5,
-      "coefficiente_forma": 0.44
+      "coefficiente_forma": 0.44,
+      "indice_tendenza_idrica_base": 0.2
     },
     "proprieta_tecnologiche": {
       "densita_verde_t_m3": 0.85

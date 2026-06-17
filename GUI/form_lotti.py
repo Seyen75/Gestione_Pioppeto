@@ -76,7 +76,7 @@ class FormLotti(QWidget):
     def popola_combo_iniziali(self):
         ''' Carica i dati all'interno dei controlli combobox presenti sulla form '''
         self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
-        self.combo_sesto_impianto.addItems(["6x6", "6x5", "7x6", "7x7"])
+        self.combo_sesto_impianto.addItems(["3x2", "3x3", "6x6", "6x5", "7x6", "7x7"])
         self.combo_destinazione.addItems(["OPERA", "INDUSTRIA"])
 
     def aggiungi_nuovo_lotto(self):
@@ -229,6 +229,18 @@ class FormLotti(QWidget):
 
     def valida_dati_input(self) -> bool:
         '''funzione per aggiungere gli eventuali paramentri di verifica sui dati inseriti'''
+        
+        if self.combo_destinazione.currentText() == "OPERA" and (self.combo_sesto_impianto.currentText()  == "3x2" or self.combo_sesto_impianto.currentText()   == "3x3"):
+            mostra_messaggio_stilizzato(self, "Errore", "Per una destinazione OPERA non usare sesti di impianto 3x2 o 3x3", "critico")
+            return False
+        
+        if self.combo_destinazione.currentText()  == "INDUSTRIA" and (self.combo_sesto_impianto.currentText()  == "6x6"
+                                                               or self.combo_sesto_impianto.currentText()  == "6x5"
+                                                               or self.combo_sesto_impianto.currentText()  == "7x6"
+                                                               or self.combo_sesto_impianto.currentText()  == "7x7"):
+            mostra_messaggio_stilizzato(self, "Errore", "Per una destinazione INDUSTRIA non usare sesti di impianto 6x6, 6x5, 7x6 o 7x7", "critico")
+            return False
+        
         # Lotti sopra i 100 ettari sono considerati eccessivi per la simulazione
         if self.spin_ettari.value() > 100.0:
             mostra_messaggio_stilizzato(self, "Errore", "Superficie fuori scala (>100 ha).", "critico")

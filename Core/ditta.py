@@ -1,5 +1,5 @@
 # Core/ditta.py
-# Modulo Rappresentazione della ditta forestale.
+# Classe che rappresenta la ditta forestale.
 # Gestisce l'inventario delle risorse, i serbatoi d'ore stagionali e la diagnostica dei colli di bottiglia.
 
 class Ditta:
@@ -215,7 +215,7 @@ class Ditta:
                 if hasattr(self, attr_f): setattr(self, attr_f, getattr(self, attr_f) + 1)
             return
 
-        # EROGAZIONE Lavoroo Puro Effettivo (per statistiche)
+        # EROGAZIONE Lavoro Puro Effettivo (per statistiche)
         lavoro_puro_effettivo = round(specifiche_cantiere.get("meta_lavoro_puro", 0.0) * percentuale_completamento, 2)
         self.ore_lavoro_effettivo = round(self.ore_lavoro_effettivo + lavoro_puro_effettivo, 2)
         
