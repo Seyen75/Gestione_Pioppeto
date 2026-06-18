@@ -6,6 +6,7 @@ from Core.lotto import Lotto
 
 class ParametriSimulazione:
     def __init__(self):
+        ''''''
         self.nome_azienda: str = "Azienda Pioppicola Padana"
         self.anno_corrente: int = 1
         self.anni_durata_target: int = 10  
@@ -22,6 +23,7 @@ class ParametriSimulazione:
 
 
     def avanza_stagione(self) -> dict:
+        '''Effettua l'avanzamento di stagione e verifica se la simulazione è conclusa'''
         cambio_anno = False
         if self.stagione_corrente == "Inverno":
             self.indice_stagione_corrente = 0
@@ -31,6 +33,8 @@ class ParametriSimulazione:
             self.indice_stagione_corrente += 1
             
         fine_simulazione = self.anno_corrente > self.anni_durata_target
+        
+        # ritorna i dati della stagione 
         return {
             "stagione": self.stagione_corrente,
             "anno": min(self.anno_corrente, self.anni_durata_target),
@@ -40,12 +44,14 @@ class ParametriSimulazione:
 
 
     def reset_simulazione_globale(self):
+        '''resetta i dati della simulazione globale'''
         self.anno_corrente = 1
         self.indice_stagione_corrente = 0
         self.storico_stagionale.clear()
 
 
     def registra_instantanea_stato_corrente(self, dati_quadro: dict):
+        '''crea una copia intera di un anno della stagione'''
         chiave_tempo = f"A{self.anno_corrente}_{self.stagione_corrente}"
         # copy.deepcopy duplica l'intera struttura, scollegandola dalle modifiche future
         self.storico_stagionale[chiave_tempo] = copy.deepcopy(dati_quadro)

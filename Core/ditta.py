@@ -39,16 +39,6 @@ class Ditta:
         # REGISTRI DI UTILIZZO E LOGISTICA TOTALI
         self.ore_lavoro_effettivo: float = 0.0
 
-        # CONTATORI DI FALLIMENTO DIAGNOSTICI
-        self.fallimenti_grado_A: int = 0
-        self.fallimenti_grado_B: int = 0
-        self.fallimenti_trattori_alta: int = 0
-        self.fallimenti_trattori_media: int = 0
-        self.fallimenti_piattaforme: int = 0
-        self.fallimenti_harvester: int = 0
-        self.fallimenti_forwarder: int = 0
-        self.fallimenti_cippatrice: int = 0
-
         self.limiti_noli_stagionali = {
             "personale_spec": 10,     
             "personale_comune": 40,   
@@ -223,16 +213,20 @@ class Ditta:
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
             
+            # calcola le ore effettive (con l'eventuale percentuale di completamento dell'operazione)
             ore_richieste = round(float(ore_richieste), 2)
             ore_effettive_spese = round(ore_richieste * percentuale_completamento, 2)
-            serbatoio_interno = round(float(self.serbatoi_ore.get(risorsa, 0.0)), 2)
+            serbatoio_interno = round(float(self.serbatoi_ore[risorsa]), 2)
             
+            # Verifica che le ore necessarie siano presenti nel serbatoio delle ore della ditta, altrimenti passa alla quota dei noli
             if ore_effettive_spese <= serbatoio_interno:
                 self.serbatoi_ore[risorsa] = round(serbatoio_interno - ore_effettive_spese, 2)
             else:
+                # Verifica quante ore non sono state attivabili con il serbatoio delle ore interne
                 quota_esterna = round(ore_effettive_spese - serbatoio_interno, 2)
                 self.serbatoi_ore[risorsa] = 0.0
                 
+                # prende il serbatoio noli e sottrae il valore residuo mettendo un controllo per evitare che i serbatoi possano andare anche di poco a numeri negativi
                 categoria_mercato = self._ottieni_chiave_elasticita(risorsa)
                 residuo_nolo = round(float(self.serbatoi_noli_correnti.get(categoria_mercato, 0.0)), 2)
                 self.serbatoi_noli_correnti[categoria_mercato] = round(max(0.0, residuo_nolo - quota_esterna), 2)
