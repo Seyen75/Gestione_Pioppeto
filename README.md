@@ -11,6 +11,7 @@ Opzione 1: Clonazione tramite Git
 Assicurati di avere Git installato sul tuo sistema, quindi apri il terminale e digita:
 
 Bash
+
 git clone https://github.com/Seyen75/Gestione_Pioppeto.git
 
 cd gestione-pioppeto
@@ -38,24 +39,32 @@ Per configurare l'ambiente e avviare il software, segui questi passaggi:
 È buona norma isolare le dipendenze del progetto. Apri il terminale nella cartella del progetto ed esegui:
 
 Bash
+
 # Crea l'ambiente virtuale
+
 python -m venv venv
 
 # Attiva l'ambiente virtuale
 # Su Windows:
+
 venv\Scripts\activate
+
 # Su macOS/Linux:
+
 source venv/bin/activate
 
 2. Installazione delle dipendenze
 Installa le librerie necessarie elencate nel file requirements.txt:
 
 Bash
+
 pip install -r requirements.txt
+
 3. Esecuzione
 Una volta completata l'installazione, puoi avviare l'applicativo lanciando lo script principale:
 
 Bash
+
 python main.py
 
 📈 Tecnologie utilizzate
