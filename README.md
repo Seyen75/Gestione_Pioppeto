@@ -11,7 +11,7 @@ Opzione 1: Clonazione tramite Git
 Assicurati di avere Git installato sul tuo sistema, quindi apri il terminale e digita:
 
 Bash
-git clone https://github.com/Seyen75/Gestione_Pioppeto/gestione-pioppeto.git
+git clone https://github.com/Seyen75/Gestione_Pioppeto.git
 cd gestione-pioppeto
 
 Opzione 2: Download Archivio
