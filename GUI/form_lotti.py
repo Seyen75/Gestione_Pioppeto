@@ -138,12 +138,14 @@ class FormLotti(QWidget):
         # istanzia il nuovo lotto ed impone un valore random di estensione fra i valori 1 e 30. Tale valore massimo per evitare la creazione di lotti eccessivamente grandi  
         lotto_random = Lotto(self.calcola_prossimo_id_progressivo(), round(random.uniform(1, 30.0), 1))
         # selezione random fra i vari sesti di impianto presenti
-        lotto_random.sesto_impianto = random.choice(["6x6", "6x5", "7x6", "7x7"])
+
         lotto_random.clone_assegnato = random.choice(list(self.dizionario_cloni.keys()))
         lotto_random.destinazione_uso = random.choice(["OPERA", "INDUSTRIA"])
-        
+        if lotto_random.destinazione_uso == "OPERA":
+            lotto_random.sesto_impianto = random.choice(["6x6", "6x5", "7x6", "7x7"])
+        else:
+            lotto_random.sesto_impianto = random.choice(["3x3", "3x2"])
         lotto_random.densita_iniziale = ServizioSelvicolturale.calcola_densita_iniziale(lotto_random.sesto_impianto)
-        lotto_random.aggiorna_efficienza_clone(self.dizionario_cloni.get(lotto_random.clone_assegnato, {}))
         
         # Aggiunta dei restanti parametri del lotto tramite la funzione random e limiti
         lotto_random.indice_attrito_spaziale = random.randint(0, 10)

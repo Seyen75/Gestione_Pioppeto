@@ -1,5 +1,7 @@
 import os
 import sys
+import platform
+
 # Import dei moduli di PySide6 per la questione grafica delle finestre
 from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
@@ -17,6 +19,9 @@ if cartella_progetto not in sys.path:
     sys.path.insert(0, cartella_progetto)
 
 if __name__ == "__main__":
+    if platform.system() == "Windows":
+        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     
