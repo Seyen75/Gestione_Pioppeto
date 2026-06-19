@@ -311,6 +311,7 @@ class Lotto:
         # il valore costante A che corrisponde all’asintoto orizzontale superiore del diametro
         # il valore costante K che rappresenta il tasso intrinseco di accrescimento (governa la "pendenza" della curva e la velocità con cui l'asintoto viene approcciato)
         # il valore costante p che rappresenta l'esponente allometrico o parametro di forma
+        
         if self.destinazione_uso == "INDUSTRIA":
             A = param["incremento_medio_annuo_ottimale"] * 0.78
             eta_rot = 5
@@ -331,11 +332,11 @@ class Lotto:
         vocazione_terreno = self.calcola_moltiplicatore_idrico(profilo_clone)
         
         # Integrazione direttamente nel moltiplicatore reale di crescita (Indici di Vitalità Biologica - IVB)
-        IVB= vocazione_terreno - self.malus_colturale_accumulato + fluttuazione_stagionale
-        IVB = max(0.35, min(1.30, IVB)) # Cap di sicurezza per evitare crescite o blocchi assurdi
+        Ivb = vocazione_terreno - self.malus_colturale_accumulato + fluttuazione_stagionale
+        Ivb = max(0.35, min(1.30,Ivb)) # Cap di sicurezza per evitare crescite o blocchi assurdi
 
         # Calcolo del DBH teorico attraverso l'applicazione della formula di Richards con l'inserimento del moltiplicatore degli Indici di Vitalità Biologica (IVB)
-        dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * IVB
+        dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * Ivb
         
         # Salvaguardia biologica (il diametro non si restringe se l'anno è pessimo, gli alberi non tornano indietro, ma possono solo crescere o stagnare se i malus sono eccessivi)
         dbh_precedente = self.diametro_medio_fusto

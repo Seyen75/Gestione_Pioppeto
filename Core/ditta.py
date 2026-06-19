@@ -85,45 +85,27 @@ class Ditta:
     # ============================================================
     
     def calcola_specifiche_richiesta_cantiere(self, tipo_cantiere: str, unita_lavoro: float, ore_unitarie: float, 
-                                              composizione_squadra: dict, indice_attrito: int = 0) -> dict:
-        '''Calcola la richiesta di risorse per un cantiere specifico, tenendo conto della composizione della squadra, del tipo di cantiere e dell'indice di attrito.'''
+                                          composizione_squadra: dict, indice_attrito: int = 0) -> dict:
+        '''Calcola la richiesta di risorse per un cantiere specifico.'''
         if not composizione_squadra or ore_unitarie <= 0: return {}
 
-        linee_possibili = []
-        for risorsa, quantita_richiesta in composizione_squadra.items():
-            if quantita_richiesta > 0:
-                mappa_mezzi = {
-                    "trattori_alta": self.trattori_alta_potenza,
-                    "trattori_media": self.trattori_media_potenza,
-                    "piattaforme": self.piattaforme_aeree_semoventi,
-                    "harvester": self.harvester_abbattitori,
-                    "forwarder": self.forwarder_caricatori,
-                    "grado_A": self.operai_grado_A,
-                    "grado_B": self.operai_grado_B,
-                    "cippatrice": self.cippatrice
-                }
-                disponibilita_fisica = mappa_mezzi.get(risorsa, 999)
-                linee_possibili.append(disponibilita_fisica // int(quantita_richiesta))
-
-        linee_attive = max(1, min(linee_possibili) if linee_possibili else 1)
-
+        # Calcolo ore nette
         if "raccolta" in tipo_cantiere:
             moltiplicatore_attrito = 1.0 + (indice_attrito / 20.0)
             ore_lavoro_puro = (unita_lavoro * ore_unitarie) * moltiplicatore_attrito
         else:
             ore_lavoro_puro = unita_lavoro * ore_unitarie
             
+        # Calcolo ore lorde (totali per il cantiere)
         ore_totali_lorde = ore_lavoro_puro / self.coefficiente_rendimento_cantiere
         
+        # Creazione dizionario richieste
         richiesta = {}
         for risorsa, quantita in composizione_squadra.items():
-            # Arrotondamento del monte ore per singola risorsa
             richiesta[risorsa] = round(ore_totali_lorde * quantita, 2)
 
-        # Arrotondamento dei metadati del cantiere
         richiesta["meta_lavoro_puro"] = round(ore_lavoro_puro, 2)
-        richiesta["meta_linee_attive"] = linee_attive # È un intero, non serve arrotondarlo
-        richiesta["ore_richieste"] = round(ore_totali_lorde / linee_attive, 2)
+        richiesta["ore_richieste"] = round(ore_totali_lorde, 2)
 
         return richiesta
 
@@ -175,6 +157,12 @@ class Ditta:
         percentuale_completamento = 1.0
         risorsa_critica = ""
 
+        # Analisi delle risorse necessarie per ogni voce della specifica di cantiere.
+        # Esclude i metadati dal calcolo e confronta le ore richieste con la disponibilità 
+        # nei serbatoi interni. In caso di carenza (deficit), valuta la disponibilità 
+        # di risorse a noleggio (mercato). Se il totale erogabile (interno + nolo) 
+        # risulta inferiore alle ore richieste, calcola la quota di completamento 
+        # possibile e aggiorna la risorsa critica che limita l'operatività.
         for risorsa, ore_richieste in specifiche_cantiere.items():
             if risorsa.startswith("meta_") or risorsa == "ore_richieste": continue
         
