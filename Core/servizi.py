@@ -31,7 +31,7 @@ class ServizioSelvicolturale:
             is_ottimale = True
         elif attitudine_reale in filiere_industriali and destinazione_scelta in filiere_industriali:
             # Questa condizione copre il caso in cui entrambi sono validi anche se non identici
-            is_ottimale = True
+            is_ottimale = False
 
         # Costruzione del messaggio
         if is_ottimale:

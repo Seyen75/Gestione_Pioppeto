@@ -94,26 +94,34 @@ QPushButton:pressed {
 }
 
 QTableWidget {
-                    background-color: #1e2422;      /* Sfondo delle celle leggermente più chiaro dello sfondo */
-                    gridline-color: #3a4743;          /* Il colore dei quadretti di separazione */
-                    color: #ffffff;                  /* Colore del testo delle celle */
+				 /* Sfondo delle celle leggermente più chiaro dello sfondo */
+                    background-color: #1e2422;  
+ 				 /* Il colore dei quadretti di separazione */
+                    gridline-color: #3a4743;        
+				 /* Colore del testo delle celle */ 
+                    color: #ffffff;                  
                     font-size: 13px;
                     border: 1px solid #3a4743;
                 }
                 
                 /* Stile dei titoli delle colonne in alto */
                 QHeaderView::section {
-                    background-color: #2d3835;       /* Sfondo dei titoli */
-                    color: #a3b8b0;                  /* Testo dei titoli  */
+				 /* Sfondo dei titoli */
+                    background-color: #2d3835;
+ 				  /* Testo dei titoli  */       
+                    color: #a3b8b0;                 
                     padding: 6px;
                     font-weight: bold;
-                    border: 1px solid #3a4743;       /* Confine dei titoli per allinearsi alla griglia */
+			      /* Confine dei titoli per allinearsi alla griglia */
+                    border: 1px solid #3a4743;       
                 }
                 
                 /* Stile quando l'utente seleziona una riga */
                 QTableWidget::item:selected {
-                    background-color: #2e6b4e;       /* Colore verde foresta per la riga selezionata */
-                    color: #ffffff;                  /* Testo bianco sulla selezione */
+				  /* Colore verde foresta per la riga selezionata */
+                    background-color: #2e6b4e; 
+                    /* Testo bianco sulla selezione */      
+                    color: #ffffff;                  
                 }
 </string>
   </property>

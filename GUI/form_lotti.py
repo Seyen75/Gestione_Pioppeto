@@ -75,9 +75,17 @@ class FormLotti(QWidget):
           
     def popola_combo_iniziali(self):
         ''' Carica i dati all'interno dei controlli combobox presenti sulla form '''
+        self.combo_clone.blockSignals(True)
+        self.combo_destinazione.blockSignals(True)
+        self.combo_sesto_impianto.blockSignals(True)
+        
         self.combo_clone.addItems(list(self.dizionario_cloni.keys()))
         self.combo_sesto_impianto.addItems(["3x2", "3x3", "6x6", "6x5", "7x6", "7x7"])
         self.combo_destinazione.addItems(["OPERA", "INDUSTRIA"])
+        
+        self.combo_clone.blockSignals(False)
+        self.combo_destinazione.blockSignals(False)
+        self.combo_sesto_impianto.blockSignals(False)
 
     def aggiungi_nuovo_lotto(self):
         '''Aggiunge il nuovo lotto con i dati inseriti nei controlli della form dopo averne validato i valori '''
@@ -208,8 +216,12 @@ class FormLotti(QWidget):
 
     def verifica_coerenza_selvicolturale(self):
         '''Ottiene dal servizio il testo da inserire nella label che avverte se il clone selezionato è idoneo alla destinazione d'uso scelto'''
+        
+        destinazione = self.combo_destinazione.currentText()
+        clone = self.combo_clone.currentText()
+        
         risultato = ServizioSelvicolturale.ottieni_messaggio_coerenza(
-            self.combo_clone.currentText(), self.combo_destinazione.currentText(), 
+           clone, destinazione, 
             self.dizionario_cloni.get(self.combo_clone.currentText(), {})
         )
         self.lbl_avviso_clone.setText(risultato["testo"])

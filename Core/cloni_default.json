@@ -88,5 +88,59 @@
       "sensibilita_marsonina": "Bassa",
       "sensibilita_afidi": "Bassa"
     }
+  },
+  "Diva": {
+    "attitudini": "OPERA",
+    "attitudine_suolo": "Pianura padana, fertili ma tollera meglio I-214 gli stress estivi",
+    "parametri_crescita": {
+      "incremento_medio_annuo_ottimale": 24.5,
+      "eta_rotazione_standard": 10,
+      "coefficiente_forma": 0.44,
+      "indice_tendenza_idrica_base": -0.1
+    },
+    "proprieta_tecnologiche": {
+      "densita_verde_t_m3": 0.84
+    },
+    "esigenze_trattamenti": {
+      "frequenza_irrigazione_anni_1_2": "Media",
+      "sensibilita_marsonina": "Molto Bassa",
+      "sensibilita_afidi": "Media"
+    }
+  },
+  "Koster": {
+    "attitudini": "OPERA",
+    "attitudine_suolo": "Rustico, adatto a terreni argillosi, pesanti o con ristagni temporanei",
+    "parametri_crescita": {
+      "incremento_medio_annuo_ottimale": 23.0,
+      "eta_rotazione_standard": 11,
+      "coefficiente_forma": 0.43,
+      "indice_tendenza_idrica_base": 0.3
+    },
+    "proprieta_tecnologiche": {
+      "densita_verde_t_m3": 0.86
+    },
+    "esigenze_trattamenti": {
+      "frequenza_irrigazione_anni_1_2": "Bassa",
+      "sensibilita_marsonina": "Bassa",
+      "sensibilita_afidi": "Bassa"
+    }
+  },
+  "Monviso": {
+    "attitudini": "INDUSTRIA",
+    "attitudine_suolo": "Clone MRF moderno, ottimo su terreni pesanti, elevata vigoria iniziale",
+    "parametri_crescita": {
+      "incremento_medio_annuo_ottimale": 29.0,
+      "eta_rotazione_standard": 5,
+      "coefficiente_forma": 0.45,
+      "indice_tendenza_idrica_base": 0.3
+    },
+    "proprieta_tecnologiche": {
+      "densita_verde_t_m3": 0.86
+    },
+    "esigenze_trattamenti": {
+      "frequenza_irrigazione_anni_1_2": "Media",
+      "sensibilita_marsonina": "Molto Bassa",
+      "sensibilita_afidi": "Bassa"
+    }
   }
 }

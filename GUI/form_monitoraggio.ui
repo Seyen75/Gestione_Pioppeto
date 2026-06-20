@@ -58,17 +58,21 @@ QLabel {
 
 /* Stile specifico per la Label dell'Anno */
 QGroupBox QLabel#lbl_anno, QLabel#lbl_anno {
-    color: #ffffff !important;          /* Bianco puro per massima leggibilità */
-    font-size: 22px !important;         /* Molto grande */
-    font-weight: bold !important;       /* Grassetto marcato */
+	/* Bianco puro per massima leggibilità */
+    color: #ffffff !important;       
+    font-size: 22px !important;
+   /* Grassetto marcato */         
+    font-weight: bold !important;      
     font-family: &quot;Courier New&quot;, monospace !important; 
 }
 
 /* Stile specifico per la Label della Stagione */
 QGroupBox QLabel#lbl_stagione, QLabel#lbl_stagione {
-    color: #00e5ff !important;          /* Azzurro Ciano Neon ad alta visibilità */
-    font-size: 18px !important;         /* Evidente */
-    font-weight: bold !important;       /* Grassetto */
+	/* Azzurro Ciano Neon ad alta visibilità */    
+	color: #00e5ff !important;          
+    font-size: 18px !important;
+	/* Grassetto */         
+    font-weight: bold !important;       
     font-family: &quot;Courier New&quot;, monospace !important;
     padding-left: 5px;
 }

@@ -341,13 +341,34 @@ class Lotto:
         dbh = max(dbh_precedente, dbh_teorico)
 
         # Calcolo dell'altezza. Questa è più veloce nei primi 5 anni di vita in cui la pianta giovane tende a crescere rapidamente per la competizione sulla luce
-        # Successivamente ha un tasso di crescita più graduale con questa che mediamente non superano i 27,5 metri di altezza per i pioppi
-        # Alla parametro di crescita viene aggiunto o sottratto un piccolo valore randomico (più o meno 3%) per rendere la crescita meno deterministica
-        rumore_allometrico = random.uniform(-0.03, 0.03)
+        # Successivamente ha un tasso di crescita più graduale con questa che mediamente non superano i 32 metri di altezza per i pioppi
+        # Alla parametro di crescita viene aggiunto o sottratto un piccolo valore randomico (rumore_allometrico) per rendere la crescita meno deterministica
+        
+        # Rumore fisiologico per simulare la variabilità naturale tra piante vicine (± 1.0 metro)
+        rumore_allometrico = random.uniform(-1.0, 1.0)
+
         if eta_anno <= 5:
-            h = (dbh * (0.6 + rumore_allometrico)) + 4.0
+            # Fase Industria
+            h_teorica = (dbh * 0.7) + 3.0 + rumore_allometrico
         else:
-            h = min(27.5, (17.0 + rumore_allometrico * 10) + (1.2 * (dbh - 20)))
+            # Fase Opera
+            delta_dbh = max(0.0, dbh - 20.0)
+            h_teorica = 17.0 + (math.sqrt(delta_dbh) * 2.45) + rumore_allometrico
+            
+        # Recupero dell'altezza precedente per il vincolo biologico (gli alberi non decrescono)
+        # altezza_precedente = 0.0
+        # if hasattr(self, "dati_correnti") and self.dati_correnti:
+        altezza_precedente = self.dati_correnti.get("altezza_m", 0.0)
+        # Verifica che l'albero non sia decresciuto e che non abbia superato l'altezza massima tipica dei pioppi coltivati in zona Padana
+        h = max(altezza_precedente, min(32.0, h_teorica))
+        
+        
+        
+        # rumore_allometrico = random.uniform(-0.03, 0.03)
+        # if eta_anno <= 5:
+        #     h = (dbh * (0.6 + rumore_allometrico)) + 4.0
+        # else:
+        #     h = min(27.5, (17.0 + rumore_allometrico * 10) + (1.2 * (dbh - 20)))
         
         # Calcolo del volume dell'albero con applicazione della formula dell'Albero Modello e l'uso del coefficiente di forma tipico del clone selezionato
         vol_singolo = (math.pi * ((dbh / 200) ** 2)) * h * param["coefficiente_forma"]

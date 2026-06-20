@@ -42,10 +42,13 @@ QTabBar {
     background: transparent;
 }
 
+/* Impostazione delle schede delle tab */
 QTabBar::tab {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2a1f21, stop:1 #1f1618);
-    color: #b0a2a4; /* Grigio-rosa morbido per il testo inattivo */
+	/* Grigio-rosa morbido per il testo inattivo */    
+	color: #b0a2a4; 
     border: 1px solid #3d292c;
+	/* bordo lateriale*/
     border-bottom: none;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -63,12 +66,13 @@ QTabBar::tab:selected {
     border-bottom: 1px solid #1a1516;
 }
 
+/* Tab con mouse che passa sopra */
 QTabBar::tab:hover:!selected {
     background: #362528;
     color: #ffffff;
 }
 
-/* ETICHETTE TESTUALI (QLabel - Tutto in Rosso Corallo Chiaro)*/
+/* QLabel - Tutto in Rosso Corallo Chiaro*/
 #FormValutazioni QLabel, 
 QGroupBox QLabel, 
 QTabWidget QLabel, 
@@ -100,6 +104,7 @@ QLabel#lbl_tot_9 {
     color: #ffecb3
 }
 
+
 QGroupBox#GroupBoxReseTotali {
 	color: #ff8a80 !important;
     font-size: 16px;
@@ -122,11 +127,10 @@ QGroupBox#groupBox_6 {
     border-radius: 6px;
     margin-top: 15px;
     background-color: #1c1415;
-    /* Assicuriamo che il colore del titolo sia coerente */
     color: #ff8a80; 
 }
 
-/* Se vuoi che il titolo del groupBox6 segua lo stile di altri groupBox specifici */
+/* GroupBox6 */
 QGroupBox#groupBox_6::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
@@ -135,7 +139,7 @@ QGroupBox#groupBox_6::title {
     color: #ff8a80; /* Rosso Corallo come definito per le label */
 }
 
-/* TABELLE (QTableWidget) - Sintonizzate sui toni caldi */
+/* QTableWidget - Sintonizzate sui toni caldi */
 QTableWidget {
     background-color: #151011; 
     gridline-color: #2b1d20;
@@ -179,6 +183,7 @@ QPushButton:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #9a2630, stop:1 #5e161b);
 }
 
+/* Pulsante premuto*/
 QPushButton:pressed {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #5e161b, stop:1 #2a0a0c);
 }
@@ -197,6 +202,7 @@ QGroupBox::title {
     left: 10px;
 }
 
+/* QComboBox presenti nelle Tab */
 QComboBox { 
                     background-color: #2d181b; 
                     color: #ffffff; 
@@ -219,17 +225,7 @@ QComboBox {
                     border: 1px solid #3d2429;
                 }
  
-QSlider::groove:horizontal { 
-                    background: #2d181b; 
-                    height: 6px; 
-                    border-radius: 3px; 
-                } 
-                QSlider::handle:horizontal { 
-                    background: #ff8a80; 
-                    width: 14px; 
-                    margin: -4px 0; 
-                    border-radius: 7px; 
-                }</string>
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <property name="leftMargin">
