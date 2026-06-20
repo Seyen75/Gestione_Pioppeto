@@ -135,7 +135,7 @@ class PioppetoMain(QMainWindow):
             self.label_titolo.setGraphicsEffect(ombra)
             
             # Assegnazione del testo dinamico
-            self.label_titolo.setText(f"Gestione Pioppicultura\n{self.ditta_attiva.nome_ditta}")
+            self.label_titolo.setText(f"Gestione Pioppicoltura\n{self.ditta_attiva.nome_ditta}")
         
 
         self.aggiorna_stato_interfaccia()
@@ -276,27 +276,7 @@ class PioppetoMain(QMainWindow):
             return
     
         # Reset del tempo e della cronologia stagionale
-        self.parametri_condivisi.reset_simulazione_globale()
-        self.parametri_condivisi.storico_stagionale = {}
-        
-        # Svuota anche l'eventuale dizionario storico_stati se presente
-        if hasattr(self.parametri_condivisi, "storico_stati"):
-            self.parametri_condivisi.storico_stati = {}
-        
-        # Ricrea un motore completamente pulito collegato alla ditta
-        self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
-        
-        # Ripristina i lotti allo stato di default iniziale
-        self._carica_lotti_iniziali()
-
-        # Reset dei serbatoi ditta stagionali
-        if hasattr(self.ditta_attiva, "inizializza_serbatoi_stagionali"):
-            self.ditta_attiva.inizializza_serbatoi_stagionali(55)
-
-        # Sblocca l'interfaccia (riattiva i due pulsanti di simulazione)
-        self.simulazione_eseguita = False
-        self.aggiorna_stato_interfaccia()
-        self.statusBar().showMessage("🔄 Sistema resettato. Orologio forestale impostato su Primavera Anno 1.")
+        self._resetta_simulazione()
 
 
     def ditta(self):
@@ -401,6 +381,21 @@ class PioppetoMain(QMainWindow):
         # instanzia l'oggetto per i parametri della simulazione
         parametri = self.motore_condiviso.parametri
         dizionario_storia = getattr(parametri, "storico_stagionale", {})
+        
+        chiave_stato = f"A1_Inverno"
+
+        if dizionario_storia == {} or chiave_stato not in dizionario_storia:
+            # Se il dizionario è vuoto, gestiamo l'errore prima di istanziare il form
+            self._resetta_simulazione()
+            
+            QMessageBox.critical(
+                self, 
+                "Errore Simulazione", 
+                "Non sono presenti dati di simulazione validi.\n"
+                "Il sistema ha resettato lo stato per permettere un nuovo avvio."
+            )
+            return
+        
 
         try:
             # Viene creato il file storia.json dove viene salvato l'intero dizionario della storia della simulazione
@@ -422,3 +417,27 @@ class PioppetoMain(QMainWindow):
             self.finestra_valutazioni.show()
         except Exception as e:
             QMessageBox.critical(self, "Errore Interfaccia", f"Impossibile aprire il modulo di reportistica:\n{str(e)}")
+            
+    def _resetta_simulazione(self):
+        """Esegue il reset logico del motore di simulazione"""
+        self.parametri_condivisi.reset_simulazione_globale()
+        self.parametri_condivisi.storico_stagionale = {}
+        
+        # Svuota anche l'eventuale dizionario storico_stati se presente
+        if hasattr(self.parametri_condivisi, "storico_stati"):
+            self.parametri_condivisi.storico_stati = {}
+        
+        # Ricrea un motore completamente pulito collegato alla ditta
+        self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
+        
+        # Ripristina i lotti allo stato di default iniziale
+        self._carica_lotti_iniziali()
+
+        # Reset dei serbatoi ditta stagionali
+        if hasattr(self.ditta_attiva, "inizializza_serbatoi_stagionali"):
+            self.ditta_attiva.inizializza_serbatoi_stagionali(55)
+
+        # Sblocca l'interfaccia (riattiva i due pulsanti di simulazione)
+        self.simulazione_eseguita = False
+        self.aggiorna_stato_interfaccia()
+        self.statusBar().showMessage("🔄 Sistema resettato. Orologio forestale impostato su Primavera Anno 1.")
