@@ -251,8 +251,7 @@ class form_monitoraggio(QWidget):
                 altezza = lotto.altezza_media_piante
 
             '''In questa parte della funzione viene effettuata una pre simulazione (che non comporta variazione dati) con la quale si verifica
-                solo se siamo in Inverno (periodo di resa) se il lotto è maturo per età e dimensione per il taglio e salva l'informazione nella variabile booleana is_maturo
-            '''
+                solo se siamo in Inverno (periodo di resa) se il lotto è maturo per età e dimensione per il taglio e salva l'informazione nella variabile booleana is_maturo'''
             eta_originale = lotto.eta
             diametro_originale = lotto.diametro_medio_fusto
             
@@ -265,7 +264,7 @@ class form_monitoraggio(QWidget):
                         
                         # Applica temporaneamente solo se necessario
                         lotto.eta = eta_futura
-                        lotto.diametro_medio_fusto = dati_futuri["dbh_reale_cm"] # Accesso diretto
+                        lotto.diametro_medio_fusto = dati_futuri["dbh_reale_cm"] 
             
                 is_maturo = lotto.verifica_maturita_raccolta()
             

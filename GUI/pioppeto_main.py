@@ -319,10 +319,12 @@ class PioppetoMain(QMainWindow):
         '''Avvia la simulazione batch che cicla in automatico per un numero di anni presente nell'impostazione base
            Per dare una sensazione visiva viene usata una Dialog Progress con un leggero ritardo sulla velocità della simulazione'''
         
+        # Inizializza la simulazione creando il dizionario storico che conterrà i dati della simulazione
         self.statusBar().showMessage("Inizializzazione del calcolo forestale in corso...")
         self.parametri_condivisi.reset_simulazione_globale()
         self.parametri_condivisi.storico_stagionale = {} 
 
+        # Imposta la dialog per mostrare la progressione della simulazione usando la QProgressDialog di Qt
         progress = QProgressDialog("Inizializzazione del motore forestale...", "Annulla", 0, self.parametri_condivisi.anni_durata_target, self)
         progress.setWindowModality(Qt.WindowModality.WindowModal)
         progress.setWindowTitle("Elaborazione Scenario"); progress.setMinimumDuration(0); progress.setAutoClose(True)
@@ -332,6 +334,7 @@ class PioppetoMain(QMainWindow):
             self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
             fine_simulazione = False
             
+            # Cicla fino a quando non si preme il tasto di interruzione oppure la simulazione batch non arriva al limite di anni imposto
             while not fine_simulazione:
                 if progress.wasCanceled():
                     self.statusBar().showMessage("🔄 Simulazione interrotta.")
@@ -352,6 +355,7 @@ class PioppetoMain(QMainWindow):
                 QApplication.processEvents()
 
             self.simulazione_eseguita = True
+            # Si utilizza il messaggio personalizzato per indicare la fine della simulazione
             mostra_messaggio_stilizzato(parent = self, titolo = "Simulazione Conclusa", 
                                         testo = f"Il piano di assestamento su {self.parametri_condivisi.anni_durata_target} anni è stato completato.\nI tre output sono pronti.", tipo="info")
         except Exception as e:

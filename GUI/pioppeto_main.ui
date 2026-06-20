@@ -129,49 +129,17 @@ QLabel {
      <string>Esci</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_titolo">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>10</y>
-      <width>951</width>
-      <height>91</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Gestione Pioppicultura</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>150</y>
+      <y>20</y>
       <width>951</width>
-      <height>451</height>
+      <height>581</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1">
-     <item row="3" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pannello Gestione Aziendale:&lt;/span&gt;&lt;br/&gt;Consente di modificare le squadre e inventariare i mezzi meccanici reali della ditta.&lt;br/&gt;&lt;br/&gt;• Operai Specializzati (Grado A)&lt;br/&gt;• Manovali Comuni (Grado B)&lt;br/&gt;• Flotta: Trattori, Piattaforme, Harvester, Forwarder&lt;br/&gt;&lt;br/&gt;I dati inseriti determineranno la capacità oraria operativa e i colli di bottiglia nei cantieri stagionali e la necessità di assumere dipendenti stagionali o noleggiare mezzi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::TextFormat::RichText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
+     <item row="1" column="1">
       <widget class="QPushButton" name="btn_gestione_lotti">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -183,7 +151,7 @@ QLabel {
         <string>Gestione e Creazione Lotti</string>
        </property>
        <property name="icon">
-        <iconset theme="text-x-generic"/>
+        <iconset theme="accessories-dictionary"/>
        </property>
        <property name="iconSize">
         <size>
@@ -193,7 +161,23 @@ QLabel {
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="2">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>&lt;b&gt;Reset Simulazione&lt;/b&gt;&lt;br&gt;
+Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti&lt;br&gt;&lt;br&gt;
+
+</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>&lt;b&gt;Bilancio Consuntivo:&lt;/b&gt;&lt;br&gt;
@@ -211,25 +195,7 @@ Analisi e revisione scientifica dei risultati economici e forestali ottenuti a f
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>&lt;b&gt;Simulazione Dinamica:&lt;/b&gt;&lt;br&gt;
-Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;br&gt;&lt;br&gt;
-• Accrescimento dendrometrico (D_bh / H)&lt;br&gt;
-• Saturazione dei serbatoi d'ore ditta&lt;br&gt;
-• Insorgenza di stress idrici e anomalie&lt;br&gt;&lt;br&gt;
-&lt;i&gt;Permette di valutare visivamente la reattività del sistema durante il passare delle stagioni e degli anni.&lt;/i&gt;</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QPushButton" name="btn_valutazioni">
        <property name="enabled">
         <bool>false</bool>
@@ -254,7 +220,7 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pannello Controllo Lotti:&lt;/span&gt;&lt;br/&gt;Consente la creazione e la modifica selvicolturale dei lotti per l'inizio della Simulazione .&lt;br/&gt;&lt;br/&gt;• Parametrizzazione Cloni Padani&lt;br/&gt;• Vulnerabilità idrica e Attrito logistico&lt;br/&gt;• Indirizzo produttivo (Opera / Industria)&lt;br/&gt;&lt;br/&gt;Dispone di un sistema a regole integrato per la verifica in tempo reale della coerenza colturale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -270,7 +236,25 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
+     <item row="4" column="2">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>&lt;b&gt;Simulazione automatica:&lt;/b&gt;&lt;br&gt;
+Avvia l'algoritmo di simulazione delle ditta.&lt;br&gt;&lt;br&gt;
+• Avanzamento per stagioni biologiche&lt;br&gt;
+• Esecuzione cantieri e consumo ore&lt;br&gt;
+• Chiusura automatica a ciclo concluso &lt;br&gt;&lt;br&gt;
+&lt;i&gt;La simulazione termina al numero di anni impostato&lt;/i&gt;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QPushButton" name="btn_gestione_ditta">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -292,32 +276,41 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QPushButton" name="btn_monitoraggio">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Monitoraggio Grafico Real-Time</string>
+        <string>&lt;b&gt;Simulazione Dinamica:&lt;/b&gt;&lt;br&gt;
+Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;br&gt;&lt;br&gt;
+• Accrescimento dendrometrico (D_bh / H)&lt;br&gt;
+• Saturazione dei serbatoi d'ore ditta&lt;br&gt;
+• Insorgenza di stress idrici e anomalie&lt;br&gt;&lt;br&gt;
+&lt;i&gt;Permette di valutare visivamente la reattività del sistema durante il passare delle stagioni e degli anni.&lt;/i&gt;</string>
        </property>
-       <property name="icon">
-        <iconset theme="document-print"/>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pannello Gestione Aziendale:&lt;/span&gt;&lt;br/&gt;Consente di modificare le squadre e inventariare i mezzi meccanici reali della ditta.&lt;br/&gt;&lt;br/&gt;• Operai Specializzati (Grado A)&lt;br/&gt;• Manovali Comuni (Grado B)&lt;br/&gt;• Flotta: Trattori, Piattaforme, Harvester, Forwarder&lt;br/&gt;&lt;br/&gt;I dati inseriti determineranno la capacità oraria operativa e i colli di bottiglia nei cantieri stagionali e la necessità di assumere dipendenti stagionali o noleggiare mezzi.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::TextFormat::RichText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
       <widget class="QPushButton" name="btn_simulazione">
        <property name="enabled">
         <bool>false</bool>
@@ -342,25 +335,32 @@ Visualizzazione grafica in tempo reale dell'avanzamento dei cicli in campo.&lt;b
        </property>
       </widget>
      </item>
-     <item row="3" column="2">
-      <widget class="QLabel" name="label_3">
+     <item row="5" column="0">
+      <widget class="QPushButton" name="btn_monitoraggio">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>&lt;b&gt;Simulazione automatica:&lt;/b&gt;&lt;br&gt;
-Avvia l'algoritmo di simulazione delle ditta.&lt;br&gt;&lt;br&gt;
-• Avanzamento per stagioni biologiche&lt;br&gt;
-• Esecuzione cantieri e consumo ore&lt;br&gt;
-• Chiusura automatica a ciclo concluso &lt;br&gt;&lt;br&gt;
-&lt;i&gt;La simulazione termina al numero di anni impostato&lt;/i&gt;</string>
+        <string>Monitoraggio Grafico Real-Time</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
+       <property name="icon">
+        <iconset theme="document-print"/>
        </property>
-       <property name="wordWrap">
-        <bool>true</bool>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
-     <item row="4" column="2">
+     <item row="5" column="2">
       <widget class="QPushButton" name="btn_reset">
        <property name="enabled">
         <bool>true</bool>
@@ -385,19 +385,19 @@ Avvia l'algoritmo di simulazione delle ditta.&lt;br&gt;&lt;br&gt;
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
-      <widget class="QLabel" name="label_6">
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label_titolo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>&lt;b&gt;Reset Simulazione&lt;/b&gt;&lt;br&gt;
-Viene cancellato ogni dato precedentemente inserito per permettere l'inserimento dei parametri di una nuova ditta e lotti&lt;br&gt;&lt;br&gt;
-
-</string>
+        <string>Gestione Pioppicultura</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
      </item>

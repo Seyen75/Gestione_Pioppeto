@@ -132,7 +132,14 @@ class SimulatorePioppicoltura:
         
         # Conclusa la creazione della lista, prima di essere ritornata alla funzione chiamante, viene ordinata 
         # in base alla chiave priorità, poichè dopo saranno lavorati preventivamente i lotto a priorità più alta
-        return sorted(interventi, key=lambda x: x["priorita"])
+        return sorted(
+            interventi, 
+            key=lambda x: (
+                x["priorita"], 
+                0 if str(x["lotto"].destinazione_uso) == "OPERA" else 1, 
+                -x["lotto"].superficie_ettari 
+            )
+        )
 
     
     def esegui_fase_lavorazioni_stagionali(self) -> Dict[str, Any]:
@@ -268,6 +275,7 @@ class SimulatorePioppicoltura:
                 lotto.malus_colturale_accumulato = 0.0
 
         # Salva i dati dello stato dei lotti prima delle operazioni nel dizionario da aggiungere poi nel report stagionale
+        
         stato_lotti_pre = {}
         for lotto in self.parametri.collezione_lotti:
             stato_lotti_pre[lotto.id_lotto] = {
