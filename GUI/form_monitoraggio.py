@@ -294,7 +294,7 @@ class form_monitoraggio(QWidget):
             self.ui.tbl_monitoraggio.setItem(riga, 1, QTableWidgetItem(str(destinazione)))
             self.ui.tbl_monitoraggio.setItem(riga, 2, QTableWidgetItem(f"{self._formatta_numero_it(superficie)} ha"))
             self.ui.tbl_monitoraggio.setItem(riga, 3, QTableWidgetItem(f"{int(piante_vive):,}".replace(",", ".")))
-            self.ui.tbl_monitoraggio.setItem(riga, 4, QTableWidgetItem(f"{eta} anni"))
+            self.ui.tbl_monitoraggio.setItem(riga, 4, QTableWidgetItem(f"{eta + 1} anni"))
             self.ui.tbl_monitoraggio.setItem(riga, 5, QTableWidgetItem(f"{self._formatta_numero_it(dbh)} cm"))
             self.ui.tbl_monitoraggio.setItem(riga, 6, QTableWidgetItem(f"{self._formatta_numero_it(altezza)} m"))
             self.ui.tbl_monitoraggio.setItem(riga, 7, QTableWidgetItem(stato_stringa))

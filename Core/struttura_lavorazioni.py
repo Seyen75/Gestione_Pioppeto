@@ -13,9 +13,9 @@ OP_ERP_01 = {"id_operazione": "OP_ERP_01", "descrizione": "Erpicatura profonda p
              "priorita": 3, "ore_ha": 4.0, "risorse": {"trattori_alta": 1.0, "grado_A": 1.0}}
 
 OP_IMP_01 = {"id_operazione": "OP_IMP_01", "descrizione": "Messa a dimora astoni/pioppelle", 
-             "macrocategoria": "impianto", "priorita": 4, "ore_ha": 18.0, "risorse": {"trattori_media": 1.0, "grado_A": 1.0, "grado_B": 2.0}}
+             "macrocategoria": "impianto", "priorita": 4, "ore_ha": 10.0, "risorse": {"trattori_media": 1.0, "grado_A": 1.0, "grado_B": 2.0}}
 OP_IMP_02 = {"id_operazione": "OP_IMP_02", "descrizione": "Immissione nuovi astoni (Rimpiazzo fallanze)", 
-             "macrocategoria": "impianto", "priorita": 4, "ore_ha": 3.0, "risorse": {"grado_B": 2.0}}
+             "macrocategoria": "impianto", "priorita": 4, "ore_ha": 2.0, "risorse": {"grado_B": 2.0}}
 
 # --- LAVORAZIONI AL TRATTORE E MANUTENZIONE ---
 

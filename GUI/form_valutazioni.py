@@ -838,8 +838,9 @@ class FormValutazioni(QWidget):
         
         # Imposta il colore del testo per evidenziare la percentuale di utilizzo della risorsa
         item_sat = QTableWidgetItem(f"{self.locale_it.toString(float(sat_perc), 'f', 1)}%")
-        if sat_perc < 25.0 and disp > 0: item_sat.setForeground(QColor("#ff5252"))
-        elif sat_perc > 75.0: item_sat.setForeground(QColor("#00e676"))
+        if sat_perc <= 25.0 and disp > 0: item_sat.setForeground(QColor("#00e676"))
+        elif sat_perc > 25.0 and sat_perc <= 99.0: item_sat.setForeground(QColor("#ffecb3"))
+        else: item_sat.setForeground(QColor("#ff5252"))
         self.tbl_saturazione.setItem(r, 4, item_sat)
         
         # Imposta i colori per le righe che contengono i totali
@@ -871,7 +872,7 @@ class FormValutazioni(QWidget):
         
         # Imposta il colore del testo per evidenziare la percentuale di utilizzo della risorsa
         item_sforate = QTableWidgetItem(f"{self.locale_it.toString(float(sforate), 'f', 1)} h")
-        if sforate > 0: 
+        if esaurimento_perc > 99.90: 
             item_sforate.setForeground(QColor("#ff5252"))
             item_sforate.setFont(QFont("Arial", 11, QFont.Bold))
         else: item_sforate.setForeground(QColor("#00e676"))
