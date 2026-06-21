@@ -64,12 +64,12 @@ class PioppetoMain(QMainWindow):
        
         # INIZIALIZZA I DATI DELLA DITTA STANDARD
         # Personale fisso della ditta
-        self.ditta_attiva.operai_grado_A = 4         
-        self.ditta_attiva.operai_grado_B = 4         
+        self.ditta_attiva.operai_grado_A = 3         
+        self.ditta_attiva.operai_grado_B = 1         
         
         # Strumentazioni base della ditta
         self.ditta_attiva.trattori_alta_potenza = 1
-        self.ditta_attiva.trattori_media_potenza = 3 
+        self.ditta_attiva.trattori_media_potenza = 2 
         self.ditta_attiva.piattaforme_aeree_semoventi = 2
         self.ditta_attiva.cippatrice = 1
         
@@ -85,8 +85,8 @@ class PioppetoMain(QMainWindow):
 
         # Livelli standard di limite ricorso del mercato degli stagionali e dei Noli per la ditta standard
         self.ditta_attiva.limiti_noli_stagionali = {
-            "personale_spec": 5,   
-            "personale_comune": 20, 
+            "personale_spec": 6,   
+            "personale_comune": 15, 
             "harvester": 1,        
             "forwarder": 1,
             "trattori_alta": 2,
