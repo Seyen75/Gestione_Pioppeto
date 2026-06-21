@@ -333,10 +333,11 @@ class Lotto:
         Ivb = vocazione_terreno - self.malus_colturale_accumulato + fluttuazione_stagionale
         Ivb = max(0.35, min(1.30,Ivb)) # Cap di sicurezza per evitare crescite o blocchi assurdi
 
-        # Calcolo del DBH teorico attraverso l'applicazione della formula di Richards con l'inserimento del moltiplicatore degli Indici di Vitalità Biologica (IVB)
+        # Calcolo del DBH teorico attraverso l'applicazione della formula di Richards con l'inserimento del moltiplicatore dell'Indice di Vitalità Biologica (IVB)
         dbh_teorico = (A * ((1.0 - math.exp(-k * eta_anno)) ** p)) * Ivb
         
-        # Salvaguardia biologica (il diametro non si restringe se l'anno è pessimo, gli alberi non tornano indietro, ma possono solo crescere o stagnare se i malus sono eccessivi)
+        # Salvaguardia biologica (il diametro non si restringe se l'anno è pessimo
+        # gli alberi non tornano indietro, ma possono solo crescere o stagnare se i malus sono eccessivi)
         dbh_precedente = self.diametro_medio_fusto
         dbh = max(dbh_precedente, dbh_teorico)
 
