@@ -5,7 +5,7 @@ import platform
 # Import dei moduli di PySide6 per la questione grafica delle finestre
 from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, QIcon
 from PySide6.QtCore import Qt
 
 # Trova il percorso assoluto della cartella che contiene questo file main.py, che è la radice del progetto Gestione_Pioppeto
@@ -23,6 +23,10 @@ if __name__ == "__main__":
         os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
     app = QApplication(sys.argv)
+    
+    percorso_icona = os.path.join("risorse", "Pioppo.png")
+    app.setWindowIcon(QIcon(percorso_icona))
+    
     app.setStyle("Fusion")
     
     # Crea e applica una Dark Palette globale per un tema scuro coerente in tutta l'applicazione, 
