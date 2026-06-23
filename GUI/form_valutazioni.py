@@ -200,7 +200,7 @@ class FormValutazioni(QWidget):
         header_sat.setStretchLastSection(False)
         
         # Setup Tabella Stress Test Noli
-        col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim.", "Ore Sforate\n(Criticità)"]
+        col_stress = ["Risorsa", "Stagione", "Ore Extra\n(Noli)", "Tetto Max\nMercato", "%\nEsaurim."]
         self.tbl_stagionali_noli.setColumnCount(len(col_stress))
         self.tbl_stagionali_noli.setHorizontalHeaderLabels(col_stress)
         header_stress = self.tbl_stagionali_noli.horizontalHeader()
@@ -839,7 +839,7 @@ class FormValutazioni(QWidget):
         # Imposta il colore del testo per evidenziare la percentuale di utilizzo della risorsa
         item_sat = QTableWidgetItem(f"{self.locale_it.toString(float(sat_perc), 'f', 1)}%")
         if sat_perc <= 25.0 and disp > 0: item_sat.setForeground(QColor("#00e676"))
-        elif sat_perc > 25.0 and sat_perc <= 99.0: item_sat.setForeground(QColor("#ffecb3"))
+        elif sat_perc > 25.0 and sat_perc <= 99.0: item_sat.setForeground(QColor("#ecaf29"))
         else: item_sat.setForeground(QColor("#ff5252"))
         self.tbl_saturazione.setItem(r, 4, item_sat)
         
@@ -862,30 +862,36 @@ class FormValutazioni(QWidget):
         self.tbl_stagionali_noli.insertRow(r)
         # Effettua il calcolo percentuale sull'utilizzo della risorsa
         esaurimento_perc = (noli / tetto * 100) if tetto > 0 else (100.0 if noli > 0 else 0.0)
+        esaurimento_perc = round(esaurimento_perc, 2)
         
         # Inserisce i valori nelle celle con i dati recuperati
         self.tbl_stagionali_noli.setItem(r, 0, QTableWidgetItem(nome if not is_totale else ""))
         self.tbl_stagionali_noli.setItem(r, 1, QTableWidgetItem(stagione))
         self.tbl_stagionali_noli.setItem(r, 2, QTableWidgetItem(f"{self.locale_it.toString(float(noli), 'f', 1)} h"))
         self.tbl_stagionali_noli.setItem(r, 3, QTableWidgetItem(f"{self.locale_it.toString(float(tetto), 'f', 1)} h"))
-        self.tbl_stagionali_noli.setItem(r, 4, QTableWidgetItem(f"{self.locale_it.toString(float(esaurimento_perc), 'f', 1)}%"))
+        item_perc = QTableWidgetItem(f"{self.locale_it.toString(float(esaurimento_perc), 'f', 1)}%")
         
         # Imposta il colore del testo per evidenziare la percentuale di utilizzo della risorsa
-        item_sforate = QTableWidgetItem(f"{self.locale_it.toString(float(sforate), 'f', 1)} h")
-        if esaurimento_perc > 99.90: 
-            item_sforate.setForeground(QColor("#ff5252"))
-            item_sforate.setFont(QFont("Arial", 11, QFont.Bold))
-        else: item_sforate.setForeground(QColor("#00e676"))
-        self.tbl_stagionali_noli.setItem(r, 5, item_sforate)
+        if esaurimento_perc > 99.00:
+            item_perc.setForeground(QColor("#ff5252")) 
+            item_perc.setFont(QFont("Arial", 11, QFont.Bold))
+        elif esaurimento_perc <= 99.00 and esaurimento_perc > 75.00:
+            item_perc.setForeground(QColor("#ecaf29")) 
+            item_perc.setFont(QFont("Arial", 11, QFont.Bold))
+        else:
+            item_perc.setForeground(QColor("#00e676")) 
+        
+        self.tbl_stagionali_noli.setItem(r, 4, item_perc)
         
          # Imposta i colori per le righe che contengono i totali
-        for c in range(6):
+        for c in range(5):
             item = self.tbl_stagionali_noli.item(r, c)
-            if item:
-                if is_totale:
-                    item.setFont(QFont("Arial", 11, QFont.Bold))
-                    if c != 5: item.setForeground(QColor("#ffecb3"))
-                elif c != 5: item.setForeground(QColor("#ffffff"))
+        if item:
+            if is_totale:
+                item.setFont(QFont("Arial", 11, QFont.Bold))
+                item.setForeground(QColor("#ffecb3"))
+            elif not is_totale and c != 4: 
+                item.setForeground(QColor("#ffffff"))
 
     # TAB 4 - Registro dei Fallimenti Operativi
     
