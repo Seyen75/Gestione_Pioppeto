@@ -150,11 +150,11 @@ class Lotto:
     
     def verifica_maturita_raccolta(self) -> bool:
         '''Funzione che verifica lo stato di maturità di un lotto per il taglio.
-        La funzione ha una tolleranza del 5% sulla verifica del diametro medio delle piante in caso di raggiungimento dell'età di taglio.
+        La funzione ha una tolleranza del 10% sulla verifica del diametro medio delle piante in caso di raggiungimento dell'età di taglio.
         Tale tolleranza è data dal fatto che economicamente è meglio effettuare un taglio di un lotto che per pochi millimetri non ha raggiunto il diametro target
         che daranno una leggera minore resa, che rimandare il taglio all'anno successivo perdendo i ritorno economici nell'anno in corso.
         Il 5% è stato considerata una percentuale coerente per gestire l'eventuale perdita economica'''
-        TOLLERANZA_PERCENTUALE = 0.05 
+        TOLLERANZA_PERCENTUALE = 0.1 
          # Differenzia a seconda della tipologia di resa del lotto i parametri per la valutazione
         if self.destinazione_uso == "OPERA":
             eta_minima_verifica = 10
@@ -167,7 +167,7 @@ class Lotto:
 
         if self.eta < eta_minima_verifica: 
             return False
-        # calcola la soglia elestica del 95% del diametro target
+        # calcola la soglia elestica del 90% del diametro target
         soglia_elastica = diametro_target * (1.0 - TOLLERANZA_PERCENTUALE)
         
         # verifica lo stato di maturità del lotto

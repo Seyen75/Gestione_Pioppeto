@@ -971,7 +971,7 @@ class FormValutazioni(QWidget):
                     target_dbh = 15.0 if lotto_reale.destinazione_uso == "INDUSTRIA" else 35.0
                     
                     # Applica la tolleranza prevista già in simulazione
-                    TOLLERANZA = 0.05
+                    TOLLERANZA = 0.1
                     soglia_elastica = target_dbh * (1.0 - TOLLERANZA)
                     
                     # Effettua le verifiche sulla lista dei lotti tagliati per decidere il motivo della fallanza ed applica poi l'inserimento in tabella
