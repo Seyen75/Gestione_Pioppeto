@@ -544,6 +544,8 @@ class FormValutazioni(QWidget):
             stato_lotti = istanza_inverno.get("stato_lotti_pre", {})
             risultati = istanza_inverno.get("risultati_cantieri", {})
             dati_biometrici = stato_lotti.get(lotto_reale.id_lotto, {})
+            fallimenti = risultati.get("fallimenti_lavorazioni", {})
+            fallimenti_taglio = fallimenti.get("tagli", {})
             
             # Crea un dizionario temporaneo dove si inseriranno i dati che poi popoleranno la tabella 
             record = {
@@ -585,6 +587,8 @@ class FormValutazioni(QWidget):
             # nelle caselle tagliato e pronto
             if dati["stato_taglio"] in ["COMPLETATO", "PARZIALE"]:
                 testo_taglio = dati["stato_taglio"]
+            elif fallimenti_taglio["saltati_risorse"] != 0:
+                testo_taglio = "NO RISORSE"
             elif is_maturo_per_eta:
                 testo_taglio = "NON MATURO"
             else:
@@ -611,7 +615,7 @@ class FormValutazioni(QWidget):
                 item_tagliato.setForeground(QColor("#00b0ff")) # Azzurro
             elif testo_taglio == "PARZIALE": 
                 item_tagliato.setForeground(QColor("#ff9800")) # Arancione
-            elif testo_taglio == "NON MATURO":
+            elif testo_taglio == "NON MATURO" or testo_taglio == "NO RISORSE":
                 item_tagliato.setForeground(QColor("#ff5252")) # Rosso acceso (Segnale d'allarme biologico)
             elif pronto_al_taglio == "SÌ" and testo_taglio == "NO": 
                 item_tagliato.setForeground(QColor("#ff9800")) # Arancione: pronto ma non ancora toccato dall'utente
@@ -971,7 +975,7 @@ class FormValutazioni(QWidget):
                     target_dbh = 15.0 if lotto_reale.destinazione_uso == "INDUSTRIA" else 35.0
                     
                     # Applica la tolleranza prevista già in simulazione
-                    TOLLERANZA = 0.1
+                    TOLLERANZA = self.parametri.tolleranza_taglio
                     soglia_elastica = target_dbh * (1.0 - TOLLERANZA)
                     
                     # Effettua le verifiche sulla lista dei lotti tagliati per decidere il motivo della fallanza ed applica poi l'inserimento in tabella

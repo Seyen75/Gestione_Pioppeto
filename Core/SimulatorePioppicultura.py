@@ -47,7 +47,7 @@ class SimulatorePioppicoltura:
                     lotto.diametro_medio_fusto = dati_futuri.get("dbh_reale_cm", 0.0)
 
             # Verifica se il lotto è pronto per la raccolta
-            is_maturo = lotto.verifica_maturita_raccolta(self.ditta.tolleranza_taglio)
+            is_maturo = lotto.verifica_maturita_raccolta(self.parametri.tolleranza_taglio)
             
             # Ripristino immediato dello stato originale per non corrompere la simulazione
             lotto.eta = eta_originale
@@ -239,7 +239,7 @@ class SimulatorePioppicoltura:
                 eta_rot = 5 if lotto_bio.destinazione_uso == "INDUSTRIA" else 10
                 # Se il lotto ha l'età da taglio, non è ancora tagliato, ma non ha il diametro sufficiente
                 
-                if lotto_bio.eta >= eta_rot and not lotto_bio.tagliato and not lotto_bio.verifica_maturita_raccolta(self.ditta.tolleranza_taglio):
+                if lotto_bio.eta >= eta_rot and not lotto_bio.tagliato and not lotto_bio.verifica_maturita_raccolta(self.parametri.tolleranza_taglio):
                     fallimenti["tagli"]["rinviati_maturita"] += 1
 
         report_stagionale["fallimenti_lavorazioni"] = fallimenti
@@ -294,7 +294,7 @@ class SimulatorePioppicoltura:
             for lotto in self.parametri.collezione_lotti:
                 if lotto.eta > 0:
                     eta_rot = 5 if lotto.destinazione_uso == "INDUSTRIA" else 10
-                    if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta(self.ditta.tolleranza_taglio):
+                    if lotto.eta >= eta_rot and not lotto.verifica_maturita_raccolta(self.parametri.tolleranza_taglio):
                         lotto.anni_ritardo_taglio = getattr(lotto, "anni_ritardo_taglio", 0) + 1
 
             # Salva i totali dell'anno di tutti i valori delle ore di operai stagionali e noli strumentazioni, utilizzati poi nella reportistica

@@ -14,6 +14,7 @@ class ParametriSimulazione:
         self.indice_stagione_corrente: int = 0  
         self.collezione_lotti: list[Lotto] = []
         self.storico_stagionale: dict[str, dict] = {}
+        self.tolleranza_taglio: float = 0.1
         
         self.simulazione_avviata: bool = False
 

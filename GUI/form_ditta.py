@@ -112,7 +112,7 @@ class FormDitta(QWidget):
         self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
         self.spin_cippatrici_noleggio.setValue(limiti["cippatrice"])
         
-        tolleranza_taglio = self.ditta.tolleranza_taglio * 100 
+        tolleranza_taglio = self.parametri.tolleranza_taglio * 100 
         self.spin_tolleranza.setValue(tolleranza_taglio)
     
 
@@ -174,7 +174,7 @@ class FormDitta(QWidget):
         # Salva la durata default per la simulazione batch all'interno della configurazione globale parametri
         self.parametri.anni_durata_target = self.spin_durata_piano.value()
         tolleranza_taglio = float(self.spin_tolleranza.value())
-        self.ditta.tolleranza_taglio = tolleranza_taglio/100
+        self.parametri.tolleranza_taglio = tolleranza_taglio/100
 
         # Sincronizzazione immediata del monte ore stagionale nominale con il nuovo organico salvato
         if hasattr(self.ditta, "inizializza_serbatoi_stagionali"):

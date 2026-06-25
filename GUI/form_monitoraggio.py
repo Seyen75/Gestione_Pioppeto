@@ -16,7 +16,7 @@ import numpy as np
 from Core.struttura_lavorazioni import STRUTTURA_LAVORAZIONI
 
 class form_monitoraggio(QWidget):
-    def __init__(self, motore_simulazione, ditta, parent=None):
+    def __init__(self, motore_simulazione, parent=None):
         super().__init__(parent)
         # Istanzia l'oggetto della classe SimulatorePioppicoltura ed i parametri da essere utilizzato in tutta l'applicazione
         self.motore = motore_simulazione
@@ -31,7 +31,6 @@ class form_monitoraggio(QWidget):
         self._cumulato_opera_precedente = 0.0
         self._cumulato_cartiera_precedente = 0.0
         self._cumulato_truciolato_precedente = 0.0
-        self.ditta = ditta
         
         # Dati per dimensioni della form
         self.DIM_W = 1100
@@ -267,7 +266,7 @@ class form_monitoraggio(QWidget):
                         lotto.eta = eta_futura
                         lotto.diametro_medio_fusto = dati_futuri["dbh_reale_cm"] 
             
-                is_maturo = lotto.verifica_maturita_raccolta(self.ditta.tolleranza_taglio)
+                is_maturo = lotto.verifica_maturita_raccolta(self.parametri.tolleranza_taglio)
             
             finally:
                 # Ripristino in caso di errore nel blocco sopra
