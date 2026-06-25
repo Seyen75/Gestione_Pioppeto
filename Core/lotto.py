@@ -111,10 +111,14 @@ class Lotto:
             if self.numero_piante_vive <= 5:
                 self.inizializza_nuovo_ciclo()
                 stato_esecuzione = "Eseguito (Taglio Completato - Reset Ciclo)"
-            else:
+            elif piante_abbattute > 0:
                 self.tagliato = True
                 self.anni_ritardo_taglio += 1
                 stato_esecuzione = f"Eseguito Parziale (In piedi {self.numero_piante_vive} piante)"
+            else:
+                self.tagliato = False
+                self.anni_ritardo_taglio += 1
+                stato_esecuzione = f"Taglio bloccato"
             
             # ritorna una tupla con il dizionario dei quantitativi di rese calcolato ed una stringa sullo stato di esecuzione della raccolta    
             return rese, stato_esecuzione

@@ -587,9 +587,9 @@ class FormValutazioni(QWidget):
             # nelle caselle tagliato e pronto
             if dati["stato_taglio"] in ["COMPLETATO", "PARZIALE"]:
                 testo_taglio = dati["stato_taglio"]
-            elif fallimenti_taglio["saltati_risorse"] != 0:
+            elif fallimenti_taglio["saltati_risorse"] != 0 and pronto_al_taglio == "SÌ":
                 testo_taglio = "NO RISORSE"
-            elif is_maturo_per_eta:
+            elif pronto_al_taglio == "SÌ":
                 testo_taglio = "NON MATURO"
             else:
                 testo_taglio = "NO"
