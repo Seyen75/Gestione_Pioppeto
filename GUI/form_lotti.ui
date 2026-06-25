@@ -145,8 +145,8 @@ QTableWidget {
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>271</width>
-      <height>200</height>
+      <width>299</width>
+      <height>201</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -240,6 +240,13 @@ QTableWidget {
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Età lotto</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="1">
       <widget class="QSpinBox" name="spin_eta_iniziale">
        <property name="minimumSize">
@@ -259,13 +266,6 @@ QTableWidget {
        </property>
        <property name="maximum">
         <number>15</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Età lotto</string>
        </property>
       </widget>
      </item>

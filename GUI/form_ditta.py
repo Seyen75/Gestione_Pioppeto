@@ -31,7 +31,7 @@ class FormDitta(QWidget):
         layout.addWidget(self.ui_interfaccia)
         layout.setContentsMargins(10, 10, 10, 10)
         self.DIM_W = 686
-        self.DIM_H = 450
+        self.DIM_H = 470
 
         # Salva il riferimento all'oggetto Ditta globale passato alla chiamata e necessario per la gestione dei dati
         self.ditta = ditta_condivisa
@@ -54,6 +54,7 @@ class FormDitta(QWidget):
         self.spin_cippatrici = self.ui_interfaccia.findChild(object, "spin_cippatrici")
         self.spin_durata_piano = self.ui_interfaccia.findChild(object, "spin_durata_piano")
 
+
         # Comparto Noli e Stagionali
         self.spin_operaio_A_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_A_noleggio")
         self.spin_operaio_B_noleggio = self.ui_interfaccia.findChild(object, "spin_operaio_B_noleggio")
@@ -63,6 +64,8 @@ class FormDitta(QWidget):
         self.spin_harvester_noleggio = self.ui_interfaccia.findChild(object, "spin_harvester_noleggio")
         self.spin_forwarder_noleggio = self.ui_interfaccia.findChild(object, "spin_forwarder_noleggio")
         self.spin_cippatrici_noleggio = self.ui_interfaccia.findChild(object, "spin_cippatrici_noleggio")
+        
+        self.spin_tolleranza = self.ui_interfaccia.findChild(object, "spin_tolleranza")
         
         # Pulsanti di Comando
         self.btn_salva = self.ui_interfaccia.findChild(object, "btn_salva")
@@ -108,6 +111,9 @@ class FormDitta(QWidget):
         self.spin_harvester_noleggio.setValue(limiti["harvester"])
         self.spin_forwarder_noleggio.setValue(limiti["forwarder"])
         self.spin_cippatrici_noleggio.setValue(limiti["cippatrice"])
+        
+        tolleranza_taglio = self.ditta.tolleranza_taglio * 100 
+        self.spin_tolleranza.setValue(tolleranza_taglio)
     
 
     def salva_dati_in_modello(self):
@@ -167,6 +173,8 @@ class FormDitta(QWidget):
         
         # Salva la durata default per la simulazione batch all'interno della configurazione globale parametri
         self.parametri.anni_durata_target = self.spin_durata_piano.value()
+        tolleranza_taglio = float(self.spin_tolleranza.value())
+        self.ditta.tolleranza_taglio = tolleranza_taglio/100
 
         # Sincronizzazione immediata del monte ore stagionale nominale con il nuovo organico salvato
         if hasattr(self.ditta, "inizializza_serbatoi_stagionali"):

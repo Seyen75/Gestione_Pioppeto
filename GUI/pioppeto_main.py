@@ -355,7 +355,7 @@ class PioppetoMain(QMainWindow):
         try:
             self.motore_condiviso = SimulatorePioppicoltura(self.ditta_attiva, self.parametri_condivisi)
             
-            self.finestra_monitoraggio = form_monitoraggio(self.motore_condiviso, self)
+            self.finestra_monitoraggio = form_monitoraggio(self.motore_condiviso, self.ditta_attiva, self)
             self.finestra_monitoraggio.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.finestra_monitoraggio.setWindowFlags(Qt.Window) 
             self.finestra_monitoraggio.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)

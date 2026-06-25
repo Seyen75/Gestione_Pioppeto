@@ -10,7 +10,8 @@ class Ditta:
         self.nome_ditta: str = nome
         self.ore_giorno_standard: int = 8
         self.coefficiente_rendimento_cantiere: float = 0.80  # Adeguamento per Normativa IUFRO (20% tempi accessori) - Da indicate in PW
-        self.coefficiente_iufro: float = 0.80              
+        self.coefficiente_iufro: float = 0.80      
+        self.tolleranza_taglio: float = 0.1        
 
         # FORZA LAVORO
         self.operai_grado_A: int = 0  # Specializzati (Conduttori macchine complesse,qualificati per potature alte, ecc.)
