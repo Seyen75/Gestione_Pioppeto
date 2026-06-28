@@ -53,7 +53,7 @@ OP_MON_01 = {"id_operazione": "OP_MON_01", "descrizione": "Monitoraggio fitosani
 OP_POT_01 = {"id_operazione": "OP_POT_01", "descrizione": "Spollonatura e prima potatura aste", 
              "macrocategoria": "potatura", "priorita": 3, "ore_ha": 10.0, "risorse": {"grado_B": 1.0}}
 OP_POT_02 = {"id_operazione": "OP_POT_02", "descrizione": "Potatura di elevazione in quota (Nodi)", 
-             "macrocategoria": "potatura", "priorita": 2, "ore_ha": 12.0, "risorse": {"piattaforme": 1.0, "grado_A": 1.0, "grado_B": 1.0}}
+             "macrocategoria": "potatura", "priorita": 2, "ore_ha": 10.0, "risorse": {"piattaforme": 1.0, "grado_A": 1.0, "grado_B": 1.0}}
 OP_POT_03 = {"id_operazione": "OP_POT_03", "descrizione": "Mondatura rami danneggiati post-eventi meteo", 
              "macrocategoria": "potatura", "priorita": 3, "ore_ha": 3.5, "risorse": {"piattaforme": 1.0, "grado_A": 1.0, "grado_B": 1.0}}
 
