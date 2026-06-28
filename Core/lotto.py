@@ -157,6 +157,7 @@ class Lotto:
         La funzione ha una tolleranza sulla verifica del diametro medio delle piante in caso di raggiungimento dell'età di taglio.
         Tale tolleranza è data dal fatto che economicamente è meglio effettuare un taglio di un lotto che per pochi millimetri non ha raggiunto il diametro target
         che daranno una leggera minore resa, che rimandare il taglio all'anno successivo perdendo i ritorno economici nell'anno in corso.'''
+        
         TOLLERANZA_PERCENTUALE = tolleranza
          # Differenzia a seconda della tipologia di resa del lotto i parametri per la valutazione
         if self.destinazione_uso == "OPERA":
@@ -224,16 +225,16 @@ class Lotto:
             malus_storico = self.malus_colturale_accumulato
             indice_qualita_fusto = max(0.60, 1.0 - (malus_storico * 0.4)) 
             
-            # Si utilizza il valore medio standard del 62%. Questo rappresenta mediamente la parte di albero utile per la resa da Opera
+            # Si utilizza il valore medio standard del 65%. Questo rappresenta mediamente la parte di albero utile per la resa da Opera
             # Il valore è poi influenzato dall'indice precedentemente calcolato
-            mu_opera = 0.62 * indice_qualita_fusto 
+            mu_opera = 0.65 * indice_qualita_fusto 
             
             # Viene applicata una minima randomizzazione, attraverso l'uso di una funzione di densità normale, con parametro di media quello calcolato precedentemente
             # e con una deviazione standard specifica per ogni quota di resa. Questo per evitare l'appiattimento matematico di una formula matematica troppo deterministica
             # e dare un minimo di variabilità.
             quota_opera = max(0.01, random.gauss(mu_opera, 0.04))
-            quota_cartiera = max(0.01, random.gauss(0.20, 0.03))
-            quota_truciolato = max(0.01, random.gauss(0.18, 0.03))
+            quota_cartiera = max(0.01, random.gauss(0.18, 0.03))
+            quota_truciolato = max(0.01, random.gauss(0.17, 0.03))
 
             # Viene effettuata una normalizzazione dei valori che escono dal precedente calcolo per evitare distorzioni di risultati
             somma_quote = quota_opera + quota_cartiera + quota_truciolato

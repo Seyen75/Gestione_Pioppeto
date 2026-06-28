@@ -190,14 +190,14 @@ class PioppetoMain(QMainWindow):
         configurazione_lotti_default = [
             # --- FILIERA OPERA (Ciclo 10 anni) - 20 Lotti = 230 ha ---
             {"id": "LTI-001", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 9, "superficie": 15.0, "idrico": 0.0},
-            {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 9, "superficie": 11.0, "idrico": 0.1},
+            {"id": "LTI-002", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 9, "superficie": 15.0, "idrico": 0.1},
             {"id": "LTI-003", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 8, "superficie": 13.0, "idrico": 0.2},
             {"id": "LTI-004", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 8, "superficie": 11.5, "idrico": -0.1},
-            {"id": "LTI-005", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 11.0, "idrico": 0.0},
-            {"id": "LTI-006", "clone": "Diva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 12.5, "idrico": -0.2},
-            {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 11.5, "idrico": 0.0},
-            {"id": "LTI-008", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 11.5, "idrico": 0.1},
-            {"id": "LTI-009", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 5, "superficie": 13.0, "idrico": 0.0},
+            {"id": "LTI-005", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 15.0, "idrico": 0.0},
+            {"id": "LTI-006", "clone": "Diva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 7, "superficie": 15.0, "idrico": -0.2},
+            {"id": "LTI-007", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 15.0, "idrico": 0.0},
+            {"id": "LTI-008", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 6, "superficie": 18.0, "idrico": 0.1},
+            {"id": "LTI-009", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 5, "superficie": 15.0, "idrico": 0.0},
             {"id": "LTI-010", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 5, "superficie": 14.5, "idrico": 0.0},
             {"id": "LTI-011", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 4, "superficie": 18.0, "idrico": 0.2},
             {"id": "LTI-012", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 4, "superficie": 12.5, "idrico": -0.1},
@@ -207,20 +207,20 @@ class PioppetoMain(QMainWindow):
             {"id": "LTI-016", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 2, "superficie": 12.0, "idrico": 0.0},
             {"id": "LTI-017", "clone": "Koster",  "dest": "OPERA", "sesto_impianto": "6x6", "eta": 1, "superficie": 18.0, "idrico": -0.2},
             {"id": "LTI-018", "clone": "Velasco", "dest": "OPERA", "sesto_impianto": "6x6", "eta": 1, "superficie": 11.5, "idrico": 0.0},
-            {"id": "LTI-019", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 11.5, "idrico": 0.1},
-            {"id": "LTI-020", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 12.0, "idrico": 0.0},
+            {"id": "LTI-019", "clone": "I-214",   "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 20.0, "idrico": 0.1},
+            {"id": "LTI-020", "clone": "Neva",    "dest": "OPERA", "sesto_impianto": "6x6", "eta": 0, "superficie": 15.0, "idrico": 0.0},
 
             # --- FILIERA INDUSTRIA (Ciclo 5 anni) - 10 Lotti = 120 ha ---
-            {"id": "LTI-021", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 4, "superficie": 16.0, "idrico": 0.1},
+            {"id": "LTI-021", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 4, "superficie": 12.0, "idrico": 0.1},
             {"id": "LTI-022", "clone": "Monviso", "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 4, "superficie": 14.0, "idrico": 0.0},
             {"id": "LTI-023", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 3, "superficie": 15.0, "idrico": -0.1},
             {"id": "LTI-024", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 3, "superficie": 13.0, "idrico": 0.2},
-            {"id": "LTI-025", "clone": "Monviso", "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 2, "superficie": 15.0, "idrico": 0.0},
+            {"id": "LTI-025", "clone": "Monviso", "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 2, "superficie": 11.0, "idrico": 0.0},
             {"id": "LTI-026", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 2, "superficie": 14.0, "idrico": -0.2},
             {"id": "LTI-027", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 1, "superficie": 14.0, "idrico": 0.0},
             {"id": "LTI-028", "clone": "Monviso", "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 1, "superficie": 14.0, "idrico": 0.1},
-            {"id": "LTI-029", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 0, "superficie": 14.0, "idrico": -0.1},
-            {"id": "LTI-030", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 0, "superficie": 13.0, "idrico": 0.2}
+            {"id": "LTI-029", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 0, "superficie": 12.0, "idrico": -0.1},
+            {"id": "LTI-030", "clone": "AF2",     "dest": "INDUSTRIA", "sesto_impianto": "3x2", "eta": 0, "superficie": 10.0, "idrico": 0.2}
         ]
         
         

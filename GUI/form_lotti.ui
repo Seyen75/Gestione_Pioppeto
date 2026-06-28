@@ -206,6 +206,9 @@ QTableWidget {
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Ciclo produttivo previsto per il lotto</string>
+       </property>
       </widget>
      </item>
      <item row="2" column="0">
@@ -228,6 +231,9 @@ QTableWidget {
          <width>90</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Estensione del lotto. Massimo 100 ha</string>
        </property>
        <property name="suffix">
         <string> ha</string>
@@ -261,6 +267,9 @@ QTableWidget {
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Età del lotto</string>
+       </property>
        <property name="suffix">
         <string> anni</string>
        </property>
@@ -283,6 +292,9 @@ QTableWidget {
          <width>90</width>
          <height>90</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Valore che identifica la difficoltà del lotto (distanza dagli altri, problemi morfologici)</string>
        </property>
        <property name="maximum">
         <number>10</number>
@@ -433,6 +445,9 @@ QTableWidget {
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Clone di Pioppo utilizzato</string>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -456,6 +471,9 @@ QTableWidget {
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Distribuzione dei pioppi sul terreno (LxL)</string>
+       </property>
       </widget>
      </item>
      <item row="2" column="0">
@@ -478,6 +496,9 @@ QTableWidget {
          <width>90</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Valore che indica le problematiche idriche del terreno</string>
        </property>
        <property name="minimum">
         <double>-1.000000000000000</double>

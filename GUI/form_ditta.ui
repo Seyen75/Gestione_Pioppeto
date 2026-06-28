@@ -128,6 +128,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Inserire il numero personale specializzato</string>
+        </property>
         <property name="minimum">
          <number>1</number>
         </property>
@@ -150,6 +153,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Inserire il numero personale genericolizzato</string>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -191,6 +197,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Personale specializzato presente sul mercato degli stagionali</string>
+        </property>
         <property name="maximum">
          <number>100</number>
         </property>
@@ -203,6 +212,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Personale generico presente sul mercato degli stagional</string>
         </property>
        </widget>
       </item>
@@ -246,6 +258,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Numero trattori alta potenza di proprietà</string>
+        </property>
         <property name="maximum">
          <number>100</number>
         </property>
@@ -265,6 +280,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Numero trattori media potenza di proprietà</string>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -289,6 +307,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Numero piattaforme potenza di proprietà</string>
+        </property>
         <property name="maximum">
          <number>100</number>
         </property>
@@ -309,6 +330,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Numero Harvester di proprietà</string>
+        </property>
        </widget>
       </item>
       <item row="4" column="0">
@@ -326,6 +350,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Numero Forwarder di proprietà</string>
+        </property>
        </widget>
       </item>
       <item row="5" column="0">
@@ -342,6 +369,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Numero Cippatrici di proprietà</string>
         </property>
        </widget>
       </item>
@@ -367,6 +397,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Trattori Alta Potenza noleggiabili</string>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -383,6 +416,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Trattori Media Potenza noleggiabili</string>
         </property>
        </widget>
       </item>
@@ -401,6 +437,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Piattoforme noleggiabili</string>
+        </property>
        </widget>
       </item>
       <item row="3" column="0">
@@ -417,6 +456,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Harvester noleggiabili</string>
         </property>
        </widget>
       </item>
@@ -435,6 +477,9 @@ QPushButton:pressed {
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Forwarder noleggiabili</string>
+        </property>
        </widget>
       </item>
       <item row="5" column="1">
@@ -444,6 +489,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Cippatrici noleggiabili</string>
         </property>
        </widget>
       </item>
@@ -478,6 +526,9 @@ QPushButton:pressed {
       </property>
       <item>
        <widget class="QPushButton" name="btn_salva">
+        <property name="toolTip">
+         <string/>
+        </property>
         <property name="text">
          <string>Salva Ditta</string>
         </property>
@@ -504,6 +555,9 @@ QPushButton:pressed {
           <width>75</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Inserire il numero di anni per simulazione Batch</string>
         </property>
         <property name="suffix">
          <string> anni</string>
