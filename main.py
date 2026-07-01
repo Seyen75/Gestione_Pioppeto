@@ -2,7 +2,7 @@ import os
 import sys
 import platform
 
-# Import dei moduli di PySide6 per la questione grafica delle finestre
+# Importa i moduli di PySide6 per la gestione grafica delle finestre
 from GUI.pioppeto_main import PioppetoMain
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette, QColor, QIcon
@@ -22,8 +22,10 @@ if __name__ == "__main__":
     if platform.system() == "Windows":
         os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
+    # Crea l'applicazione Qt
     app = QApplication(sys.argv)
     
+    # Imposta l'icona dell'applicazione, che sarà visibile nella barra delle applicazioni e nella finestra principale
     percorso_icona = os.path.join("risorse", "Pioppo.png")
     app.setWindowIcon(QIcon(percorso_icona))
     
